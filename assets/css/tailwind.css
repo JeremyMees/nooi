@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {}
+
+@layer utilities {}
+
+@layer base {
+  @font-face {
+    font-family: 'Mukta';
+    src: url('@/assets/fonts/Mukta-Bold.ttf');
+    font-weight: 700;
+  }
+  
+  @font-face {
+    font-family: 'Mukta';
+    src: url('@/assets/fonts/Mukta-Medium.ttf');
+    font-weight: 500;
+  }
+
+  @font-face {
+    font-family: 'Mukta';
+    src: url('@/assets/fonts/Mukta-Regular.ttf');
+    font-weight: 400;
+  }
+
+  @font-face {
+    font-family: 'Mukta';
+    src: url('@/assets/fonts/Mukta-Light.ttf');
+    font-weight: 300;
+  }
+
+  @font-face {
+    font-family: 'MsMadi';
+    src: url('@/assets/fonts/MsMadi-Regular.ttf');
+    font-weight: 300;
+  }
+
+  html {
+    @apply font-mukta scroll-smooth text-black bg-white accent-primary body-normal;
+  }
+
+  h1, .head-1 {
+    @apply font-bold text-[1.5rem] leading-[1.75rem] md:text-[1.75rem] md:leading-[2rem] lg:text-[2rem] lg:leading-[2.25rem];
+  }
+
+  h2, .head-2 {
+    @apply font-bold text-[1.25rem] leading-[1.5rem] md:text-[1.5rem] md:leading-[1.5rem];
+  }
+
+  h3, .head-3 {
+    @apply font-bold text-[1rem] leading-[1.25rem] sm:text-[1.125rem] sm:leading-[1.25rem] md:text-[1.25rem] md:leading-[1.5rem];
+  }
+
+  .body-normal {
+    @apply text-[1.125rem] leading-[1.5rem] sm:text-[1.125rem] sm:leading-[1.5rem] md:text-[1.25rem] md:leading-[1.75rem];
+  }
+
+  .body-small {
+    @apply text-[0.75rem] leading-[1.25rem] sm:text-[0.875rem] sm:leading-[1.25rem];
+  }
+
+  .body-extra-small {
+    @apply text-[0.5rem] leading-[0.75rem];
+  }
+}
