@@ -5,9 +5,16 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "prod": "nuxt build && nuxt start",
+    "lint": "eslint .",
+    "fix": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "eslint": "^8.57.0"
   },
   "dependencies": {
     "@vueuse/nuxt": "^10.9.0",
