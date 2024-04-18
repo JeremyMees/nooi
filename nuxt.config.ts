@@ -1,15 +1,22 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import path from 'path'
+
 export default defineNuxtConfig({
   modules: [
-    '@vueuse/nuxt',
-    '@nuxtjs/tailwindcss'
+    '@nuxtjs/tailwindcss',
+    'nuxt-primevue',
+    '@vueuse/nuxt'
   ],
+  css: [
+    '~/assets/css/base.css',
+    '~/node_modules/primeicons/primeicons.css'
+  ],
+  primevue: {
+    options: { unstyled: true },
+    importPT: { as: 'Lara', from: path.resolve(__dirname, './presets/lara/') }
+  },
   tailwindcss: {
     cssPath: '~/assets/css/tailwind.css',
-    configPath: '~/tailwind.config.ts',
-    injectPosition: 0,
-    viewer: false,
-    exposeConfig: true
+    viewer: false
   },
   devtools: { enabled: true }
 })
