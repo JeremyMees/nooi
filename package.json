@@ -10,18 +10,22 @@
     "fix": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "sb:types": "npx supabase gen types typescript --project-id aikknsewvgsoxiorzdzo > types/database.ts "
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/supabase": "^1.2.1",
     "@nuxtjs/tailwindcss": "^6.11.4",
     "eslint": "^8.57.0",
+    "nuxt": "^3.11.2",
     "nuxt-primevue": "^0.3.1"
   },
   "dependencies": {
     "@formkit/tempo": "^0.0.13",
+    "@pinia/nuxt": "^0.5.1",
     "@vueuse/nuxt": "^10.9.0",
-    "nuxt": "^3.10.3",
+    "pinia": "^2.1.7",
     "primeicons": "^6.0.1",
     "primevue": "^3.49.1",
     "vue": "^3.4.19",
