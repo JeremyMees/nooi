@@ -22,7 +22,12 @@
     "nuxt-primevue": "^0.3.1"
   },
   "dependencies": {
+    "@formkit/core": "^1.6.2",
+    "@formkit/i18n": "^1.6.2",
+    "@formkit/icons": "^1.6.2",
+    "@formkit/nuxt": "^1.6.2",
     "@formkit/tempo": "^0.0.13",
+    "@formkit/vue": "^1.6.2",
     "@pinia/nuxt": "^0.5.1",
     "@vueuse/nuxt": "^10.9.0",
     "pinia": "^2.1.7",

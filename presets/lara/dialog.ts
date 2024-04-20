@@ -1,5 +1,5 @@
 export default {
-  root: ({ state }) => ({
+  root: ({ state }: any) => ({
     class: [
       // Shape
       'rounded-lg',
@@ -142,7 +142,7 @@ export default {
       'h-4'
     ]
   },
-  content: ({ state, instance }) => ({
+  content: ({ state, instance }: any) => ({
     class: [
       // Spacing
       'px-6',
@@ -185,18 +185,17 @@ export default {
       'text-surface-700 dark:text-surface-0/80'
     ]
   },
-  mask: ({ props }) => ({
+  mask: ({ props }: any) => ({
     class: [
       // Transitions
       'transition-all',
       'duration-300',
-      { 'p-5': !props.position == 'full' },
 
       // Background and Effects
       { 'has-[.mask-active]:bg-transparent bg-black/40': props.modal, 'has-[.mask-active]:backdrop-blur-none backdrop-blur-sm': props.modal }
     ]
   }),
-  transition: ({ props }) => {
+  transition: ({ props }: any) => {
     return props.position === 'top'
       ? {
           enterFromClass: 'opacity-0 scale-75 translate-x-0 -translate-y-full translate-z-0 mask-active',

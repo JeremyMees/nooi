@@ -3,10 +3,12 @@ export default {
   content: [
     'app.vue',
     'error.vue',
-    'pages/**/*.{vue,js}',
-    'layouts/**/*.{vue,js}',
-    'components/**/*.{vue,js}',
-    'presets/**/*.{js,vue,ts}'
+    'pages/*.vue',
+    'layouts/*.vue',
+    'components/**/*.vue',
+    'presets/**/*.ts',
+    './formkit.theme.ts',
+    './formkit.plugins.ts'
   ],
   theme: {
     extend: {

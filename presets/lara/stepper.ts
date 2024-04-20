@@ -1,5 +1,5 @@
 export default {
-  root: ({ props }) => ({
+  root: ({ props }: any) => ({
     class: ['flex-1', props.orientation === 'vertical' ? 'flex-col' : 'flex-row']
   }),
   nav: {
@@ -24,10 +24,10 @@ export default {
     ]
   },
   stepperpanel: {
-    panel: ({ context, parent }) => ({
+    panel: ({ context, parent }: any) => ({
       class: [context.active ? 'flex-1' : '', parent.props.orientation === 'vertical' ? 'flex flex-col flex-initial' : '']
     }),
-    header: ({ parent, context }) => ({
+    header: ({ parent, context }: any) => ({
       class: [
         // Position
         'relative',
@@ -70,7 +70,7 @@ export default {
         'outline-none'
       ]
     },
-    number: ({ context }) => ({
+    number: ({ context }: any) => ({
       class: [
         // Flexbox
         'flex',
@@ -99,7 +99,7 @@ export default {
         'duration-200'
       ]
     }),
-    title: ({ context }) => ({
+    title: ({ context }: any) => ({
       class: [
         // Layout
         'block',
@@ -122,7 +122,7 @@ export default {
         'duration-200'
       ]
     }),
-    separator: ({ context, state, parent }) => ({
+    separator: ({ context, state, parent }: any) => ({
       class: [
         // Colors (Conditional for active step)
         state.d_activeStep <= context.index ? 'bg-surface-200 dark:bg-surface-700' : 'bg-primary-500 dark:bg-primary-400',
@@ -144,7 +144,7 @@ export default {
       leaveActiveClass: 'overflow-hidden transition-[max-height] duration-[450ms] ease-[cubic-bezier(0,1,0,1)]',
       leaveToClass: 'max-h-0'
     },
-    content: ({ parent }) => ({
+    content: ({ parent }: any) => ({
       class: [parent.props.orientation === 'vertical' ? 'w-full pl-4' : '']
     })
   },

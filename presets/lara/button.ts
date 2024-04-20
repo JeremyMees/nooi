@@ -1,5 +1,5 @@
 export default {
-  root: ({ props, context, parent }) => ({
+  root: ({ props, context, parent }: any) => ({
     class: [
       'relative',
 
@@ -9,7 +9,7 @@ export default {
       // Sizes & Spacing
       'leading-[normal]',
       {
-        'px-4 py-3': props.size === null,
+        'px-4 py-3 text-sm': props.size === null,
         'text-sm py-2 px-3': props.size === 'small',
         'text-xl py-3 px-4': props.size === 'large'
       },
@@ -53,14 +53,14 @@ export default {
 
       // Secondary Button
       {
-        'text-white dark:text-surface-900': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
-        'bg-surface-500 dark:bg-surface-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
-        'border border-surface-500 dark:border-surface-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain
+        'text-white dark:text-secondary': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
+        'bg-secondary dark:bg-surface-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain,
+        'border border-secondary dark:border-surface-400': props.severity === 'secondary' && !props.text && !props.outlined && !props.plain
       },
       // Secondary Text Button
-      { 'text-surface-500 dark:text-surface-300': props.text && props.severity === 'secondary' && !props.plain },
+      { 'text-secondary dark:text-surface-300': props.text && props.severity === 'secondary' && !props.plain },
       // Secondary Outlined Button
-      { 'text-surface-500 dark:text-surface-300 border border-surface-500 hover:bg-surface-300/20': props.outlined && props.severity === 'secondary' && !props.plain },
+      { 'text-secondary dark:text-surface-300 border border-secondary hover:bg-surface-300/20': props.outlined && props.severity === 'secondary' && !props.plain },
 
       // Success Button
       {
@@ -180,7 +180,7 @@ export default {
       'cursor-pointer overflow-hidden select-none'
     ]
   }),
-  label: ({ props }) => ({
+  label: ({ props }: any) => ({
     class: [
       'duration-200',
       'font-bold',
@@ -190,31 +190,31 @@ export default {
       { 'flex-1': props.label !== null, 'invisible w-0': props.label == null }
     ]
   }),
-  icon: ({ props }) => ({
+  icon: ({ props }: any) => ({
     class: [
       'mx-0',
       {
-        'mr-2': props.iconPos == 'left' && props.label != null,
-        'ml-2 order-1': props.iconPos == 'right' && props.label != null,
-        'mb-2': props.iconPos == 'top' && props.label != null,
-        'mt-2': props.iconPos == 'bottom' && props.label != null
+        'mr-2': props.iconPos === 'left' && props.label != null,
+        'ml-2 order-1': props.iconPos === 'right' && props.label != null,
+        'mb-2': props.iconPos === 'top' && props.label != null,
+        'mt-2': props.iconPos === 'bottom' && props.label != null
       }
     ]
   }),
-  loadingicon: ({ props }) => ({
+  loadingicon: ({ props }: any) => ({
     class: [
       'h-4 w-4',
       'mx-0',
       {
-        'mr-2': props.iconPos == 'left' && props.label != null,
-        'ml-2 order-1': props.iconPos == 'right' && props.label != null,
-        'mb-2': props.iconPos == 'top' && props.label != null,
-        'mt-2': props.iconPos == 'bottom' && props.label != null
+        'mr-2': props.iconPos === 'left' && props.label != null,
+        'ml-2 order-1': props.iconPos === 'right' && props.label != null,
+        'mb-2': props.iconPos === 'top' && props.label != null,
+        'mt-2': props.iconPos === 'bottom' && props.label != null
       },
       'animate-spin'
     ]
   }),
-  badge: ({ props }) => ({
+  badge: ({ props }: any) => ({
     class: [{ 'ml-2 w-4 h-4 leading-none flex items-center justify-center': props.badge }]
   })
 }
