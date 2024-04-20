@@ -1,5 +1,5 @@
 export default {
-  root: ({ props }) => ({
+  root: ({ props }: any) => ({
     class: [
       'overflow-hidden',
       {
