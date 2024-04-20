@@ -1,8 +1,11 @@
 export default {
   darkMode: 'selector',
   content: [
-    './app.vue',
-    './components/*.{vue,js}',
+    'app.vue',
+    'error.vue',
+    'pages/**/*.{vue,js}',
+    'layouts/**/*.{vue,js}',
+    'components/**/*.{vue,js}',
     'presets/**/*.{js,vue,ts}'
   ],
   theme: {
