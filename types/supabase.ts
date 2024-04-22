@@ -13,3 +13,14 @@ type ReservationUpdate = Database['public']['Tables']['reservations']['Update']
 type EventTheme = Database['public']['Enums']['eventTheme']
 
 type BookingType = Database['public']['Enums']['bookingType']
+
+interface EventReservation extends EventRow {
+  reservations: {
+    id: number
+  }[]
+}
+
+interface SbFetchOptions {
+  table: 'events' | 'reservations'
+  select?: string
+}

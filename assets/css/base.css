@@ -22,3 +22,33 @@
   --surface-900: 26 24 21;
   --surface-950: 13 12 11;
 }
+
+@font-face {
+  font-family: 'Mukta';
+  src: url('@/assets/fonts/Mukta-Bold.ttf');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'Mukta';
+  src: url('@/assets/fonts/Mukta-Medium.ttf');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Mukta';
+  src: url('@/assets/fonts/Mukta-Regular.ttf');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Mukta';
+  src: url('@/assets/fonts/Mukta-Light.ttf');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'MsMadi';
+  src: url('@/assets/fonts/MsMadi-Regular.ttf');
+  font-weight: 300;
+}

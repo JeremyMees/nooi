@@ -4,8 +4,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const supabase = useSupabaseClient<Database>()
   const toast = useToast()
 
-  const events = ref<EventRow[]>([])
-  const selectedEvent = ref<EventRow>({ id: 1, name: 'Color of death', spots: 12, min_spots: 3, day: '2024-05-04', start: '19:30:43', end: null, created_at: '2024-04-19T18:04:38.633893+00:00', price: null, description: 'Wij spelen Color of death sessie 2', theme: 'game' })
+  const events = ref<EventReservation[]>([])
+  const selectedEvent = ref<EventReservation>()
   const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(true)
   const sidebarOpen = ref<boolean>(false)
@@ -22,7 +22,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const spots = computed<{ min: number, max: number}>(() => {
     return {
       min: selectedEvent.value?.min_spots ?? opening.value?.minSpots ?? 2,
-      max: selectedEvent.value?.spots ?? maxSpots // check how many spots are already booked for this event
+      max: selectedEvent.value?.spots
+        ? selectedEvent.value.spots - selectedEvent.value.reservations.length
+        : maxSpots
     }
   })
 
@@ -30,10 +32,15 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     return type.value === 'reservation' ? minTimeSlot : minTimeSlotRental
   })
 
+  watch(selectedEvent, (value) => {
+    if (value) { sidebarOpen.value = true }
+  })
+
   watch(sidebarOpen, (value) => {
     if (!value) {
       type.value = 'reservation'
       day.value = undefined
+      selectedEvent.value = undefined
     }
   })
 
@@ -51,9 +58,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     loading.value = true
 
     try {
-      events.value = await sbFetch<EventRow[]>('events')
-      reservations.value = await sbFetch<ReservationRow[]>('reservations')
-
+      await getData()
       subscribe()
     } catch (error) {
       toast.add({
@@ -67,6 +72,17 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   }
 
+  async function getData (): Promise<void> {
+    events.value = await sbFetch<EventReservation[]>({
+      table: 'events',
+      select: '*, reservations:reservations(id)'
+    })
+
+    reservations.value = await sbFetch<ReservationRow[]>({
+      table: 'reservations'
+    })
+  }
+
   function subscribe () {
     supabase
       .channel('reservation')
@@ -78,9 +94,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           table: 'reservations',
           filter: `day=gte.${(new Date()).toISOString()}`
         },
-        async () => {
-          reservations.value = await sbFetch<ReservationRow[]>('reservations')
-        }
+        async () => await getData()
       ).subscribe()
   }
 

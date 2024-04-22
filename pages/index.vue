@@ -10,11 +10,22 @@ onBeforeUnmount(() => store.unsubscribe())
     <div v-if="store.loading">
       loading...
     </div>
-    <div v-else>
-      reservations: {{ store.reservations.length }}
-      events: {{ store.events.length }}
+    <div v-else class="flex flex-col gap-y-4 items-start">
+      <p>
+        reservations: {{ store.reservations.length }}
+      </p>
+      <p>
+        events: {{ store.events.length }}
+      </p>
       <Button @click="store.sidebarOpen = true">
-        Open sidebar
+        Reservatie maken
+      </Button>
+      <Button
+        v-for="event in store.events"
+        :key="event.id"
+        @click="store.selectedEvent = event"
+      >
+        Reservatie maken {{ event.name }}
       </Button>
     </div>
     <ReservationSidebar />
