@@ -1,4 +1,4 @@
-import { format, range, monthDays, sameDay } from '@formkit/tempo'
+import { format, range, monthDays, sameDay, addDay, addYear } from '@formkit/tempo'
 import type { Format } from '@formkit/tempo'
 
 const formatDefault: Format = { date: 'medium', time: 'short' }
@@ -29,6 +29,37 @@ export function createFormattedDate (date: DisplayDate): string {
 
 export function firstDayOfWeek (date: Date): number {
   return date.getDay() === 0 ? 7 : date.getDay() // Adjust if first day is Sunday
+}
+
+export function formatHour (hour: number, minute = 0): string {
+  return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+}
+
+export function getDayOfWeek (date: string): number {
+  const day = new Date(date).getDay()
+
+  return day === 0 ? 6 : day - 1 // Adjust if first day is Sunday
+}
+
+export function getYesterday (): Date {
+  return addDay(new Date(), -1)
+}
+
+export function getNextYear (): Date {
+  return addYear(new Date(), 1)
+}
+
+export function roundTime (time: string): string {
+  const [hour, minutes] = time.split(':')
+
+  if (+minutes <= 15) {
+    return `${hour}:00`
+  } else if (+minutes >= 45) {
+    const newHour = +hour + 1
+    return `${newHour === 24 ? '00' : newHour.toString().padStart(2, '0')}:00`
+  } else {
+    return `${hour}:30`
+  }
 }
 
 export function getMonths (): string[] {

@@ -29,5 +29,6 @@ export default defineNuxtConfig({
   pinia: {
     storesDirs: ['./stores/**']
   },
+  formkit: { configFile: './formkit/config' },
   devtools: { enabled: true }
 })

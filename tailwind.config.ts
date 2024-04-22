@@ -7,8 +7,7 @@ export default {
     'layouts/*.vue',
     'components/**/*.vue',
     'presets/**/*.ts',
-    './formkit.theme.ts',
-    './formkit.plugins.ts'
+    'formkit/*.ts'
   ],
   theme: {
     extend: {

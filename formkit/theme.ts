@@ -646,7 +646,9 @@ const classes: Record<string, Record<string, boolean>> = {
     'mb-4': true,
     'data-[disabled]:select-none': true,
     'text-base': true,
-    'data-[disabled]:opacity-100': true
+    'data-[disabled]:opacity-100': true,
+    flex: true,
+    'justify-end': true
   },
   submit__input: {
     'appearance-none': true,

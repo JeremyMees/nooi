@@ -13,6 +13,10 @@ onBeforeUnmount(() => store.unsubscribe())
     <div v-else>
       reservations: {{ store.reservations.length }}
       events: {{ store.events.length }}
+      <Button @click="store.sidebarOpen = true">
+        Open sidebar
+      </Button>
     </div>
+    <ReservationSidebar />
   </NuxtLayout>
 </template>
