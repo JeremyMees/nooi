@@ -9,3 +9,7 @@ type ReservationRow = Database['public']['Tables']['reservations']['Row']
 type ReservationInsert = Database['public']['Tables']['reservations']['Insert']
 
 type ReservationUpdate = Database['public']['Tables']['reservations']['Update']
+
+type EventTheme = Database['public']['Enums']['eventTheme']
+
+type BookingType = Database['public']['Enums']['bookingType']
