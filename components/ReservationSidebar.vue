@@ -43,12 +43,15 @@ async function submit (form: ReservationInsert): Promise<void> {
   <Sidebar
     v-model:visible="store.sidebarOpen"
     position="right"
-    :header="
-      store.selectedEvent
-        ? 'Reservatie maken voor ' + store.selectedEvent.name
-        : 'Reservatie maken'
-    "
   >
+    <template #header>
+      <span class="head-3">
+        {{ store.selectedEvent ? 'Reservatie maken voor ' : 'Reservatie maken' }}
+        <span v-if="store.selectedEvent" class="text-secondary">
+          {{ store.selectedEvent.name }}
+        </span>
+      </span>
+    </template>
     <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
     <FormKit
       v-else

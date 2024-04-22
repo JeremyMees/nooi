@@ -10,8 +10,7 @@ export default defineNuxtConfig({
     '@formkit/nuxt'
   ],
   css: [
-    '@/assets/css/base.css',
-    '@/assets/css/tailwind.css',
+    './assets/css/base.css',
     '~/node_modules/primeicons/primeicons.css'
   ],
   supabase: { redirect: false },
@@ -20,7 +19,7 @@ export default defineNuxtConfig({
     importPT: { as: 'Lara', from: path.resolve(__dirname, './presets/lara/') }
   },
   tailwindcss: {
-    cssPath: '~/assets/css/tailwind.css',
+    cssPath: './assets/css/tailwind.css',
     viewer: false
   },
   imports: {
