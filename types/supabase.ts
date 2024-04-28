@@ -1,26 +1,26 @@
-type EventRow = Database['public']['Tables']['events']['Row']
+export type EventRow = Database['public']['Tables']['events']['Row']
 
-type EventInsert = Database['public']['Tables']['events']['Insert']
+export type EventInsert = Database['public']['Tables']['events']['Insert']
 
-type EventUpdate = Database['public']['Tables']['events']['Update']
+export type EventUpdate = Database['public']['Tables']['events']['Update']
 
-type ReservationRow = Database['public']['Tables']['reservations']['Row']
+export type ReservationRow = Database['public']['Tables']['reservations']['Row']
 
-type ReservationInsert = Database['public']['Tables']['reservations']['Insert']
+export type ReservationInsert = Database['public']['Tables']['reservations']['Insert']
 
-type ReservationUpdate = Database['public']['Tables']['reservations']['Update']
+export type ReservationUpdate = Database['public']['Tables']['reservations']['Update']
 
-type EventTheme = Database['public']['Enums']['eventTheme']
+export type EventTheme = Database['public']['Enums']['eventTheme']
 
-type BookingType = Database['public']['Enums']['bookingType']
+export type BookingType = Database['public']['Enums']['bookingType']
 
-interface EventReservation extends EventRow {
+export interface EventReservation extends EventRow {
   reservations: {
     id: number
   }[]
 }
 
-interface SbFetchOptions {
+export interface SbFetchOptions {
   table: 'events' | 'reservations'
   select?: string
 }

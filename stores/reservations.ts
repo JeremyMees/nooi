@@ -1,4 +1,5 @@
 import { minTimeSlot, minTimeSlotRental, maxSpots, info } from '~/constants/info'
+import type { BasicForm } from '~/types/form'
 
 export const useReservationStore = defineStore('useReservationStore', () => {
   const supabase = useSupabaseClient<Database>()
@@ -10,13 +11,18 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const loading = ref<boolean>(true)
   const sidebarOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
+  const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
-  // Form values
-  const type = ref<BookingType>('reservation')
-  const day = ref<string>()
+  const form = ref<BasicForm>({
+    type: 'reservation',
+    day: '',
+    name: '',
+    number: '',
+    mail: ''
+  })
 
   const opening = computed<Info|undefined>(() => {
-    return day.value ? info[getDayOfWeek(day.value)] : undefined
+    return form.value.day ? info[getDayOfWeek(form.value.day)] : undefined
   })
 
   const spots = computed<{ min: number, max: number}>(() => {
@@ -29,18 +35,22 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   })
 
   const timeSlot = computed<number>(() => {
-    return type.value === 'reservation' ? minTimeSlot : minTimeSlotRental
+    return form.value.type === 'reservation' ? minTimeSlot : minTimeSlotRental
   })
 
-  watch([selectedEvent, day], (value) => {
+  watch([selectedEvent, () => form.value.day], (value) => {
     if (value.some(v => !!v)) { sidebarOpen.value = true }
   })
 
   watch(sidebarOpen, (value) => {
     if (!value) {
-      type.value = 'reservation'
-      day.value = undefined
+      form.value.day = undefined
+      form.value.type = 'reservation'
       selectedEvent.value = undefined
+    } else if (reservationInfo.value) {
+      form.value.name = reservationInfo.value.name
+      form.value.number = reservationInfo.value.number
+      form.value.mail = reservationInfo.value.email
     }
   })
 
@@ -49,6 +59,10 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   async function createReservation (insert: ReservationInsert): Promise<void> {
+    const { name, number, email } = insert
+
+    reservationInfo.value = { name, number, email }
+
     const { error: err } = await supabase
       .from('reservations')
       .insert([insert])
@@ -113,10 +127,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     loading,
     sidebarOpen,
     activeStep,
-    type,
+    form,
     timeSlot,
     spots,
-    day,
     opening,
     info,
     init,

@@ -1,4 +1,4 @@
-interface CalendarTile {
+export interface CalendarTile {
   key: string
   date: number
   dateFull: Date
@@ -6,18 +6,18 @@ interface CalendarTile {
   currentMonth?: boolean
 }
 
-interface DisplayDate {
+export interface DisplayDate {
   year: number
   month: number
   day?: number
 }
 
-interface Time {
+export interface Time {
   hour: number
   minute?: number
 }
 
-interface Info {
+export interface Info {
   open: Time
   close: Time
   minSpots: number

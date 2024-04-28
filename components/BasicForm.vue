@@ -17,18 +17,21 @@ watch([start, end], (v) => {
 
 <template>
   <FormKit
+    v-model="store.form.name"
     type="text"
     name="name"
     label="Volledige naam"
     validation="required|alpha_spaces:default|length:5,25"
   />
   <FormKit
+    v-model="store.form.number"
     type="tel"
     name="number"
     label="Telefoonnummer"
     validation="required|matches:/^[0-9]*$/|length:10,12"
   />
   <FormKit
+    v-model="store.form.mail"
     type="email"
     name="email"
     label="Email"
@@ -36,7 +39,7 @@ watch([start, end], (v) => {
   />
   <FormKit
     v-if="!store.selectedEvent"
-    v-model="store.type"
+    v-model="store.form.type"
     type="select"
     name="type"
     label="Type"
@@ -48,7 +51,7 @@ watch([start, end], (v) => {
   />
   <Expand>
     <FormKit
-      v-if="store.type === 'rental'"
+      v-if="store.form.type === 'rental'"
       type="select"
       name="theme"
       label="Thema"
@@ -58,7 +61,7 @@ watch([start, end], (v) => {
   </Expand>
   <template v-if="!store.selectedEvent">
     <FormKit
-      v-model="store.day"
+      v-model="store.form.day"
       type="date"
       name="day"
       label="Datum"
@@ -74,11 +77,11 @@ watch([start, end], (v) => {
           type="time"
           name="start"
           label="Start"
-          :disabled="!store.day"
+          :disabled="!store.form.day"
           :min="formatHour(store.opening.open.hour, store.opening.open.minute)"
           :max="formatHour(store.opening.close.hour, store.opening.close.minute)"
           step="1800"
-          :validation="`required|time_after:${store.day}|time_before:${store.day}`"
+          :validation="`required|time_after:${store.form.day}|time_before:${store.form.day}`"
           :validation-messages="{
             time_after: `Je kan pas boeken vanaf ${formatHour(store.opening.open.hour, store.opening.open.minute)}`,
             time_before: `Wij sluiten om ${formatHour(store.opening.close.hour, store.opening.close.minute)}`
@@ -90,11 +93,11 @@ watch([start, end], (v) => {
           type="time"
           name="end"
           label="Einde"
-          :disabled="!store.day"
+          :disabled="!store.form.day"
           :min="formatHour(store.opening.open.hour, store.opening.open.minute)"
           :max="formatHour(store.opening.close.hour, store.opening.close.minute)"
           step="1800"
-          :validation="`time_after:${store.day}|time_before:${store.day}|time_slot:${store.timeSlot},${start}`"
+          :validation="`time_after:${store.form.day}|time_before:${store.form.day}|time_slot:${store.timeSlot},${start}`"
           :validation-messages="{
             time_after: `Je kan pas boeken vanaf ${formatHour(store.opening.open.hour, store.opening.open.minute)}`,
             time_before: `Wij sluiten om ${formatHour(store.opening.close.hour, store.opening.close.minute)}`,
@@ -111,7 +114,7 @@ watch([start, end], (v) => {
       type="number"
       name="spots"
       label="Personen"
-      :disabled="!store.selectedEvent && !store.day"
+      :disabled="!store.selectedEvent && !store.form.day"
       :validation="`required|number|max:${store.spots.max}|min:${store.spots.min}`"
       :min="store.spots.min"
       :max="store.spots.max"

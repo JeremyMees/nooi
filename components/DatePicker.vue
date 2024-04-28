@@ -25,7 +25,7 @@ function navigateCalendar (modifier: number): void {
 function handleClick (day: CalendarTile): void {
   if (dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull)) { return }
 
-  store.day = formatDay(day.dateFull)
+  store.form.day = formatDay(day.dateFull)
 }
 </script>
 
@@ -117,7 +117,7 @@ function handleClick (day: CalendarTile): void {
           icon="pi pi-calendar"
           label="Reserveer vandaag"
           :disabled="!store.checkIfOpen()"
-          @click="store.day = formatDay(new Date())"
+          @click="store.form.day = formatDay(new Date())"
         />
       </div>
     </template>
