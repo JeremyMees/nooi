@@ -1,9 +1,13 @@
-import { format, range, monthDays, sameDay, addDay, addYear } from '@formkit/tempo'
+import { format, range, monthDays, sameDay, addDay, addYear, isBefore } from '@formkit/tempo'
 import type { Format } from '@formkit/tempo'
 
 const formatDefault: Format = { date: 'medium', time: 'short' }
 const locale = 'nl'
 const gridSize = 42
+
+export function dateInPast (date: Date): boolean {
+  return isBefore(date, addDay(new Date(), -1))
+}
 
 export function sameYear (date: DisplayDate, current: Date): boolean {
   return current.getFullYear() === date.year
@@ -27,15 +31,19 @@ export function createFormattedDate (date: DisplayDate): string {
   return format(createDate(date), formatDefault, locale)
 }
 
-export function firstDayOfWeek (date: Date): number {
-  return date.getDay() === 0 ? 7 : date.getDay() // Adjust if first day is Sunday
+export function formatDay (date: Date): string {
+  const day = date.getDate()
+  const month = date.getMonth() + 1
+  const year = date.getFullYear()
+
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
 export function formatHour (hour: number, minute = 0): string {
   return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
 }
 
-export function getDayOfWeek (date: string): number {
+export function getDayOfWeek (date: string|Date): number {
   const day = new Date(date).getDay()
 
   return day === 0 ? 6 : day - 1 // Adjust if first day is Sunday
@@ -90,9 +98,9 @@ export function addMonth (date: DisplayDate, increment: number): DisplayDate {
 export function getCalenderDays (date: DisplayDate): CalendarTile[] {
   const today = new Date()
   const currentDate = createDate(addMonth(date, 1))
-  const firstDay = firstDayOfWeek(currentDate)
+  const firstDay = getDayOfWeek(currentDate)
   const totalDaysInMonth = monthDays(currentDate)
-  const totalDaysInPrevMonth = monthDays(createDate(addMonth(date, -1)))
+  const totalDaysInPrevMonth = monthDays(createDate(date))
 
   const dates: CalendarTile[] = []
 
@@ -103,7 +111,8 @@ export function getCalenderDays (date: DisplayDate): CalendarTile[] {
 
     dates.push({
       key: format(createdDate, formatDefault, locale),
-      date: prevMonthDate
+      date: prevMonthDate,
+      dateFull: createdDate
     })
   }
 
@@ -115,7 +124,8 @@ export function getCalenderDays (date: DisplayDate): CalendarTile[] {
       key: format(createdDate, formatDefault, locale),
       date: i,
       currentMonth: true,
-      today: sameDay(createdDate, today)
+      today: sameDay(createdDate, today),
+      dateFull: createdDate
     })
   }
 
@@ -127,7 +137,8 @@ export function getCalenderDays (date: DisplayDate): CalendarTile[] {
 
     dates.push({
       key: format(createdDate, formatDefault, locale),
-      date: i
+      date: i,
+      dateFull: createdDate
     })
   }
 

@@ -1,6 +1,7 @@
 interface CalendarTile {
   key: string
   date: number
+  dateFull: Date
   today?: boolean
   currentMonth?: boolean
 }

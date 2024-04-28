@@ -32,8 +32,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     return type.value === 'reservation' ? minTimeSlot : minTimeSlotRental
   })
 
-  watch(selectedEvent, (value) => {
-    if (value) { sidebarOpen.value = true }
+  watch([selectedEvent, day], (value) => {
+    if (value.some(v => !!v)) { sidebarOpen.value = true }
   })
 
   watch(sidebarOpen, (value) => {
@@ -43,6 +43,10 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       selectedEvent.value = undefined
     }
   })
+
+  function checkIfOpen (date?: Date): boolean {
+    return !!info[getDayOfWeek(date ?? new Date())]
+  }
 
   async function createReservation (insert: ReservationInsert): Promise<void> {
     const { error: err } = await supabase
@@ -114,9 +118,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     spots,
     day,
     opening,
+    info,
     init,
     subscribe,
     unsubscribe,
-    createReservation
+    createReservation,
+    checkIfOpen
   }
 })

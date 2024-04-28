@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const store = useReservationStore()
 const daysOfWeek = getDaysOfWeek()
 const months = getMonths()
 const currentDate = new Date()
@@ -20,77 +21,104 @@ function navigateCalendar (modifier: number): void {
     year: date.getFullYear()
   }
 }
+
+function handleClick (day: CalendarTile): void {
+  if (dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull)) { return }
+
+  store.day = formatDay(day.dateFull)
+}
 </script>
 
 <template>
   <Card class="w-full">
-    <template #content>
-      <div class="space-y-2 w-full">
-        <div class="flex items-center justify-between border-b py-3 text-xl">
-          <div class="flex flex-wrap gap-x-4">
-            <Button
-              size="small"
-              icon="pi pi-angle-left"
-              outlined
-              aria-label="Vorige maand"
-              @click="navigateCalendar(-1)"
-            />
-            <Button
-              v-if="!isCurrentMonth"
-              size="small"
-              icon="pi pi-calendar"
-              label="Vandaag"
-              @click="() => {
-                shownDate = {
-                  month: currentDate.getMonth(),
-                  year: currentDate.getFullYear()
-                }
-              }"
-            />
-          </div>
-          <div class="font-semibold capitalize">
-            {{ months[shownDate.month] }} {{ shownDate.year }}
-          </div>
+    <template #title>
+      <div class="flex items-center justify-between border-b py-3 text-xl">
+        <div class="flex flex-wrap gap-x-4">
           <Button
-            size="small"
-            icon="pi pi-angle-right"
+            icon="pi pi-angle-left"
             outlined
-            aria-label="Volgende maand"
-            @click="navigateCalendar(1)"
+            rounded
+            aria-label="Vorige maand"
+            :disabled="isCurrentMonth"
+            @click="navigateCalendar(-1)"
           />
         </div>
+        <div class="font-semibold capitalize">
+          {{ months[shownDate.month] }} {{ shownDate.year }}
+        </div>
+        <Button
+          icon="pi pi-angle-right"
+          outlined
+          rounded
+          aria-label="Volgende maand"
+          @click="navigateCalendar(1)"
+        />
+      </div>
+    </template>
+    <template #content>
+      <div class="space-y-2 w-full">
         <div class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center">
           <div v-for="(day, index) in daysOfWeek" :key="index">
             {{ day }}
           </div>
         </div>
         <div class="isolate grid grid-cols-7">
-          <div
+          <button
             v-for="(day, index) in grid"
             :key="`${index}-${day.key}`"
-            class="hover:bg-primary-50 transition-all duration-200 border p-1 space-y-1 overflow-hidden"
+            :aria-label="`Reservatie voor ${day.key}`"
+            class="hover:bg-primary-50/75 transition-all duration-200 border p-1 space-y-1 overflow-hidden"
             :class="{
-              'bg-gray-50': !day.currentMonth,
+              'bg-gray-50/75': !day.currentMonth,
+              'cursor-not-allowed': dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull),
               'rounded-tl-xl': index === 0,
               'rounded-tr-xl': index === 6,
               'rounded-bl-xl': index === 35,
               'rounded-br-xl': index === 41,
             }"
+            @click="handleClick(day)"
           >
             <time
               :datetime="day.key"
               class="flex h-6 w-6 items-center justify-center rounded-lg"
               :class="{
-                'bg-secondary text-white shadow' : day.today
+                'bg-secondary text-white shadow' : day.today,
+                'opacity-25': dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull),
               }"
             >
               {{ day.date }}
             </time>
             <div class="space-y-1 min-h-8">
-              <!-- placeholder -->
+              <Skeleton v-if="store.loading" />
             </div>
-          </div>
+          </button>
         </div>
+      </div>
+    </template>
+    <template #footer>
+      <Button
+        v-if="!isCurrentMonth"
+        size="small"
+        text
+        severity="secondary"
+        icon="pi pi-directions"
+        label="Huidige maand tonen"
+        @click="() => {
+          shownDate = {
+            month: currentDate.getMonth(),
+            year: currentDate.getFullYear()
+          }
+        }"
+      />
+      <div v-tooltip="!store.checkIfOpen() ? 'Vandaag zijn we gesloten' : ''">
+        <Button
+          size="small"
+          text
+          icon="pi pi-calendar"
+          label="Reserveer vandaag"
+          :disabled="!store.checkIfOpen()"
+          @click="store.day = formatDay(new Date())"
+        />
       </div>
     </template>
   </Card>
