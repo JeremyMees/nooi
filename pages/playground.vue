@@ -1,8 +1,6 @@
 <script setup lang="ts">
 const toast = useToast()
 
-const visible = ref<boolean>(false)
-
 function showMultiple (): void {
   toast.add({ severity: 'success', summary: 'Success', detail: 'Message Content', life: 3000 })
   toast.add({ severity: 'info', summary: 'Info', detail: 'Message Content', life: 3050 })
@@ -76,19 +74,6 @@ function showMultiple (): void {
           </p>
         </template>
       </Card>
-      <Button label="Show modal" icon="pi pi-external-link" @click="visible = true" />
-      <Dialog
-        v-model:visible="visible"
-        modal
-        header="Header"
-        :style="{ width: '50rem' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-      >
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-      </Dialog>
       <div class="flex flex-wrap gap-2 items-center">
         <InlineMessage severity="success">
           Success Message

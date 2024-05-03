@@ -9,7 +9,7 @@ export default {
       // Size
       {
         'h-full w-full md:w-[500px]': props.position === 'left' || props.position === 'right',
-        'h-auto w-full': props.position === 'top' || props.position === 'bottom'
+        'h-auto w-full max-w-3xl mx-auto rounded-t-lg overflow-hidden': props.position === 'top' || props.position === 'bottom'
       },
       // Shape
       'border-0 dark:border',

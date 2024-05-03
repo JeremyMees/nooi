@@ -27,13 +27,7 @@ watch(() => store.informationEvent, (event) => {
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="visible"
-    modal
-    :draggable="false"
-    position="bottom"
-    class="w-full max-w-3xl mx-auto tester"
-  >
+  <Sidebar v-model:visible="visible" position="bottom">
     <template #header>
       <p class="head-3 sm:head-1">
         {{ store.informationEvent?.name }}
@@ -70,7 +64,7 @@ watch(() => store.informationEvent, (event) => {
       {{ store.informationEvent.description }}
     </p>
 
-    <template #footer>
+    <div class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8">
       <p
         v-if="store.informationEvent?.bookingDeadline"
         class="mr-4 text-secondary body-small text-pretty text-left"
@@ -85,6 +79,6 @@ watch(() => store.informationEvent, (event) => {
       >
         Reserveren
       </Button>
-    </template>
-  </Dialog>
+    </div>
+  </Sidebar>
 </template>

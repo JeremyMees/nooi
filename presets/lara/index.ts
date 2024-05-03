@@ -1,6 +1,5 @@
 import global from './global'
 import tooltip from './tooltip'
-import dialog from './dialog'
 import card from './card'
 import toast from './toast'
 import message from './message'
@@ -12,7 +11,6 @@ import sidebar from './sidebar'
 export default {
   global,
   directives: { tooltip },
-  dialog,
   card,
   toast,
   message,
