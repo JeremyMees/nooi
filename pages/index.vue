@@ -7,7 +7,7 @@ onBeforeUnmount(() => store.unsubscribe())
 
 <template>
   <NuxtLayout>
-    <DatePicker class="max-w-3xl mx-auto" />
+    <DatePicker class="max-w-4xl mx-auto" />
     <div v-if="store.loading">
       loading...
     </div>

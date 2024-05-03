@@ -86,7 +86,7 @@ function handleClick (day: CalendarTile): void {
             >
               {{ day.date }}
             </time>
-            <div class="flex flex-wrap gap-1 min-h-8">
+            <div class="flex flex-wrap gap-1 min-h-10">
               <Skeleton v-if="store.loading" />
               <template v-else>
                 <EventTag
