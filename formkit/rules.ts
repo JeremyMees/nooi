@@ -1,7 +1,23 @@
 import type { FormKitNode } from '@formkit/core'
+import { sameDay } from '@formkit/tempo'
 
-const is_true = function (_node: FormKitNode, value: boolean): boolean {
-  return value
+const date_open = function (_node: FormKitNode, value: string): boolean {
+  return value === 'true'
+}
+
+const time_valid = function (node: FormKitNode, day: string): boolean {
+  const { value } = node as FormKitNode<string>
+  const now = new Date()
+
+  if (sameDay(new Date(day), now)) {
+    const { hour, minutes } = splitTime(value)
+    const nodeTime = hour + (minutes / 100)
+    const nowTime = now.getHours() + (now.getMinutes() / 100)
+
+    return nowTime < nodeTime
+  }
+
+  return true
 }
 
 const time_after = function (node: FormKitNode, start: string): boolean {
@@ -64,7 +80,8 @@ const time_slot = function (node: FormKitNode, minTime: number, start: string): 
 }
 
 export const rules = {
-  is_true,
+  date_open,
+  time_valid,
   time_after,
   time_before,
   time_break,

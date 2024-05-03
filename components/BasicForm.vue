@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { time } from '@formkit/icons'
 import { themeOptions } from '~/constants/info'
 
 const store = useReservationStore()
@@ -73,13 +72,10 @@ watch([start, end], (v) => {
       label="Datum"
       :validation="`
         required|
-        is_true:${store.form.day ? roster.checkIfOpen(new Date(store.form.day)): false}|
+        date_open:${store.form.day ? roster.checkIfOpen(new Date(store.form.day)): false}|
         date_after:${getYesterday()}|
         date_before:${getNextYear()}
       `"
-      :validation-messages="{
-        date_open: 'Wij zijn niet open op deze dag'
-      }"
     />
     <Expand>
       <div v-if="currentRoster">
@@ -94,15 +90,11 @@ watch([start, end], (v) => {
           step="1800"
           :validation="`
             required|
+            time_valid:${store.form.day}|
             time_after:${currentRoster.startOfDay}|
             time_before:${currentRoster.endOfDay}|
             time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd}
           `"
-          :validation-messages="{
-            time_after: `Je kan pas boeken vanaf ${formatHour(currentRoster.startOfDay)}`,
-            time_before: `Wij sluiten om ${formatHour(currentRoster.endOfDay)}`,
-            time_break: `Wij zijn gesloten tussen ${formatHour(currentRoster.noonBreakStart as string)} en ${formatHour(currentRoster.noonBreakEnd as string)}`
-          }"
           validation-visibility="live"
         />
         <FormKit
@@ -115,17 +107,12 @@ watch([start, end], (v) => {
           :max="formatHour(currentRoster.endOfDay)"
           step="1800"
           :validation="`
+            time_valid:${store.form.day}|
             time_after:${currentRoster.startOfDay}|
             time_before:${currentRoster.endOfDay}|
             time_slot:${store.timeSlot},${start}|
             time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd},${start}
           `"
-          :validation-messages="{
-            time_after: `Je kan pas boeken vanaf ${formatHour(currentRoster.startOfDay)}`,
-            time_before: `Wij sluiten om ${formatHour(currentRoster.endOfDay)}`,
-            time_slot: `Reservatie mag minimum ${store.timeSlot} uur zijn`,
-            time_break: `Wij zijn gesloten tussen ${formatHour(currentRoster.noonBreakStart as string)} en ${formatHour(currentRoster.noonBreakEnd as string)}`
-          }"
           validation-visibility="live"
         />
       </div>
