@@ -13,12 +13,6 @@ export interface DisplayDate {
 }
 
 export interface Time {
-  hour: number
-  minute?: number
-}
-
-export interface Info {
-  open: Time
-  close: Time
-  minSpots: number
+  hour: number,
+  minutes: number
 }

@@ -110,6 +110,39 @@ export type Database = {
           },
         ]
       }
+      roster: {
+        Row: {
+          created_at: string
+          day: string
+          endOfDay: string
+          id: number
+          minSpots: number
+          noonBreakEnd: string | null
+          noonBreakStart: string | null
+          startOfDay: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          endOfDay: string
+          id?: number
+          minSpots: number
+          noonBreakEnd?: string | null
+          noonBreakStart?: string | null
+          startOfDay: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          endOfDay?: string
+          id?: number
+          minSpots?: number
+          noonBreakEnd?: string | null
+          noonBreakStart?: string | null
+          startOfDay?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

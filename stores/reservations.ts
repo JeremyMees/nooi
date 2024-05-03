@@ -1,7 +1,7 @@
-import { minTimeSlot, minTimeSlotRental, maxSpots, info } from '~/constants/info'
-import type { BasicForm } from '~/types/form'
+import { minTimeSlot, minTimeSlotRental, maxSpots } from '~/constants/info'
 
 export const useReservationStore = defineStore('useReservationStore', () => {
+  const rosterStore = useRosterStore()
   const supabase = useSupabaseClient<Database>()
   const toast = useToast()
 
@@ -21,8 +21,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     mail: ''
   })
 
-  const opening = computed<Info|undefined>(() => {
-    return form.value.day ? info[getDayOfWeek(form.value.day)] : undefined
+  const opening = computed<RosterRow|undefined>(() => {
+    return form.value.day ? rosterStore.getDayRoster(form.value.day) : undefined
   })
 
   const spots = computed<{ min: number, max: number}>(() => {
@@ -53,10 +53,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       form.value.mail = reservationInfo.value.email
     }
   })
-
-  function checkIfOpen (date?: Date): boolean {
-    return !!info[getDayOfWeek(date ?? new Date())]
-  }
 
   async function createReservation (insert: ReservationInsert): Promise<void> {
     const { name, number, email } = insert
@@ -131,11 +127,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     timeSlot,
     spots,
     opening,
-    info,
     init,
     subscribe,
     unsubscribe,
-    createReservation,
-    checkIfOpen
+    createReservation
   }
 })

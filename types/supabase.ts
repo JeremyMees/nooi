@@ -14,6 +14,14 @@ export type EventTheme = Database['public']['Enums']['eventTheme']
 
 export type BookingType = Database['public']['Enums']['bookingType']
 
+export type RosterRow = Database['public']['Tables']['roster']['Row']
+
+export type RosterInsert = Database['public']['Tables']['roster']['Insert']
+
+export type RosterUpdate = Database['public']['Tables']['roster']['Update']
+
+export type DatabaseTable = 'events' | 'reservations' | 'roster'
+
 export interface EventReservation extends EventRow {
   reservations: {
     id: number
@@ -21,6 +29,6 @@ export interface EventReservation extends EventRow {
 }
 
 export interface SbFetchOptions {
-  table: 'events' | 'reservations'
+  table: DatabaseTable
   select?: string
 }

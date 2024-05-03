@@ -39,8 +39,10 @@ export function formatDay (date: Date): string {
   return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
-export function formatHour (hour: number, minute = 0): string {
-  return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+export function formatHour (time: string): string {
+  const { hour, minutes } = splitTime(time)
+
+  return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 }
 
 export function getDayOfWeek (date: string|Date): number {
@@ -143,4 +145,24 @@ export function getCalenderDays (date: DisplayDate): CalendarTile[] {
   }
 
   return dates
+}
+
+export function splitTime (time: string): Time {
+  const [hour, minutes] = time.split(':')
+
+  return { hour: +hour, minutes: +minutes }
+}
+
+export function beforeTime (time: string, compare: string): boolean {
+  const { hour, minutes } = splitTime(time)
+  const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
+
+  return hour < compareHour || (hour === compareHour && minutes < compareMinutes)
+}
+
+export function afterTime (time: string, compare: string): boolean {
+  const { hour, minutes } = splitTime(time)
+  const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
+
+  return hour > compareHour || (hour === compareHour && minutes > compareMinutes)
 }

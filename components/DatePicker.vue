@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const roster = useRosterStore()
 const store = useReservationStore()
 const daysOfWeek = getDaysOfWeek()
 const months = getMonths()
@@ -23,7 +24,7 @@ function navigateCalendar (modifier: number): void {
 }
 
 function handleClick (day: CalendarTile): void {
-  if (dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull)) { return }
+  if (dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull)) { return }
 
   store.form.day = formatDay(day.dateFull)
 }
@@ -70,7 +71,7 @@ function handleClick (day: CalendarTile): void {
             class="hover:bg-primary-50/75 transition-all duration-200 border p-1 space-y-1 overflow-hidden"
             :class="{
               'bg-gray-50/75': !day.currentMonth,
-              'cursor-not-allowed': dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull),
+              'cursor-not-allowed': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
               'rounded-tl-xl': index === 0,
               'rounded-tr-xl': index === 6,
               'rounded-bl-xl': index === 35,
@@ -83,7 +84,7 @@ function handleClick (day: CalendarTile): void {
               class="flex h-6 w-6 items-center justify-center rounded-lg"
               :class="{
                 'bg-secondary text-white shadow' : day.today,
-                'opacity-25': dateInPast(day.dateFull) || !store.checkIfOpen(day.dateFull),
+                'opacity-25': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
               }"
             >
               {{ day.date }}
@@ -110,13 +111,13 @@ function handleClick (day: CalendarTile): void {
           }
         }"
       />
-      <div v-tooltip="!store.checkIfOpen() ? 'Vandaag zijn we gesloten' : ''">
+      <div v-tooltip="!roster.checkIfOpen() ? 'Vandaag zijn we gesloten' : ''">
         <Button
           size="small"
           text
           icon="pi pi-calendar"
           label="Reserveer vandaag"
-          :disabled="!store.checkIfOpen()"
+          :disabled="!roster.checkIfOpen()"
           @click="store.form.day = formatDay(new Date())"
         />
       </div>

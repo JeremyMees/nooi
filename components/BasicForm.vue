@@ -1,10 +1,16 @@
 <script setup lang="ts">
+import { time } from '@formkit/icons'
 import { themeOptions } from '~/constants/info'
 
 const store = useReservationStore()
+const roster = useRosterStore()
 
 const start = ref<string>()
 const end = ref<string>()
+
+const currentRoster = computed<RosterRow|undefined>(() => {
+  return store.form.day ? roster.getDayRoster(store.form.day) : undefined
+})
 
 watch([start, end], (v) => {
   v.forEach((value: string|undefined, i: number) => {
@@ -65,26 +71,37 @@ watch([start, end], (v) => {
       type="date"
       name="day"
       label="Datum"
-      :validation="`required|date_open|date_after:${getYesterday()}|date_before:${getNextYear()}`"
+      :validation="`
+        required|
+        is_true:${store.form.day ? roster.checkIfOpen(new Date(store.form.day)): false}|
+        date_after:${getYesterday()}|
+        date_before:${getNextYear()}
+      `"
       :validation-messages="{
         date_open: 'Wij zijn niet open op deze dag'
       }"
     />
     <Expand>
-      <div v-if="store.opening">
+      <div v-if="currentRoster">
         <FormKit
           v-model="start"
           type="time"
           name="start"
           label="Start"
           :disabled="!store.form.day"
-          :min="formatHour(store.opening.open.hour, store.opening.open.minute)"
-          :max="formatHour(store.opening.close.hour, store.opening.close.minute)"
+          :min="formatHour(currentRoster.startOfDay)"
+          :max="formatHour(currentRoster.endOfDay)"
           step="1800"
-          :validation="`required|time_after:${store.form.day}|time_before:${store.form.day}`"
+          :validation="`
+            required|
+            time_after:${currentRoster.startOfDay}|
+            time_before:${currentRoster.endOfDay}|
+            time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd}
+          `"
           :validation-messages="{
-            time_after: `Je kan pas boeken vanaf ${formatHour(store.opening.open.hour, store.opening.open.minute)}`,
-            time_before: `Wij sluiten om ${formatHour(store.opening.close.hour, store.opening.close.minute)}`
+            time_after: `Je kan pas boeken vanaf ${formatHour(currentRoster.startOfDay)}`,
+            time_before: `Wij sluiten om ${formatHour(currentRoster.endOfDay)}`,
+            time_break: `Wij zijn gesloten tussen ${formatHour(currentRoster.noonBreakStart as string)} en ${formatHour(currentRoster.noonBreakEnd as string)}`
           }"
           validation-visibility="live"
         />
@@ -94,14 +111,20 @@ watch([start, end], (v) => {
           name="end"
           label="Einde"
           :disabled="!store.form.day"
-          :min="formatHour(store.opening.open.hour, store.opening.open.minute)"
-          :max="formatHour(store.opening.close.hour, store.opening.close.minute)"
+          :min="formatHour(currentRoster.startOfDay)"
+          :max="formatHour(currentRoster.endOfDay)"
           step="1800"
-          :validation="`time_after:${store.form.day}|time_before:${store.form.day}|time_slot:${store.timeSlot},${start}`"
+          :validation="`
+            time_after:${currentRoster.startOfDay}|
+            time_before:${currentRoster.endOfDay}|
+            time_slot:${store.timeSlot},${start}|
+            time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd},${start}
+          `"
           :validation-messages="{
-            time_after: `Je kan pas boeken vanaf ${formatHour(store.opening.open.hour, store.opening.open.minute)}`,
-            time_before: `Wij sluiten om ${formatHour(store.opening.close.hour, store.opening.close.minute)}`,
-            time_slot: `Reservatie mag minimum ${store.timeSlot} uur zijn`
+            time_after: `Je kan pas boeken vanaf ${formatHour(currentRoster.startOfDay)}`,
+            time_before: `Wij sluiten om ${formatHour(currentRoster.endOfDay)}`,
+            time_slot: `Reservatie mag minimum ${store.timeSlot} uur zijn`,
+            time_break: `Wij zijn gesloten tussen ${formatHour(currentRoster.noonBreakStart as string)} en ${formatHour(currentRoster.noonBreakEnd as string)}`
           }"
           validation-visibility="live"
         />
@@ -115,7 +138,12 @@ watch([start, end], (v) => {
       name="spots"
       label="Personen"
       :disabled="!store.selectedEvent && !store.form.day"
-      :validation="`required|number|max:${store.spots.max}|min:${store.spots.min}`"
+      :validation="`
+        required|
+        number|
+        max:${store.spots.max}|
+        min:${store.spots.min}
+      `"
       :min="store.spots.min"
       :max="store.spots.max"
     />
