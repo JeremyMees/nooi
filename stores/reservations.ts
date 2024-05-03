@@ -39,7 +39,29 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   })
 
   watch([selectedEvent, () => form.value.day], (value) => {
-    if (value.some(v => !!v)) { sidebarOpen.value = true }
+    const [event, day] = value
+
+    if (event && event.spots && event.reservations.length >= event.spots) {
+      toast.add({
+        severity: 'info',
+        summary: 'Volzet!',
+        detail: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
+        life: 5000
+      })
+
+      selectedEvent.value = undefined
+    } else if (event && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))) {
+      toast.add({
+        severity: 'info',
+        summary: 'Te Laat!',
+        detail: `De inschrijvingsperiode voor ${event.name} is helaas afgelopen.`,
+        life: 5000
+      })
+
+      selectedEvent.value = undefined
+    } else if (event || day) {
+      sidebarOpen.value = true
+    }
   })
 
   watch(sidebarOpen, (value) => {

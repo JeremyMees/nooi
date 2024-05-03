@@ -5,6 +5,10 @@ const formatDefault: Format = { date: 'medium', time: 'short' }
 const locale = 'nl'
 const gridSize = 42
 
+export function isBeforeDeadline (date: Date, deadline: Date): boolean {
+  return isBefore(date, deadline) || sameDay(date, deadline)
+}
+
 export function dateInPast (date: Date): boolean {
   return isBefore(date, addDay(new Date(), -1))
 }

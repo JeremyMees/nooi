@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       events: {
         Row: {
+          bookingDeadline: string
           created_at: string
           day: string
           description: string | null
@@ -18,12 +19,14 @@ export type Database = {
           id: number
           min_spots: number
           name: string
+          onlinePayment: boolean
           price: number | null
           spots: number | null
           start: string
           theme: Database['public']['Enums']['eventTheme']
         }
         Insert: {
+          bookingDeadline: string
           created_at?: string
           day: string
           description?: string | null
@@ -31,12 +34,14 @@ export type Database = {
           id?: number
           min_spots?: number
           name: string
+          onlinePayment?: boolean
           price?: number | null
           spots?: number | null
           start: string
           theme: Database['public']['Enums']['eventTheme']
         }
         Update: {
+          bookingDeadline?: string
           created_at?: string
           day?: string
           description?: string | null
@@ -44,6 +49,7 @@ export type Database = {
           id?: number
           min_spots?: number
           name?: string
+          onlinePayment?: boolean
           price?: number | null
           spots?: number | null
           start?: string
