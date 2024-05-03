@@ -24,6 +24,13 @@ async function submit (form: ReservationInsert): Promise<void> {
 
     if (payment_pending) {
       // navigate to stripe payment page
+    } else {
+      toast.add({
+        severity: 'success',
+        summary: 'Gelukt!',
+        detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
+        life: 5000
+      })
     }
   } catch (error) {
     toast.add({

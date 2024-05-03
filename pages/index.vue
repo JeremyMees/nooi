@@ -18,17 +18,8 @@ onBeforeUnmount(() => store.unsubscribe())
       <p>
         events: {{ store.events.length }}
       </p>
-      <Button @click="store.sidebarOpen = true">
-        Reservatie maken
-      </Button>
-      <Button
-        v-for="event in store.events"
-        :key="event.id"
-        @click="store.selectedEvent = event"
-      >
-        Reservatie maken {{ event.name }}
-      </Button>
     </div>
+    <EventModal />
     <ReservationSidebar />
   </NuxtLayout>
 </template>

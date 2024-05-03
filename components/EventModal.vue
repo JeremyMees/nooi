@@ -1,0 +1,90 @@
+<script setup lang="ts">
+const store = useReservationStore()
+const toast = useToast()
+
+const visible = ref<boolean>(false)
+
+watch(visible, (value) => {
+  if (!value) {
+    store.informationEvent = undefined
+  }
+})
+
+watch(() => store.informationEvent, (event) => {
+  if (event && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))) {
+    toast.add({
+      severity: 'info',
+      summary: 'Te Laat!',
+      detail: `De inschrijvingsperiode voor ${event.name} is helaas afgelopen.`,
+      life: 5000
+    })
+
+    store.informationEvent = undefined
+  } else {
+    visible.value = !!store.informationEvent
+  }
+})
+</script>
+
+<template>
+  <Dialog
+    v-model:visible="visible"
+    modal
+    :draggable="false"
+    position="bottom"
+    class="w-full max-w-3xl mx-auto tester"
+  >
+    <template #header>
+      <p class="head-3 sm:head-1">
+        {{ store.informationEvent?.name }}
+      </p>
+    </template>
+
+    <div class="flex flex-wrap gap-2">
+      <IconLabel v-if="store.informationEvent?.day" icon="calendar">
+        {{ formatDateUI(store.informationEvent.day) }}
+      </IconLabel>
+      <IconLabel v-if="store.informationEvent?.start" icon="clock">
+        {{ formatHour(store.informationEvent.start) }}
+        <template v-if="store.informationEvent?.end">
+          tot {{ formatHour(store.informationEvent.end) }}
+        </template>
+      </IconLabel>
+      <IconLabel v-if="store.informationEvent?.price" icon="wallet">
+        €{{ store.informationEvent.price }} {{ store.informationEvent.onlinePayment ? 'online' : 'ter plaatse' }}
+      </IconLabel>
+      <IconLabel v-if="store.informationEvent?.spots" icon="user">
+        {{ store.informationEvent.spots - store.informationEvent.reservations.length }} vrije plaatsen
+      </IconLabel>
+      <IconLabel
+        v-if="store.informationEvent?.min_spots && store.informationEvent.min_spots > 1"
+        icon="users"
+      >
+        minimum voor {{ store.informationEvent.min_spots }} reserveren
+      </IconLabel>
+      <IconLabel v-if="store.informationEvent?.theme" icon="tag">
+        {{ translateTheme(store.informationEvent.theme) }}
+      </IconLabel>
+    </div>
+    <p v-if="store.informationEvent?.description" class="pt-6 text-pretty">
+      {{ store.informationEvent.description }}
+    </p>
+
+    <template #footer>
+      <p
+        v-if="store.informationEvent?.bookingDeadline"
+        class="mr-4 text-secondary body-small text-pretty text-left"
+      >
+        reservaties sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
+      </p>
+      <Button
+        @click="() => {
+          store.selectedEvent = store.informationEvent
+          store.informationEvent = undefined
+        }"
+      >
+        Reserveren
+      </Button>
+    </template>
+  </Dialog>
+</template>

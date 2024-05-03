@@ -35,6 +35,10 @@ export function createFormattedDate (date: DisplayDate): string {
   return format(createDate(date), formatDefault, locale)
 }
 
+export function formatDateUI (date: string): string {
+  return format(new Date(date), { date: 'medium' }, locale)
+}
+
 export function formatDay (date: Date): string {
   const day = date.getDate()
   const month = date.getMonth() + 1

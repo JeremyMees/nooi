@@ -11,7 +11,7 @@ export default {
     ]
   },
   body: {
-    class: 'p-5'
+    class: 'pb-5'
   },
   title: {
     class: 'text-2xl font-bold mb-2'
@@ -22,7 +22,7 @@ export default {
       'font-normal',
 
       // Spacing
-      'mb-2',
+      'mb-2 px-5',
 
       // Color
       'text-surface-600 dark:text-surface-0/60'
@@ -32,6 +32,6 @@ export default {
     class: 'py-5' // Vertical padding.
   },
   footer: {
-    class: 'pt-0 flex justify-end items-center gap-2' // Top padding.
+    class: 'pt-0 flex justify-end items-center gap-2 px-5' // Top padding.
   }
 }

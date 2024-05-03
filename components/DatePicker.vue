@@ -33,7 +33,7 @@ function handleClick (day: CalendarTile): void {
 <template>
   <Card class="w-full">
     <template #title>
-      <div class="flex items-center justify-between border-b py-3 text-xl">
+      <div class="flex items-center justify-between border-b py-3 text-xl px-5">
         <div class="flex flex-wrap gap-x-4">
           <Button
             icon="pi pi-angle-left"
@@ -52,6 +52,7 @@ function handleClick (day: CalendarTile): void {
           outlined
           rounded
           aria-label="Volgende maand"
+          class="p-2"
           @click="navigateCalendar(1)"
         />
       </div>
@@ -68,14 +69,10 @@ function handleClick (day: CalendarTile): void {
             v-for="(day, index) in grid"
             :key="`${index}-${day.key}`"
             :aria-label="`Reservatie voor ${day.key}`"
-            class="hover:bg-primary-50/75 transition-all duration-200 border p-1 space-y-1 overflow-hidden"
+            class="hover:bg-primary-50/75 transition-all duration-200 border p-1 flex flex-col gap-y-1 overflow-hidden"
             :class="{
               'bg-gray-50/75': !day.currentMonth,
-              'cursor-not-allowed': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
-              'rounded-tl-xl': index === 0,
-              'rounded-tr-xl': index === 6,
-              'rounded-bl-xl': index === 35,
-              'rounded-br-xl': index === 41,
+              'cursor-not-allowed': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull)
             }"
             @click="handleClick(day)"
           >
@@ -89,8 +86,16 @@ function handleClick (day: CalendarTile): void {
             >
               {{ day.date }}
             </time>
-            <div class="space-y-1 min-h-8">
+            <div class="flex flex-wrap gap-1 min-h-8">
               <Skeleton v-if="store.loading" />
+              <template v-else>
+                <EventTag
+                  v-for="event in store.getEventsByDate(day.dateFull)"
+                  :key="event.id"
+                  :event="event"
+                  @click.stop="store.informationEvent = event"
+                />
+              </template>
             </div>
           </button>
         </div>

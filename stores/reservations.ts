@@ -7,6 +7,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   const events = ref<EventReservation[]>([])
   const selectedEvent = ref<EventReservation>()
+  const informationEvent = ref<EventReservation>()
   const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(true)
   const sidebarOpen = ref<boolean>(false)
@@ -46,15 +47,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         severity: 'info',
         summary: 'Volzet!',
         detail: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
-        life: 5000
-      })
-
-      selectedEvent.value = undefined
-    } else if (event && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))) {
-      toast.add({
-        severity: 'info',
-        summary: 'Te Laat!',
-        detail: `De inschrijvingsperiode voor ${event.name} is helaas afgelopen.`,
         life: 5000
       })
 
@@ -138,9 +130,14 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     supabase.removeAllChannels()
   }
 
+  function getEventsByDate (date: Date): EventReservation[] {
+    return events.value.filter(event => event.day === formatDay(date))
+  }
+
   return {
     events,
     selectedEvent,
+    informationEvent,
     reservations,
     loading,
     sidebarOpen,
@@ -152,6 +149,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     init,
     subscribe,
     unsubscribe,
-    createReservation
+    createReservation,
+    getEventsByDate
   }
 })
