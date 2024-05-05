@@ -50,4 +50,12 @@
   .lines-yellow {
     background: repeating-linear-gradient(-55deg,#fff9c450,#fff9c450 10px,#fff9c480 10px,#fff9c480 20px)
   }
+
+  .lines-calendar {
+    background: repeating-linear-gradient(-60deg,#e6e4e140,#e6e4e140 10px,#e6e4e120 10px,#e6e4e120 20px)
+  }
+
+  .lines-calendar-red {
+    background: repeating-linear-gradient(-60deg,#ffcdd210,#ffcdd210 10px,#ffcdd220 10px,#ffcdd220 20px)
+  }
 }

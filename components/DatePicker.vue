@@ -69,10 +69,11 @@ function handleClick (day: CalendarTile): void {
             v-for="(day, index) in grid"
             :key="`${index}-${day.key}`"
             :aria-label="`Reservatie voor ${day.key}`"
-            class="hover:bg-primary-50/75 transition-all duration-200 border p-1 flex flex-col gap-y-1 overflow-hidden"
+            class="transition-all duration-200 border p-1 flex flex-col gap-y-1 overflow-hidden"
             :class="{
-              'bg-gray-50/75': !day.currentMonth,
-              'cursor-not-allowed': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull)
+              'lines-calendar': !day.currentMonth,
+              'cursor-not-allowed hover:lines-calendar-red': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
+              'hover:bg-primary-200/25': !dateInPast(day.dateFull) && roster.checkIfOpen(day.dateFull)
             }"
             @click="handleClick(day)"
           >
@@ -81,7 +82,7 @@ function handleClick (day: CalendarTile): void {
               class="flex h-6 w-6 items-center justify-center rounded-lg"
               :class="{
                 'bg-secondary text-white shadow' : day.today,
-                'opacity-25': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
+                'text-surface-200': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
               }"
             >
               {{ day.date }}
@@ -89,6 +90,12 @@ function handleClick (day: CalendarTile): void {
             <div class="flex flex-wrap gap-1 min-h-10">
               <Skeleton v-if="store.loading" />
               <template v-else>
+                <span
+                  v-if="roster.checkIfOpen(day.dateFull)"
+                  class="text-primary body-small w-full text-left"
+                >
+                  Open
+                </span>
                 <EventTag
                   v-for="event in store.events
                     .filter(event => event.day === formatDay(day.dateFull))
