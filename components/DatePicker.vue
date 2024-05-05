@@ -116,16 +116,6 @@ function handleClick (day: CalendarTile): void {
           }
         }"
       />
-      <div v-tooltip="!roster.checkIfOpen() ? 'Vandaag zijn we gesloten' : ''">
-        <Button
-          size="small"
-          text
-          icon="pi pi-calendar"
-          label="Reserveer vandaag"
-          :disabled="!roster.checkIfOpen()"
-          @click="store.form.day = formatDay(new Date())"
-        />
-      </div>
     </template>
   </Card>
 </template>
