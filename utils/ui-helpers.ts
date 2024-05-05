@@ -57,3 +57,26 @@ export function translateTheme (theme: EventTheme): string {
       return 'markt'
   }
 }
+
+export function removeQuery (names: string[]): void {
+  const router = useRouter()
+  const route = useRoute()
+
+  const query = { ...route.query }
+
+  names.forEach(name => delete query[name])
+
+  router.push({ query })
+}
+
+export function addQuery (values: Record<string, any>): void {
+  const router = useRouter()
+  const route = useRoute()
+
+  router.push({
+    query: {
+      ...route.query,
+      ...values
+    }
+  })
+}

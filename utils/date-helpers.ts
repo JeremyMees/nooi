@@ -5,6 +5,16 @@ const formatDefault: Format = { date: 'medium', time: 'short' }
 const locale = 'nl'
 const gridSize = 42
 
+export function isValidDateString (dateString: string): boolean {
+  const date = new Date(dateString)
+
+  return (
+    dateString.length === 10 &&
+    !isNaN(date.getTime()) &&
+    !dateInPast(date)
+  )
+}
+
 export function isBeforeDeadline (date: Date, deadline: Date): boolean {
   return isBefore(date, deadline) || sameDay(date, deadline)
 }
@@ -37,6 +47,10 @@ export function createFormattedDate (date: DisplayDate): string {
 
 export function formatDateUI (date: string): string {
   return format(new Date(date), { date: 'medium' }, locale)
+}
+
+export function formatDateUrl (date: string): string {
+  return date.split('-').reverse().join('-')
 }
 
 export function formatDay (date: Date): string {

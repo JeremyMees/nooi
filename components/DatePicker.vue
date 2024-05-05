@@ -96,7 +96,7 @@ function handleClick (day: CalendarTile): void {
                   "
                   :key="event.id"
                   :event="event"
-                  @click.stop="store.informationEvent = event"
+                  @click.stop="addQuery({ event :event.id, status: 'info' })"
                 />
               </template>
             </div>

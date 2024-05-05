@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const store = useReservationStore()
 const toast = useToast()
+const route = useRoute()
 
 const visible = ref<boolean>(false)
 
 watch(visible, (value) => {
-  if (!value) {
-    store.informationEvent = undefined
+  if (!value && route.query.status === 'info') {
+    removeQuery(['event', 'status'])
   }
 })
 
@@ -19,7 +20,7 @@ watch(() => store.informationEvent, (event) => {
       life: 5000
     })
 
-    store.informationEvent = undefined
+    removeQuery(['event', 'status'])
   } else {
     visible.value = !!store.informationEvent
   }
@@ -71,12 +72,7 @@ watch(() => store.informationEvent, (event) => {
       >
         reservaties sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
       </p>
-      <Button
-        @click="() => {
-          store.selectedEvent = store.informationEvent
-          store.informationEvent = undefined
-        }"
-      >
+      <Button @click="addQuery({ status: 'reservation' })">
         Reserveren
       </Button>
     </div>

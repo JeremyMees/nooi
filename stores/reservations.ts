@@ -4,10 +4,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const rosterStore = useRosterStore()
   const supabase = useSupabaseClient<Database>()
   const toast = useToast()
+  const route = useRoute()
 
   const events = ref<EventReservation[]>([])
-  const selectedEvent = ref<EventReservation>()
-  const informationEvent = ref<EventReservation>()
   const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(true)
   const sidebarOpen = ref<boolean>(false)
@@ -21,6 +20,32 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     name: '',
     number: '',
     mail: ''
+  })
+
+  const informationEvent = computed<EventReservation | undefined>(() => {
+    const { event, status } = route.query
+
+    if (event && status === 'info') {
+      const eventId = +event
+      const foundEvent = events.value.find(({ id }) => id === eventId)
+
+      if (!isNaN(eventId) && foundEvent) {
+        return foundEvent
+      }
+    }
+  })
+
+  const selectedEvent = computed<EventReservation | undefined>(() => {
+    const { event, status } = route.query
+
+    if (event && status === 'reservation') {
+      const eventId = +event
+      const foundEvent = events.value.find(({ id }) => id === eventId)
+
+      if (!isNaN(eventId) && foundEvent) {
+        return foundEvent
+      }
+    }
   })
 
   const opening = computed<RosterRow|undefined>(() => {
@@ -51,9 +76,14 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         life: 5000
       })
 
-      selectedEvent.value = undefined
-    } else if (event || day) {
+      removeQuery(['event', 'status'])
+    } else if (event) {
       sidebarOpen.value = true
+    } else if (day) {
+      sidebarOpen.value = true
+      addQuery({ day: formatDateUrl(day) })
+    } else {
+      sidebarOpen.value = false
     }
   })
 
@@ -61,7 +91,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     if (!value) {
       form.value.day = undefined
       form.value.type = 'reservation'
-      selectedEvent.value = undefined
+      removeQuery(['day', 'event', 'status'])
     } else if (reservationInfo.value) {
       form.value.name = reservationInfo.value.name
       form.value.number = reservationInfo.value.number
@@ -89,6 +119,14 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     try {
       await getData()
       subscribe()
+
+      if (route.query.day) {
+        const date = formatDay(new Date(route.query.day as string))
+
+        isValidDateString(route.query.day as string) && rosterStore.getDayRoster(date)
+          ? form.value.day = date
+          : removeQuery(['day'])
+      }
     } catch (error) {
       toast.add({
         severity: 'error',
