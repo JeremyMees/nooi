@@ -54,7 +54,7 @@ watch([start, end], (v) => {
       { label: 'Reservation', value: 'reservation' }
     ]"
   />
-  <Expand>
+  <AnimationExpand>
     <FormKit
       v-if="store.form.type === 'rental'"
       type="select"
@@ -63,7 +63,7 @@ watch([start, end], (v) => {
       validation="required"
       :options="themeOptions"
     />
-  </Expand>
+  </AnimationExpand>
   <template v-if="!store.selectedEvent">
     <FormKit
       v-model="store.form.day"
@@ -77,46 +77,48 @@ watch([start, end], (v) => {
         date_before:${getNextYear()}
       `"
     />
-    <Expand>
-      <div v-if="currentRoster">
-        <FormKit
-          v-model="start"
-          type="time"
-          name="start"
-          label="Start"
-          :disabled="!store.form.day"
-          :min="formatHour(currentRoster.startOfDay)"
-          :max="formatHour(currentRoster.endOfDay)"
-          step="1800"
-          :validation="`
+    <AnimationExpand>
+      <FormKit
+        v-if="currentRoster"
+        v-model="start"
+        type="time"
+        name="start"
+        label="Start"
+        :disabled="!store.form.day"
+        :min="formatHour(currentRoster.startOfDay)"
+        :max="formatHour(currentRoster.endOfDay)"
+        step="1800"
+        :validation="`
             required|
             time_valid:${store.form.day}|
             time_after:${currentRoster.startOfDay}|
             time_before:${currentRoster.endOfDay}|
             time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd}
           `"
-          validation-visibility="live"
-        />
-        <FormKit
-          v-model="end"
-          type="time"
-          name="end"
-          label="Einde"
-          :disabled="!store.form.day"
-          :min="formatHour(currentRoster.startOfDay)"
-          :max="formatHour(currentRoster.endOfDay)"
-          step="1800"
-          :validation="`
+        validation-visibility="live"
+      />
+    </AnimationExpand>
+    <AnimationExpand>
+      <FormKit
+        v-if="currentRoster && store.form.type === 'rental'"
+        v-model="end"
+        type="time"
+        name="end"
+        label="Einde"
+        :disabled="!store.form.day"
+        :min="formatHour(currentRoster.startOfDay)"
+        :max="formatHour(currentRoster.endOfDay)"
+        step="1800"
+        :validation="`
             time_valid:${store.form.day}|
             time_after:${currentRoster.startOfDay}|
             time_before:${currentRoster.endOfDay}|
             time_slot:${store.timeSlot},${start}|
             time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd},${start}
           `"
-          validation-visibility="live"
-        />
-      </div>
-    </Expand>
+        validation-visibility="live"
+      />
+    </AnimationExpand>
   </template>
   <Expand>
     <FormKit
