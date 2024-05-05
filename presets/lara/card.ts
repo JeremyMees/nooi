@@ -32,6 +32,6 @@ export default {
     class: 'py-5' // Vertical padding.
   },
   footer: {
-    class: 'pt-0 flex justify-end items-center gap-2 px-5' // Top padding.
+    class: 'pt-0 flex flex-wrap justify-between items-start gap-2 px-5' // Top padding.
   }
 }

@@ -90,7 +90,10 @@ function handleClick (day: CalendarTile): void {
               <Skeleton v-if="store.loading" />
               <template v-else>
                 <EventTag
-                  v-for="event in store.getEventsByDate(day.dateFull)"
+                  v-for="event in store.events
+                    .filter(event => event.day === formatDay(day.dateFull))
+                    .filter(event => store.selectedThemes.length ? store.selectedThemes.includes(event.theme) : true)
+                  "
                   :key="event.id"
                   :event="event"
                   @click.stop="store.informationEvent = event"
@@ -102,20 +105,22 @@ function handleClick (day: CalendarTile): void {
       </div>
     </template>
     <template #footer>
-      <Button
-        v-if="!isCurrentMonth"
-        size="small"
-        text
-        severity="secondary"
-        icon="pi pi-directions"
-        label="Huidige maand tonen"
-        @click="() => {
-          shownDate = {
-            month: currentDate.getMonth(),
-            year: currentDate.getFullYear()
-          }
-        }"
-      />
+      <ThemeSelector />
+      <AnimationReveal>
+        <Button
+          v-if="!isCurrentMonth"
+          size="small"
+          text
+          icon="pi pi-directions"
+          label="Huidige maand tonen"
+          @click="() => {
+            shownDate = {
+              month: currentDate.getMonth(),
+              year: currentDate.getFullYear()
+            }
+          }"
+        />
+      </AnimationReveal>
     </template>
   </Card>
 </template>

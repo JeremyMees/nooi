@@ -12,6 +12,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const loading = ref<boolean>(true)
   const sidebarOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
+  const selectedThemes = ref<EventTheme[]>([])
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
   const form = ref<BasicForm>({
@@ -130,10 +131,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     supabase.removeAllChannels()
   }
 
-  function getEventsByDate (date: Date): EventReservation[] {
-    return events.value.filter(event => event.day === formatDay(date))
-  }
-
   return {
     events,
     selectedEvent,
@@ -146,10 +143,10 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     timeSlot,
     spots,
     opening,
+    selectedThemes,
     init,
     subscribe,
     unsubscribe,
-    createReservation,
-    getEventsByDate
+    createReservation
   }
 })
