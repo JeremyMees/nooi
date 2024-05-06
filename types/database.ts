@@ -17,6 +17,7 @@ export type Database = {
           description: string | null
           end: string | null
           id: number
+          imageUrl: string | null
           min_spots: number
           name: string
           onlinePayment: boolean
@@ -32,6 +33,7 @@ export type Database = {
           description?: string | null
           end?: string | null
           id?: number
+          imageUrl?: string | null
           min_spots?: number
           name: string
           onlinePayment?: boolean
@@ -47,6 +49,7 @@ export type Database = {
           description?: string | null
           end?: string | null
           id?: number
+          imageUrl?: string | null
           min_spots?: number
           name?: string
           onlinePayment?: boolean

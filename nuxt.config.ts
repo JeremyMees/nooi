@@ -7,7 +7,8 @@ export default defineNuxtConfig({
     'nuxt-primevue',
     '@vueuse/nuxt',
     '@nuxtjs/supabase',
-    '@formkit/nuxt'
+    '@formkit/nuxt',
+    '@nuxt/image'
   ],
   css: [
     './assets/css/base.css',
@@ -29,5 +30,6 @@ export default defineNuxtConfig({
     storesDirs: ['./stores/**']
   },
   formkit: { configFile: './formkit/config' },
+  image: { quality: 80 },
   devtools: { enabled: true }
 })

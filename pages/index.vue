@@ -8,17 +8,6 @@ onBeforeUnmount(() => store.unsubscribe())
 <template>
   <NuxtLayout>
     <DatePicker class="max-w-5xl mx-auto" />
-    <div v-if="store.loading">
-      loading...
-    </div>
-    <div v-else class="flex flex-col gap-y-4 items-start">
-      <p>
-        reservations: {{ store.reservations.length }}
-      </p>
-      <p>
-        events: {{ store.events.length }}
-      </p>
-    </div>
     <EventModal />
     <ReservationSidebar />
   </NuxtLayout>
