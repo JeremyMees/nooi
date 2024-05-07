@@ -16,3 +16,5 @@ export interface Time {
   hour: number,
   minutes: number
 }
+
+export type CalendarStatus = 'full' | 'game' | 'reservation'

@@ -33,6 +33,7 @@ export default {
           950: 'rgb(var(--primary-950))'
         },
         secondary: '#C35200',
+        teal: '#53A688',
         surface: {
           DEFAULT: 'rgb(var(--surface-500))',
           0: 'rgb(var(--surface-0))',

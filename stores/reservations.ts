@@ -15,11 +15,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
   const form = ref<BasicForm>({
-    type: 'reservation',
     day: '',
     name: '',
     number: '',
-    mail: ''
+    mail: '',
+    exclusive: false
   })
 
   const informationEvent = computed<EventReservation | undefined>(() => {
@@ -62,8 +62,16 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   })
 
   const timeSlot = computed<number>(() => {
-    return form.value.type === 'reservation' ? minTimeSlot : minTimeSlotRental
+    return route.query.type === 'reservation' ? minTimeSlot : minTimeSlotRental
   })
+
+  watch(() => route.query, (query) => {
+    const { date } = query
+
+    if (date) {
+      form.value.day = date as string
+    }
+  }, { immediate: true })
 
   watch([selectedEvent, () => form.value.day], (value) => {
     const [event, day] = value
@@ -77,25 +85,23 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       })
 
       removeQuery(['event', 'status'])
-    } else if (event) {
+    } else if (event || day) {
+      if (reservationInfo.value) {
+        form.value.name = reservationInfo.value.name
+        form.value.number = reservationInfo.value.number
+        form.value.mail = reservationInfo.value.email
+      }
+
       sidebarOpen.value = true
-    } else if (day) {
-      sidebarOpen.value = true
-      addQuery({ day: formatDateUrl(day) })
     } else {
       sidebarOpen.value = false
     }
-  })
+  }, { immediate: true })
 
   watch(sidebarOpen, (value) => {
     if (!value) {
       form.value.day = undefined
-      form.value.type = 'reservation'
-      removeQuery(['day', 'event', 'status'])
-    } else if (reservationInfo.value) {
-      form.value.name = reservationInfo.value.name
-      form.value.number = reservationInfo.value.number
-      form.value.mail = reservationInfo.value.email
+      removeQuery(['date', 'type', 'event', 'status'])
     }
   })
 

@@ -31,31 +31,7 @@
     @apply text-[0.5rem] leading-[0.75rem];
   }
 
-  .lines-purple {
-    background: repeating-linear-gradient(-55deg,#e1bee750,#e1bee750 10px,#e1bee780 10px,#e1bee780 20px)
-  }
-
-  .lines-green {
-    background: repeating-linear-gradient(-55deg,#c8e6c950,#c8e6c950 10px,#c8e6c980 10px,#c8e6c980 20px)
-  }
-
-  .lines-red {
-    background: repeating-linear-gradient(-55deg,#ffcdd250,#ffcdd250 10px,#ffcdd280 10px,#ffcdd280 20px)
-  }
-
-  .lines-blue {
-    background: repeating-linear-gradient(-55deg,#bbdefb50,#bbdefb50 10px,#bbdefb80 10px,#bbdefb80 20px)
-  }
-
-  .lines-yellow {
-    background: repeating-linear-gradient(-55deg,#fff9c450,#fff9c450 10px,#fff9c480 10px,#fff9c480 20px)
-  }
-
   .lines-calendar {
-    background: repeating-linear-gradient(-60deg,#e6e4e140,#e6e4e140 10px,#e6e4e120 10px,#e6e4e120 20px)
-  }
-
-  .lines-calendar-red {
-    background: repeating-linear-gradient(-60deg,#ffcdd210,#ffcdd210 10px,#ffcdd220 10px,#ffcdd220 20px)
+    background: repeating-linear-gradient(-50deg,#e6e4e140,#e6e4e140 10px,#e6e4e120 10px,#e6e4e120 20px)
   }
 }

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 const store = useReservationStore()
 const toast = useToast()
+const { query } = useRoute()
 
 const loading = ref<boolean>(false)
 
 async function submit (form: ReservationInsert): Promise<void> {
   try {
     loading.value = true
-    const payment_pending = form.type !== 'reservation'
+    const payment_pending = true // if not a reservation, payment is pending
 
-    if (store.selectedEvent) {
+    if (store.selectedEvent && query.event) {
       form = {
         ...form,
         event: store.selectedEvent.id,
@@ -17,6 +18,11 @@ async function submit (form: ReservationInsert): Promise<void> {
         start: store.selectedEvent.start,
         end: store.selectedEvent.end,
         type: 'event'
+      }
+    } else {
+      form = {
+        ...form,
+        type: query.type === 'game' ? 'game' : 'reservation'
       }
     }
 
@@ -53,9 +59,13 @@ async function submit (form: ReservationInsert): Promise<void> {
   >
     <template #header>
       <span class="head-3">
-        {{ store.selectedEvent ? 'Reservatie maken voor ' : 'Reservatie maken' }}
+        {{
+          store.selectedEvent
+            ? 'Reservatie maken voor '
+            : $route.query.type === 'game' ? 'Boek een tafel' : 'Reservatie / Verhuur'
+        }}
         <span v-if="store.selectedEvent" class="text-secondary">
-          {{ store.selectedEvent.name }}
+          {{ store.selectedEvent?.name }}
         </span>
       </span>
     </template>

@@ -67,6 +67,7 @@ export type Database = {
           email: string
           end: string | null
           event: number | null
+          exclusive: boolean
           id: number
           info: string | null
           name: string
@@ -83,6 +84,7 @@ export type Database = {
           email: string
           end?: string | null
           event?: number | null
+          exclusive?: boolean
           id?: number
           info?: string | null
           name: string
@@ -99,6 +101,7 @@ export type Database = {
           email?: string
           end?: string | null
           event?: number | null
+          exclusive?: boolean
           id?: number
           info?: string | null
           name?: string
@@ -125,9 +128,12 @@ export type Database = {
           day: string
           endOfDay: string
           id: number
+          isOccupied: boolean
           minSpots: number
           noonBreakEnd: string | null
           noonBreakStart: string | null
+          openForGames: boolean
+          openForReservations: boolean
           startOfDay: string
         }
         Insert: {
@@ -135,9 +141,12 @@ export type Database = {
           day: string
           endOfDay: string
           id?: number
+          isOccupied?: boolean
           minSpots: number
           noonBreakEnd?: string | null
           noonBreakStart?: string | null
+          openForGames: boolean
+          openForReservations: boolean
           startOfDay: string
         }
         Update: {
@@ -145,9 +154,12 @@ export type Database = {
           day?: string
           endOfDay?: string
           id?: number
+          isOccupied?: boolean
           minSpots?: number
           noonBreakEnd?: string | null
           noonBreakStart?: string | null
+          openForGames?: boolean
+          openForReservations?: boolean
           startOfDay?: string
         }
         Relationships: []
@@ -160,7 +172,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      bookingType: 'event' | 'reservation' | 'rental'
+      bookingType: 'game' | 'reservation' | 'event'
       eventTheme: 'culinary' | 'creative' | 'game' | 'lecture' | 'market'
     }
     CompositeTypes: {

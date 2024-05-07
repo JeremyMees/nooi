@@ -3,6 +3,7 @@ import { themeOptions } from '~/constants/info'
 
 const store = useReservationStore()
 const roster = useRosterStore()
+const { query } = useRoute()
 
 const start = ref<string>()
 const end = ref<string>()
@@ -43,27 +44,13 @@ watch([start, end], (v) => {
     validation="required|email|length:5,25"
   />
   <FormKit
-    v-if="!store.selectedEvent"
-    v-model="store.form.type"
+    v-if="query.type === 'reservation'"
     type="select"
-    name="type"
-    label="Type"
+    name="theme"
+    label="Thema"
     validation="required"
-    :options="[
-      { label: 'Verhuur', value: 'rental' },
-      { label: 'Reservation', value: 'reservation' }
-    ]"
+    :options="themeOptions"
   />
-  <AnimationExpand>
-    <FormKit
-      v-if="store.form.type === 'rental'"
-      type="select"
-      name="theme"
-      label="Thema"
-      validation="required"
-      :options="themeOptions"
-    />
-  </AnimationExpand>
   <template v-if="!store.selectedEvent">
     <FormKit
       v-model="store.form.day"
@@ -77,66 +64,79 @@ watch([start, end], (v) => {
         date_before:${getNextYear()}
       `"
     />
-    <AnimationExpand>
+    <div v-if="currentRoster">
+      <p class="body-small text-surface pb-2">
+        Onze openingsuren zijn vandaag:
+        {{ formatHour(currentRoster.startOfDay) }}  -
+        <template v-if="currentRoster.noonBreakStart && currentRoster.noonBreakEnd">
+          {{ formatHour(currentRoster.noonBreakStart) }},
+          {{ formatHour(currentRoster.noonBreakEnd) }} -
+        </template>
+        {{ formatHour(currentRoster.endOfDay) }}
+      </p>
       <FormKit
-        v-if="currentRoster"
         v-model="start"
         type="time"
         name="start"
-        label="Start"
+        :label="query.type === 'game' ? 'Tijdstip' : 'Startuur'"
         :disabled="!store.form.day"
         :min="formatHour(currentRoster.startOfDay)"
         :max="formatHour(currentRoster.endOfDay)"
         step="1800"
         :validation="`
-            required|
-            time_valid:${store.form.day}|
-            time_after:${currentRoster.startOfDay}|
-            time_before:${currentRoster.endOfDay}|
-            time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd}
-          `"
+              required|
+              time_valid:${store.form.day}|
+              time_after:${currentRoster.startOfDay}|
+              time_before:${currentRoster.endOfDay}|
+              time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd}
+            `"
         validation-visibility="live"
       />
-    </AnimationExpand>
-    <AnimationExpand>
-      <FormKit
-        v-if="currentRoster && store.form.type === 'rental'"
-        v-model="end"
-        type="time"
-        name="end"
-        label="Einde"
-        :disabled="!store.form.day"
-        :min="formatHour(currentRoster.startOfDay)"
-        :max="formatHour(currentRoster.endOfDay)"
-        step="1800"
-        :validation="`
+    </div>
+    <FormKit
+      v-if="currentRoster && query.type === 'reservation'"
+      v-model="end"
+      type="time"
+      name="end"
+      label="Einduur"
+      :disabled="!store.form.day"
+      :min="formatHour(currentRoster.startOfDay)"
+      :max="formatHour(currentRoster.endOfDay)"
+      step="1800"
+      :validation="`
+            required|
             time_valid:${store.form.day}|
             time_after:${currentRoster.startOfDay}|
             time_before:${currentRoster.endOfDay}|
             time_slot:${store.timeSlot},${start}|
             time_break:${currentRoster.noonBreakStart},${currentRoster.noonBreakEnd},${start}
           `"
-        validation-visibility="live"
-      />
-    </AnimationExpand>
+      validation-visibility="live"
+    />
   </template>
-  <Expand>
-    <FormKit
-      v-if="store.opening || store.selectedEvent"
-      type="number"
-      name="spots"
-      label="Personen"
-      :disabled="!store.selectedEvent && !store.form.day"
-      :validation="`
+  <FormKit
+    v-if="store.opening || store.selectedEvent"
+    type="number"
+    name="spots"
+    label="Aantal personen"
+    :disabled="!store.selectedEvent && !store.form.day"
+    :validation="`
         required|
         number|
         max:${store.spots.max}|
         min:${store.spots.min}
       `"
-      :min="store.spots.min"
-      :max="store.spots.max"
-    />
-  </Expand>
+    :min="store.spots.min"
+    :max="store.spots.max"
+  />
+  <FormKit
+    v-if="query.type === 'reservation'"
+    v-model="store.form.exclusive"
+    type="checkbox"
+    label="Exclusief"
+    help="Exclusief reserveren is tegen betaling"
+    name="exclusive"
+  />
   <FormKit
     type="textarea"
     name="info"

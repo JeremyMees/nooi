@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const roster = useRosterStore()
 const store = useReservationStore()
 const daysOfWeek = getDaysOfWeek()
 const months = getMonths()
@@ -11,7 +10,6 @@ const shownDate = ref<DisplayDate>({
 })
 
 const grid = computed<CalendarTile[]>(() => getCalenderDays(shownDate.value))
-
 const isCurrentMonth = computed<boolean>(() => sameMonth(shownDate.value, currentDate))
 
 function navigateCalendar (modifier: number): void {
@@ -21,12 +19,6 @@ function navigateCalendar (modifier: number): void {
     month: date.getMonth(),
     year: date.getFullYear()
   }
-}
-
-function handleClick (day: CalendarTile): void {
-  if (dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull)) { return }
-
-  store.form.day = formatDay(day.dateFull)
 }
 </script>
 
@@ -65,54 +57,33 @@ function handleClick (day: CalendarTile): void {
           </div>
         </div>
         <div class="isolate grid grid-cols-7">
-          <button
+          <CalendarCell
             v-for="(day, index) in grid"
             :key="`${index}-${day.key}`"
-            :aria-label="`Reservatie voor ${day.key}`"
-            class="transition-all duration-200 border p-1 flex flex-col gap-y-1 overflow-hidden"
-            :class="{
-              'lines-calendar': !day.currentMonth,
-              'cursor-not-allowed hover:lines-calendar-red': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
-              'hover:bg-primary-200/25': !dateInPast(day.dateFull) && roster.checkIfOpen(day.dateFull)
-            }"
-            @click="handleClick(day)"
-          >
-            <time
-              :datetime="day.key"
-              class="flex h-6 w-6 items-center justify-center rounded-lg"
-              :class="{
-                'bg-secondary text-white shadow' : day.today,
-                'text-surface-200': dateInPast(day.dateFull) || !roster.checkIfOpen(day.dateFull),
-              }"
-            >
-              {{ day.date }}
-            </time>
-            <div class="flex flex-wrap gap-1 min-h-10">
-              <Skeleton v-if="store.loading" />
-              <template v-else>
-                <span
-                  v-if="roster.checkIfOpen(day.dateFull)"
-                  class="text-primary body-small w-full text-left"
-                >
-                  Open
-                </span>
-                <EventTag
-                  v-for="event in store.events
-                    .filter(event => event.day === formatDay(day.dateFull))
-                    .filter(event => store.selectedThemes.length ? store.selectedThemes.includes(event.theme) : true)
-                  "
-                  :key="event.id"
-                  :event="event"
-                  @click.stop="addQuery({ event :event.id, status: 'info' })"
-                />
-              </template>
-            </div>
-          </button>
+            :day="day"
+            :events="store.events.filter(e => e.day === formatDay(day.dateFull))"
+          />
         </div>
       </div>
     </template>
     <template #footer>
-      <ThemeSelector />
+      <div class="flex flex-col sm:flex-row gap-x-6 gap-y-2">
+        <div
+          v-for="status in ['full', 'reservation', 'game'] as CalendarStatus[]"
+          :key="status"
+          class="flex items-center gap-2"
+        >
+          <div
+            class="h-6 w-10 rounded-md"
+            :class="{
+              'bg-primary': status === 'reservation',
+              'bg-teal': status === 'game',
+              'bg-secondary': status === 'full'
+            }"
+          />
+          <span> {{ translateStatus(status) }} </span>
+        </div>
+      </div>
       <AnimationReveal>
         <Button
           v-if="!isCurrentMonth"
