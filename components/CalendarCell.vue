@@ -65,7 +65,7 @@ function handleClick (day: CalendarTile, top: boolean): void {
         :datetime="day.key"
         class="flex h-6 w-6 items-center justify-center rounded-lg text-white"
         :class="{
-          'bg-surface-50 shadow font-bold !text-surface-700' : day.today,
+          'bg-surface-50 shadow font-bold text-surface-700' : day.today,
           '!text-surface-200': isPast || !isOpen
         }"
       >

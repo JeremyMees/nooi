@@ -188,3 +188,10 @@ export function afterTime (time: string, compare: string): boolean {
 
   return hour > compareHour || (hour === compareHour && minutes > compareMinutes)
 }
+
+export function sameTime (time: string, compare: string): boolean {
+  const { hour, minutes } = splitTime(time)
+  const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
+
+  return hour === compareHour && minutes === compareMinutes
+}

@@ -27,7 +27,7 @@ const time_after = function (node: FormKitNode, start: string): boolean {
     return false
   }
 
-  return afterTime(value, start)
+  return afterTime(value, start) || sameTime(value, start)
 }
 
 const time_before = function (node: FormKitNode, end: string): boolean {
@@ -47,11 +47,11 @@ const time_break = function (node: FormKitNode, startNoon?: string, endNoon?: st
     return false
   }
 
-  if (!startNoon || !endNoon) {
+  if (!startNoon || !endNoon || startNoon === 'null' || endNoon === 'null') {
     return true
   }
 
-  const afterNoonBreak = afterTime(value, startNoon) && afterTime(value, endNoon)
+  const afterNoonBreak = afterTime(value, startNoon) && (afterTime(value, endNoon) || sameTime(value, endNoon))
   const beforeNoonBreak = beforeTime(value, startNoon) && beforeTime(value, endNoon)
 
   if (start) {
