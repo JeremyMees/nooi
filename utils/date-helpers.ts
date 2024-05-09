@@ -67,12 +67,6 @@ export function formatHour (time: string): string {
   return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
 }
 
-export function getDayOfWeek (date: string|Date): number {
-  const day = new Date(date).getDay()
-
-  return day === 0 ? 6 : day - 1 // Adjust if first day is Sunday
-}
-
 export function getYesterday (): Date {
   return addDay(new Date(), -1)
 }
@@ -122,7 +116,7 @@ export function addMonth (date: DisplayDate, increment: number): DisplayDate {
 export function getCalenderDays (date: DisplayDate): CalendarTile[] {
   const today = new Date()
   const currentDate = createDate(addMonth(date, 1))
-  const firstDay = getDayOfWeek(currentDate)
+  const firstDay = new Date(currentDate).getDay()
   const totalDaysInMonth = monthDays(currentDate)
   const totalDaysInPrevMonth = monthDays(createDate(date))
 
