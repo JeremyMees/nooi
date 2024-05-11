@@ -7,6 +7,10 @@ const route = useRoute()
 const loading = ref<boolean>(false)
 const checkout = ref()
 
+const payment = computed<boolean>(() => {
+  return !!(store.selectedEvent?.onlinePayment && store.selectedEvent?.price)
+})
+
 watch(() => store.paymentPending, (pending) => {
   if (!pending) {
     checkout.value?.destroy()
@@ -15,7 +19,6 @@ watch(() => store.paymentPending, (pending) => {
 
 async function submit (form: ReservationInsert): Promise<void> {
   loading.value = true
-  const payment = !!(store.selectedEvent?.onlinePayment && store.selectedEvent?.price)
 
   try {
     if (store.selectedEvent && route.query.event) {
@@ -34,35 +37,29 @@ async function submit (form: ReservationInsert): Promise<void> {
       }
     }
 
-    const { id } = await store.createReservation({ ...form, paymentNeeded: payment })
+    const { id } = await store.createReservation({ ...form, paymentNeeded: payment.value })
 
-    payment ? loadEmbed(id) : successToast()
+    payment.value
+      ? loadEmbed(id)
+      : toast.add({
+        severity: 'success',
+        summary: 'Gelukt!',
+        detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
+        life: 5000
+      })
   } catch (error) {
-    errorToast()
+    toast.add({
+      severity: 'error',
+      summary: 'Oeps!',
+      detail: 'Het lijkt erop dat er een probleem was met het maken van een reservatie',
+      life: 5000
+    })
   } finally {
-    if (!payment) {
+    if (!payment.value) {
       loading.value = false
       store.sidebarOpen = false
     }
   }
-}
-
-function successToast (): void {
-  toast.add({
-    severity: 'success',
-    summary: 'Gelukt!',
-    detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
-    life: 5000
-  })
-}
-
-function errorToast (): void {
-  toast.add({
-    severity: 'error',
-    summary: 'Oeps!',
-    detail: 'Het lijkt erop dat er een probleem was met het maken van een reservatie',
-    life: 5000
-  })
 }
 
 async function loadEmbed (id: number): Promise<void> {
@@ -96,11 +93,11 @@ async function loadEmbed (id: number): Promise<void> {
     <FormKit
       v-else-if="!store.paymentPending"
       type="form"
-      submit-label="Reservatie maken"
+      :submit-label="payment ? 'Verder naar betalen' : 'Reservatie maken'"
       :config="{ validationVisibility: 'blur' }"
       @submit="submit"
     >
-      <BasicForm />
+      <BasicForm :payment="payment" />
     </FormKit>
     <div
       v-show="store.paymentPending"
