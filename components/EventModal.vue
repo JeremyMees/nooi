@@ -5,12 +5,6 @@ const route = useRoute()
 
 const visible = ref<boolean>(false)
 
-const freeSpots = computed<number|undefined>(() => {
-  if (store.informationEvent?.spots) {
-    return store.informationEvent?.spots - getReservedSpots(store.informationEvent.reservations)
-  }
-})
-
 watch(visible, (value) => {
   if (!value && route.query.status === 'info') {
     removeQuery(['event', 'status'])
@@ -50,32 +44,10 @@ watch(() => store.informationEvent, (event) => {
       </p>
     </template>
 
-    <div class="flex flex-wrap gap-2">
-      <IconLabel v-if="store.informationEvent?.day" icon="calendar">
-        {{ formatDateUI(store.informationEvent.day) }}
-      </IconLabel>
-      <IconLabel v-if="store.informationEvent?.start" icon="clock">
-        {{ formatHour(store.informationEvent.start) }}
-        <template v-if="store.informationEvent?.end">
-          tot {{ formatHour(store.informationEvent.end) }}
-        </template>
-      </IconLabel>
-      <IconLabel v-if="store.informationEvent?.price" icon="wallet">
-        €{{ store.informationEvent.price }} {{ store.informationEvent.onlinePayment ? 'online' : 'ter plaatse' }}
-      </IconLabel>
-      <IconLabel v-if="freeSpots" icon="user">
-        {{ freeSpots }} vrije plaatsen
-      </IconLabel>
-      <IconLabel
-        v-if="store.informationEvent?.min_spots && store.informationEvent.min_spots > 1"
-        icon="users"
-      >
-        minimum voor {{ store.informationEvent.min_spots }} reserveren
-      </IconLabel>
-      <IconLabel v-if="store.informationEvent?.theme" icon="tag">
-        {{ translateTheme(store.informationEvent.theme) }}
-      </IconLabel>
-    </div>
+    <EventTags
+      v-if="store.informationEvent"
+      :event="store.informationEvent"
+    />
     <p v-if="store.informationEvent?.description" class="pt-6 text-pretty">
       {{ store.informationEvent.description }}
     </p>
