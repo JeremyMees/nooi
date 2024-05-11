@@ -1,14 +1,18 @@
 export const useRosterStore = defineStore('useRosterStore', () => {
+  const reservationStore = useReservationStore()
   const toast = useToast()
 
   const loading = ref<boolean>(false)
   const rosters = ref<RosterRow[]>([])
 
+  watch(() => reservationStore.shownDate, async () => await getData())
+
   async function getData (): Promise<void> {
     loading.value = true
+    const date = new Date(reservationStore.shownDate.year, reservationStore.shownDate.month)
 
     try {
-      rosters.value = await sbFetch<RosterRow[]>({ table: 'roster' })
+      rosters.value = await sbFetch<RosterRow[]>({ table: 'roster', date })
     } catch (error) {
       toast.add({
         severity: 'error',

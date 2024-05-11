@@ -6,6 +6,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const supabase = useSupabaseClient<Database>()
   const toast = useToast()
   const route = useRoute()
+  const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
   const events = ref<EventReservation[]>([])
   const reservations = ref<ReservationRow[]>([])
@@ -14,7 +15,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const sidebarOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
   const selectedThemes = ref<EventTheme[]>([])
-  const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
+
+  const shownDate = ref<DisplayDate>({
+    month: new Date().getMonth(),
+    year: new Date().getFullYear()
+  })
 
   const form = ref<BasicForm>({
     day: '',
@@ -114,6 +119,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   })
 
+  watch(shownDate, async () => await getData())
+
   async function createReservation (insert: ReservationInsert): Promise<ReservationRow> {
     const { name, number, email } = insert
 
@@ -194,7 +201,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     loading.value = true
 
     try {
-      await getData()
       subscribe()
 
       const { day, reservation_id, session_id } = route.query
@@ -221,17 +227,23 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   async function getData (): Promise<void> {
+    const date = new Date(shownDate.value.year, shownDate.value.month)
+
     events.value = await sbFetch<EventReservation[]>({
       table: 'events',
-      select: '*, reservations:reservations(id)'
+      select: '*, reservations:reservations(id)',
+      date
     })
 
     reservations.value = await sbFetch<ReservationRow[]>({
-      table: 'reservations'
+      table: 'reservations',
+      date
     })
   }
 
   function subscribe () {
+    const { gte } = sbDateFilters()
+
     supabase
       .channel('reservation')
       .on(
@@ -240,7 +252,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           event: '*',
           schema: 'public',
           table: 'reservations',
-          filter: `day=gte.${(new Date()).toISOString()}`
+          filter: `day=gte.${gte}`
         },
         async () => await getData()
       ).subscribe()
@@ -286,6 +298,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     spots,
     opening,
     selectedThemes,
+    shownDate,
     init,
     subscribe,
     unsubscribe,

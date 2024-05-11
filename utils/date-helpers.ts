@@ -5,6 +5,10 @@ const formatDefault: Format = { date: 'medium', time: 'short' }
 const locale = 'nl'
 const gridSize = 42
 
+export function padDate (date: number): string {
+  return date.toString().padStart(2, '0')
+}
+
 export function isValidDateString (dateString: string): boolean {
   const date = new Date(dateString)
 
@@ -32,10 +36,10 @@ export function sameMonth (date: DisplayDate, current: Date): boolean {
 }
 
 export function createDate ({ year, month, day }: DisplayDate): Date {
-  let dateString = `${year}-${month.toString().padStart(2, '0')}`
+  let dateString = `${year}-${padDate(month)}`
 
   if (day) {
-    dateString += `-${day.toString().padStart(2, '0')}`
+    dateString += `-${padDate(day)}`
   }
 
   return new Date(dateString)
@@ -58,13 +62,13 @@ export function formatDay (date: Date): string {
   const month = date.getMonth() + 1
   const year = date.getFullYear()
 
-  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+  return `${year}-${padDate(month)}-${padDate(day)}`
 }
 
 export function formatHour (time: string): string {
   const { hour, minutes } = splitTime(time)
 
-  return `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
+  return `${padDate(hour)}:${padDate(minutes)}`
 }
 
 export function getYesterday (): Date {
@@ -82,7 +86,7 @@ export function roundTime (time: string): string {
     return `${hour}:00`
   } else if (+minutes >= 45) {
     const newHour = +hour + 1
-    return `${newHour === 24 ? '00' : newHour.toString().padStart(2, '0')}:00`
+    return `${newHour === 24 ? '00' : padDate(newHour)}:00`
   } else {
     return `${hour}:30`
   }

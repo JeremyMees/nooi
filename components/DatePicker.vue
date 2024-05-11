@@ -3,11 +3,7 @@ const store = useReservationStore()
 const daysOfWeek = getDaysOfWeek()
 const months = getMonths()
 const currentDate = new Date()
-
-const shownDate = ref<DisplayDate>({
-  month: currentDate.getMonth(),
-  year: currentDate.getFullYear()
-})
+const { shownDate } = storeToRefs(store)
 
 const grid = computed<CalendarTile[]>(() => getCalenderDays(shownDate.value))
 const isCurrentMonth = computed<boolean>(() => sameMonth(shownDate.value, currentDate))

@@ -30,5 +30,6 @@ export interface EventReservation extends EventRow {
 
 export interface SbFetchOptions {
   table: DatabaseTable
-  select?: string
+  select?: string,
+  date?: Date
 }
