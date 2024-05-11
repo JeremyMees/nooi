@@ -25,6 +25,7 @@ export type DatabaseTable = 'events' | 'reservations' | 'roster'
 export interface EventReservation extends EventRow {
   reservations: {
     id: number
+    spots: number
   }[]
 }
 

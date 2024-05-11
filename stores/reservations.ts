@@ -64,7 +64,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     return {
       min: selectedEvent.value?.min_spots ?? opening.value?.minSpots ?? 2,
       max: selectedEvent.value?.spots
-        ? selectedEvent.value.spots - selectedEvent.value.reservations.length
+        ? selectedEvent.value.spots - getReservedSpots(selectedEvent.value.reservations)
         : maxSpots
     }
   })
@@ -231,7 +231,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
     events.value = await sbFetch<EventReservation[]>({
       table: 'events',
-      select: '*, reservations:reservations(id)',
+      select: '*, reservations:reservations(id, spots)',
       date
     })
 

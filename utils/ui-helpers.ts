@@ -46,3 +46,7 @@ export function addQuery (values: Record<string, any>): void {
     }
   })
 }
+
+export function getReservedSpots (arr: EventReservation['reservations']): number {
+  return arr.reduce((acc, { spots }) => acc + spots, 0)
+}

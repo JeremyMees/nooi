@@ -5,6 +5,12 @@ const route = useRoute()
 
 const visible = ref<boolean>(false)
 
+const freeSpots = computed<number|undefined>(() => {
+  if (store.informationEvent?.spots) {
+    return store.informationEvent?.spots - getReservedSpots(store.informationEvent.reservations)
+  }
+})
+
 watch(visible, (value) => {
   if (!value && route.query.status === 'info') {
     removeQuery(['event', 'status'])
@@ -17,6 +23,15 @@ watch(() => store.informationEvent, (event) => {
       severity: 'info',
       summary: 'Te Laat!',
       detail: `De inschrijvingsperiode voor ${event.name} is helaas afgelopen.`,
+      life: 5000
+    })
+
+    removeQuery(['event', 'status'])
+  } else if (event?.spots && event.spots <= getReservedSpots(event.reservations)) {
+    toast.add({
+      severity: 'info',
+      summary: 'Event zit vol!',
+      detail: `Je bent net te laat. ${event.name} is helaas volzet.`,
       life: 5000
     })
 
@@ -48,8 +63,8 @@ watch(() => store.informationEvent, (event) => {
       <IconLabel v-if="store.informationEvent?.price" icon="wallet">
         €{{ store.informationEvent.price }} {{ store.informationEvent.onlinePayment ? 'online' : 'ter plaatse' }}
       </IconLabel>
-      <IconLabel v-if="store.informationEvent?.spots" icon="user">
-        {{ store.informationEvent.spots - store.informationEvent.reservations.length }} vrije plaatsen
+      <IconLabel v-if="freeSpots" icon="user">
+        {{ freeSpots }} vrije plaatsen
       </IconLabel>
       <IconLabel
         v-if="store.informationEvent?.min_spots && store.informationEvent.min_spots > 1"
