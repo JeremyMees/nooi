@@ -8,12 +8,14 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/supabase',
     '@formkit/nuxt',
-    '@nuxt/image'
+    '@nuxt/image',
+    '@unlok-co/nuxt-stripe'
   ],
   css: [
     './assets/css/base.css',
     '~/node_modules/primeicons/primeicons.css'
   ],
+  runtimeConfig: { url: process.env.NUXT_PUBLIC_URL },
   supabase: { redirect: false },
   primevue: {
     options: { unstyled: true },
@@ -23,11 +25,11 @@ export default defineNuxtConfig({
     cssPath: './assets/css/tailwind.css',
     viewer: false
   },
-  imports: {
-    dirs: ['types/*.ts']
-  },
-  pinia: {
-    storesDirs: ['./stores/**']
+  imports: { dirs: ['types/*.ts'] },
+  pinia: { storesDirs: ['./stores/**'] },
+  stripe: {
+    server: { key: process.env.STRIPE_SK },
+    client: { key: process.env.STRIPE_PK }
   },
   formkit: { configFile: './formkit/config' },
   image: { quality: 80 },

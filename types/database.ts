@@ -25,6 +25,7 @@ export type Database = {
           spots: number | null
           start: string
           theme: Database['public']['Enums']['eventTheme']
+          unitPrice: boolean | null
         }
         Insert: {
           bookingDeadline: string
@@ -41,6 +42,7 @@ export type Database = {
           spots?: number | null
           start: string
           theme: Database['public']['Enums']['eventTheme']
+          unitPrice?: boolean | null
         }
         Update: {
           bookingDeadline?: string
@@ -57,6 +59,7 @@ export type Database = {
           spots?: number | null
           start?: string
           theme?: Database['public']['Enums']['eventTheme']
+          unitPrice?: boolean | null
         }
         Relationships: []
       }
@@ -72,7 +75,8 @@ export type Database = {
           info: string | null
           name: string
           number: string
-          payment_pending: boolean
+          paymentIdentifier: string | null
+          paymentNeeded: boolean
           spots: number
           start: string
           theme: Database['public']['Enums']['eventTheme'] | null
@@ -89,7 +93,8 @@ export type Database = {
           info?: string | null
           name: string
           number: string
-          payment_pending?: boolean
+          paymentIdentifier?: string | null
+          paymentNeeded?: boolean
           spots: number
           start: string
           theme?: Database['public']['Enums']['eventTheme'] | null
@@ -106,7 +111,8 @@ export type Database = {
           info?: string | null
           name?: string
           number?: string
-          payment_pending?: boolean
+          paymentIdentifier?: string | null
+          paymentNeeded?: boolean
           spots?: number
           start?: string
           theme?: Database['public']['Enums']['eventTheme'] | null

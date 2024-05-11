@@ -116,6 +116,7 @@ watch([start, end], (v) => {
   </template>
   <FormKit
     v-if="store.opening || store.selectedEvent"
+    v-model="store.form.spots"
     type="number"
     name="spots"
     label="Aantal personen"

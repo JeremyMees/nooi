@@ -1,16 +1,24 @@
 <script setup lang="ts">
+const stripe = await useClientStripe()
 const store = useReservationStore()
 const toast = useToast()
-const { query } = useRoute()
+const route = useRoute()
 
 const loading = ref<boolean>(false)
+const checkout = ref()
+
+watch(() => store.paymentPending, (pending) => {
+  if (!pending) {
+    checkout.value?.destroy()
+  }
+})
 
 async function submit (form: ReservationInsert): Promise<void> {
-  try {
-    loading.value = true
-    const payment_pending = true // if not a reservation, payment is pending
+  loading.value = true
+  const payment = !!(store.selectedEvent?.onlinePayment && store.selectedEvent?.price)
 
-    if (store.selectedEvent && query.event) {
+  try {
+    if (store.selectedEvent && route.query.event) {
       form = {
         ...form,
         event: store.selectedEvent.id,
@@ -22,33 +30,48 @@ async function submit (form: ReservationInsert): Promise<void> {
     } else {
       form = {
         ...form,
-        type: query.type === 'game' ? 'game' : 'reservation'
+        type: route.query.type === 'game' ? 'game' : 'reservation'
       }
     }
 
-    await store.createReservation({ ...form, payment_pending })
+    const { id } = await store.createReservation({ ...form, paymentNeeded: payment })
 
-    if (payment_pending) {
-      // navigate to stripe payment page
-    } else {
-      toast.add({
-        severity: 'success',
-        summary: 'Gelukt!',
-        detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
-        life: 5000
-      })
-    }
+    payment ? loadEmbed(id) : successToast()
   } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Oeps!',
-      detail: 'Het lijkt erop dat er een probleem was met het maken van een reservatie',
-      life: 5000
-    })
+    errorToast()
   } finally {
-    loading.value = false
-    store.sidebarOpen = false
+    if (!payment) {
+      loading.value = false
+      store.sidebarOpen = false
+    }
   }
+}
+
+function successToast (): void {
+  toast.add({
+    severity: 'success',
+    summary: 'Gelukt!',
+    detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
+    life: 5000
+  })
+}
+
+function errorToast (): void {
+  toast.add({
+    severity: 'error',
+    summary: 'Oeps!',
+    detail: 'Het lijkt erop dat er een probleem was met het maken van een reservatie',
+    life: 5000
+  })
+}
+
+async function loadEmbed (id: number): Promise<void> {
+  const payload = await store.createSession(id)
+  checkout.value = await stripe.value?.initEmbeddedCheckout(payload)
+
+  checkout.value?.mount('#checkout-container')
+  store.paymentPending = id
+  loading.value = false
 }
 </script>
 
@@ -71,7 +94,7 @@ async function submit (form: ReservationInsert): Promise<void> {
     </template>
     <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
     <FormKit
-      v-else
+      v-else-if="!store.paymentPending"
       type="form"
       submit-label="Reservatie maken"
       :config="{ validationVisibility: 'blur' }"
@@ -79,5 +102,10 @@ async function submit (form: ReservationInsert): Promise<void> {
     >
       <BasicForm />
     </FormKit>
+    <div
+      v-show="store.paymentPending"
+      id="checkout-container"
+      class="w-full"
+    />
   </Sidebar>
 </template>

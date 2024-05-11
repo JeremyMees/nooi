@@ -1,3 +1,4 @@
+import Stripe from 'stripe'
 import { minTimeSlot, minTimeSlotRental, maxSpots } from '~/constants/info'
 
 export const useReservationStore = defineStore('useReservationStore', () => {
@@ -9,6 +10,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const events = ref<EventReservation[]>([])
   const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(true)
+  const paymentPending = ref<number>()
   const sidebarOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
   const selectedThemes = ref<EventTheme[]>([])
@@ -19,6 +21,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     name: '',
     number: '',
     mail: '',
+    spots: '',
     exclusive: false
   })
 
@@ -100,23 +103,91 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   watch(sidebarOpen, (value) => {
     if (!value) {
+      if (paymentPending.value) {
+        cancelUnpaidReservation(paymentPending.value)
+      }
+
       form.value.day = undefined
       removeQuery(['date', 'type', 'event', 'status'])
+    } else {
+      paymentPending.value = undefined
     }
   })
 
-  async function createReservation (insert: ReservationInsert): Promise<void> {
+  async function createReservation (insert: ReservationInsert): Promise<ReservationRow> {
     const { name, number, email } = insert
 
     reservationInfo.value = { name, number, email }
 
-    const { error: err } = await supabase
+    const { error, data } = await supabase
       .from('reservations')
       .insert([insert])
+      .select('*')
 
-    if (err) {
-      throw err
+    if (error) {
+      throw error
     }
+
+    return data?.[0]
+  }
+
+  async function removeReservation (id: number): Promise<void> {
+    const { error } = await supabase
+      .from('reservations')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
+  }
+
+  async function updateReservation (id: number, payload: ReservationUpdate): Promise<void> {
+    const { error } = await supabase
+      .from('reservations')
+      .update(payload)
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
+  }
+
+  async function checkPaymentStatus (reservation: number, session: string): Promise<void> {
+    try {
+      const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/session/status', {
+        query: { id: session }
+      })
+
+      if (currentSession.payment_status === 'paid') {
+        await updateReservation(reservation, {
+          paymentNeeded: false,
+          paymentIdentifier: currentSession.payment_intent as string
+        })
+
+        toast.add({
+          severity: 'success',
+          summary: 'Betaling gelukt!',
+          detail: 'De betaling is succesvol verwerkt en de reservering is bevestigd',
+          life: 5000
+        })
+      }
+    } catch (error) {
+      cancelUnpaidReservation(+reservation)
+    } finally {
+      removeQuery(['reservation_id', 'session_id'])
+    }
+  }
+
+  async function cancelUnpaidReservation (id: number): Promise<void> {
+    await removeReservation(id)
+
+    toast.add({
+      severity: 'error',
+      summary: 'Oeps!',
+      detail: 'Het lijkt erop dat er een probleem is met de betaling',
+      life: 5000
+    })
   }
 
   async function init (): Promise<void> {
@@ -126,12 +197,16 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       await getData()
       subscribe()
 
-      if (route.query.day) {
-        const date = formatDay(new Date(route.query.day as string))
+      const { day, reservation_id, session_id } = route.query
 
-        isValidDateString(route.query.day as string) && rosterStore.getDayRoster(date)
+      if (day) {
+        const date = formatDay(new Date(day as string))
+
+        isValidDateString(day as string) && rosterStore.getDayRoster(date)
           ? form.value.day = date
           : removeQuery(['day'])
+      } else if (reservation_id && session_id) {
+        await checkPaymentStatus(+reservation_id, session_id as string)
       }
     } catch (error) {
       toast.add({
@@ -175,6 +250,28 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     supabase.removeAllChannels()
   }
 
+  async function createSession (id: number): Promise<{ clientSecret: string }> {
+    const spotsNumber = form.value?.spots && !isNaN(+form.value.spots)
+      ? +form.value.spots
+      : 1
+
+    const { clientSecret } = await $fetch('/api/stripe/session', {
+      method: 'POST',
+      body: {
+        url: `?reservation_id=${id}`,
+        name: selectedEvent.value?.name,
+        amount: selectedEvent.value?.price,
+        quantity: selectedEvent.value?.unitPrice ? spotsNumber : 1
+      }
+    })
+
+    if (!clientSecret) {
+      throw new Error('No client secret returned')
+    }
+
+    return { clientSecret }
+  }
+
   return {
     events,
     selectedEvent,
@@ -182,6 +279,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     reservations,
     loading,
     sidebarOpen,
+    paymentPending,
     activeStep,
     form,
     timeSlot,
@@ -191,6 +289,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     init,
     subscribe,
     unsubscribe,
-    createReservation
+    createReservation,
+    createSession
   }
 })
