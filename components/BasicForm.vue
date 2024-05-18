@@ -47,7 +47,7 @@ watch([start, end], (v) => {
     name="theme"
     label="Thema"
     validation="required"
-    :options="store.themes"
+    :options="store.themes.map(({ label }) => label)"
   />
   <template v-if="!store.selectedEvent">
     <FormKit
