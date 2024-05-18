@@ -31,8 +31,14 @@ const freeSpots = computed<number|undefined>(() => {
     >
       minimum voor {{ event.min_spots }} reserveren
     </IconLabel>
-    <IconLabel v-if="event?.theme" icon="tag">
-      {{ translateTheme(event.theme) }}
-    </IconLabel>
+    <template v-if="event?.theme">
+      <IconLabel
+        v-for="theme in event.theme.split(',')"
+        :key="theme"
+        icon="tag"
+      >
+        {{ theme.trim() }}
+      </IconLabel>
+    </template>
   </div>
 </template>

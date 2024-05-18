@@ -24,7 +24,7 @@ export type Database = {
           price: number | null
           spots: number | null
           start: string
-          theme: Database['public']['Enums']['eventTheme']
+          theme: string
           unitPrice: boolean | null
         }
         Insert: {
@@ -41,7 +41,7 @@ export type Database = {
           price?: number | null
           spots?: number | null
           start: string
-          theme: Database['public']['Enums']['eventTheme']
+          theme: string
           unitPrice?: boolean | null
         }
         Update: {
@@ -58,7 +58,7 @@ export type Database = {
           price?: number | null
           spots?: number | null
           start?: string
-          theme?: Database['public']['Enums']['eventTheme']
+          theme?: string
           unitPrice?: boolean | null
         }
         Relationships: []
@@ -79,7 +79,7 @@ export type Database = {
           paymentNeeded: boolean
           spots: number
           start: string
-          theme: Database['public']['Enums']['eventTheme'] | null
+          theme: string | null
           type: Database['public']['Enums']['bookingType']
         }
         Insert: {
@@ -97,7 +97,7 @@ export type Database = {
           paymentNeeded?: boolean
           spots: number
           start: string
-          theme?: Database['public']['Enums']['eventTheme'] | null
+          theme?: string | null
           type: Database['public']['Enums']['bookingType']
         }
         Update: {
@@ -115,7 +115,7 @@ export type Database = {
           paymentNeeded?: boolean
           spots?: number
           start?: string
-          theme?: Database['public']['Enums']['eventTheme'] | null
+          theme?: string | null
           type?: Database['public']['Enums']['bookingType']
         }
         Relationships: [
@@ -170,6 +170,24 @@ export type Database = {
         }
         Relationships: []
       }
+      themes: {
+        Row: {
+          created_at: string
+          id: number
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          label: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          label?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -179,7 +197,6 @@ export type Database = {
     }
     Enums: {
       bookingType: 'game' | 'reservation' | 'event'
-      eventTheme: 'culinary' | 'creative' | 'game' | 'lecture' | 'market'
     }
     CompositeTypes: {
       [_ in never]: never

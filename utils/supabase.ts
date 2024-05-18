@@ -2,13 +2,17 @@ import { addMonth, monthDays } from '@formkit/tempo'
 
 export async function sbFetch<T> (options: SbFetchOptions): Promise<T> {
   const supabase = useSupabaseClient<Database>()
-  const { gte, lte } = sbDateFilters(options.date)
+  const { table, select, date } = options
 
-  const { data } = await supabase
-    .from(options.table)
-    .select(options.select || '*')
-    .gte('day', gte)
-    .lte('day', lte)
+  let query = supabase.from(table).select(select || '*')
+
+  if (date) {
+    const { gte, lte } = sbDateFilters(date)
+
+    query = query.gte('day', gte).lte('day', lte)
+  }
+
+  const { data } = await query
 
   return (data || []) as T
 }

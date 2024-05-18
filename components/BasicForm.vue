@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { themeOptions } from '~/constants/info'
-
 const store = useReservationStore()
 const roster = useRosterStore()
 const { query } = useRoute()
@@ -49,7 +47,7 @@ watch([start, end], (v) => {
     name="theme"
     label="Thema"
     validation="required"
-    :options="themeOptions"
+    :options="store.themes"
   />
   <template v-if="!store.selectedEvent">
     <FormKit

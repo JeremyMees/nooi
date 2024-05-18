@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { minTimeSlot, minTimeSlotRental, maxSpots } from '~/constants/info'
+import type { ThemeRow } from '~/types/supabase'
 
 export const useReservationStore = defineStore('useReservationStore', () => {
   const rosterStore = useRosterStore()
@@ -8,13 +9,14 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const route = useRoute()
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
+  const themes = ref<ThemeRow[]>([])
   const events = ref<EventReservation[]>([])
   const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(true)
   const paymentPending = ref<number>()
   const sidebarOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
-  const selectedThemes = ref<EventTheme[]>([])
+  const selectedThemes = ref<string[]>([])
 
   const shownDate = ref<DisplayDate>({
     month: new Date().getMonth(),
@@ -203,6 +205,10 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     try {
       subscribe()
 
+      if (!themes.value.length) {
+        themes.value = await sbFetch<ThemeRow[]>({ table: 'themes' })
+      }
+
       const { day, reservation_id, session_id } = route.query
 
       if (day) {
@@ -286,6 +292,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   return {
     events,
+    themes,
     selectedEvent,
     informationEvent,
     reservations,
