@@ -1,4 +1,4 @@
-import { format, range, monthDays, sameDay, addDay, addYear, isBefore } from '@formkit/tempo'
+import { format, range, sameDay, addDay, addYear, isBefore } from '@formkit/tempo'
 import type { Format } from '@formkit/tempo'
 
 const formatDefault: Format = { date: 'medium', time: 'short' }
@@ -33,20 +33,6 @@ export function sameYear (date: DisplayDate, current: Date): boolean {
 
 export function sameMonth (date: DisplayDate, current: Date): boolean {
   return current.getMonth() === date.month && sameYear(date, current)
-}
-
-export function createDate ({ year, month, day }: DisplayDate): Date {
-  let dateString = `${year}-${padDate(month)}`
-
-  if (day) {
-    dateString += `-${padDate(day)}`
-  }
-
-  return new Date(dateString)
-}
-
-export function createFormattedDate (date: DisplayDate): string {
-  return format(createDate(date), formatDefault, locale)
 }
 
 export function formatDateUI (date: string): string {
@@ -117,51 +103,44 @@ export function addMonth (date: DisplayDate, increment: number): DisplayDate {
   return { ...date, year, month }
 }
 
-export function getCalenderDays (date: DisplayDate): CalendarTile[] {
-  const today = new Date()
-  const currentDate = createDate(addMonth(date, 1))
-  const firstDay = new Date(currentDate).getDay()
-  const totalDaysInMonth = monthDays(currentDate)
-  const totalDaysInPrevMonth = monthDays(createDate(date))
+export function daysInMonth (year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate()
+}
 
+export function getCalenderDays ({ year, month }: DisplayDate): CalendarTile[] {
+  const firstDayOfMonth = new Date(year, month, 1)
+  const firstDayOfWeek = firstDayOfMonth.getDay()
+  const daysInCurrentMonth = daysInMonth(year, month)
+  const addDaysToStart = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1
+  const addDaysToEnd = gridSize - (daysInCurrentMonth + addDaysToStart)
   const dates: CalendarTile[] = []
 
-  // Add days from previous month
-  for (let i = 1; i < firstDay; i++) {
-    const prevMonthDate = totalDaysInPrevMonth - firstDay + i + 1
-    const createdDate = createDate(addMonth({ ...date, day: prevMonthDate }, 0))
-
+  const addTile = (date: Date, currentMonth: boolean = false) => {
     dates.push({
-      key: format(createdDate, formatDefault, locale),
-      date: prevMonthDate,
-      dateFull: createdDate
+      key: format(date, formatDefault, locale),
+      date: date.getDate(),
+      dateFull: date,
+      currentMonth,
+      today: currentMonth && sameDay(date, new Date())
     })
   }
 
-  // Add days from current month
-  for (let i = 1; i <= totalDaysInMonth; i++) {
-    const createdDate = createDate(addMonth({ ...date, day: i }, 1))
-
-    dates.push({
-      key: format(createdDate, formatDefault, locale),
-      date: i,
-      currentMonth: true,
-      today: sameDay(createdDate, today),
-      dateFull: createdDate
-    })
+  // Add dates from the previous month
+  const previousMonth = new Date(year, month, 1)
+  previousMonth.setDate(1 - addDaysToStart)
+  for (let i = 0; i < addDaysToStart; i++) {
+    addTile(new Date(previousMonth.getFullYear(), previousMonth.getMonth(), previousMonth.getDate() + i))
   }
 
-  // Add days from next month
-  const daysToAdd = gridSize - dates.length
+  // Add dates for the current month
+  for (let i = 1; i <= daysInCurrentMonth; i++) {
+    addTile(new Date(year, month, i), true)
+  }
 
-  for (let i = 1; i <= daysToAdd; i++) {
-    const createdDate = createDate(addMonth({ ...date, day: i }, 2))
-
-    dates.push({
-      key: format(createdDate, formatDefault, locale),
-      date: i,
-      dateFull: createdDate
-    })
+  // Add dates from the next month
+  const nextMonth = new Date(year, month + 1, 1)
+  for (let i = 1; i <= addDaysToEnd; i++) {
+    addTile(new Date(nextMonth.getFullYear(), nextMonth.getMonth(), nextMonth.getDate() + i - 1))
   }
 
   return dates
