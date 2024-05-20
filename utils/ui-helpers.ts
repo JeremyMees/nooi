@@ -35,3 +35,38 @@ export function addQuery (values: Record<string, any>): void {
 export function getReservedSpots (arr: EventReservation['reservations']): number {
   return arr.reduce((acc, { spots }) => acc + spots, 0)
 }
+
+export function calculateCellClick (event: MouseEvent, cell: HTMLButtonElement, max: number): number {
+  const { y: yEvent, target } = event
+  const { y: yCell } = cell.getBoundingClientRect()
+  const height = (target as HTMLElement)?.offsetHeight
+  const start = Math.round(yEvent) - Math.round(yCell)
+  const part = height / max
+
+  return Math.floor(start / part)
+}
+
+export function generateCellBg (rosters: RosterRow[]): string {
+  const rosterItems = rosters.length
+
+  if (!rosterItems) { return '' }
+
+  const parts = 100 / rosterItems
+  let bg = ''
+
+  rosters.forEach((row: RosterRow, i: number) => {
+    const partStart = rosterItems > 1 ? `${parts * i}%` : '0%'
+    const partEnd = rosterItems > 1 ? `${parts * (i + 1)}%` : '100%'
+    let color = '#53A688' // game default color
+
+    if (row.status === 'occupied') {
+      color = '#C35200'
+    } else if (row.status === 'reservation') {
+      color = '#315546'
+    }
+
+    bg += `${color} ${partStart}, ${color} ${partEnd} ${i !== rosterItems - 1 ? ', ' : ''}`
+  })
+
+  return `linear-gradient(to bottom, ${bg})`
+}

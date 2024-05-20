@@ -108,6 +108,7 @@ export function daysInMonth (year: number, month: number): number {
 }
 
 export function getCalenderDays ({ year, month }: DisplayDate): CalendarTile[] {
+  const today = new Date()
   const firstDayOfMonth = new Date(year, month, 1)
   const firstDayOfWeek = firstDayOfMonth.getDay()
   const daysInCurrentMonth = daysInMonth(year, month)
@@ -121,7 +122,7 @@ export function getCalenderDays ({ year, month }: DisplayDate): CalendarTile[] {
       date: date.getDate(),
       dateFull: date,
       currentMonth,
-      today: currentMonth && sameDay(date, new Date())
+      today: currentMonth && sameDay(date, today)
     })
   }
 

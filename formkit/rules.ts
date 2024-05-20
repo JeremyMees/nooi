@@ -5,16 +5,11 @@ const date_open = function (_node: FormKitNode, value: string): boolean {
   return value === 'true'
 }
 
-const time_valid = function (node: FormKitNode, day: string): boolean {
-  const { value } = node as FormKitNode<string>
+const date_valid = function (_node: FormKitNode, day: string): boolean {
   const now = new Date()
 
   if (sameDay(new Date(day), now)) {
-    const { hour, minutes } = splitTime(value)
-    const nodeTime = hour + (minutes / 100)
-    const nowTime = now.getHours() + (now.getMinutes() / 100)
-
-    return nowTime < nodeTime
+    return false
   }
 
   return true
@@ -40,33 +35,12 @@ const time_before = function (node: FormKitNode, end: string): boolean {
   return beforeTime(value, end)
 }
 
-const time_break = function (node: FormKitNode, startNoon?: string, endNoon?: string, start?: string): boolean {
-  const { value } = node as FormKitNode<string>
-
-  if (!value) {
-    return false
-  }
-
-  if (!startNoon || !endNoon || startNoon === 'null' || endNoon === 'null') {
-    return true
-  }
-
-  const afterNoonBreak = afterTime(value, startNoon) && (afterTime(value, endNoon) || sameTime(value, endNoon))
-  const beforeNoonBreak = beforeTime(value, startNoon) && beforeTime(value, endNoon)
-
-  if (start) {
-    const startBeforeBreak = beforeTime(start, startNoon) && beforeTime(start, endNoon)
-
-    return startBeforeBreak && afterNoonBreak
-      ? false
-      : afterNoonBreak || beforeNoonBreak
-  }
-
-  return afterNoonBreak || beforeNoonBreak
-}
-
 const time_slot = function (node: FormKitNode, minTime: number, start: string): boolean {
   const { value } = node as FormKitNode<string>
+
+  if (!start || !value) {
+    return true
+  }
 
   const { hour: nodeHour, minutes: nodeMinutes } = splitTime(value)
   const nodeTime = nodeHour + (nodeMinutes / 100)
@@ -81,9 +55,29 @@ const time_slot = function (node: FormKitNode, minTime: number, start: string): 
 
 export const rules = {
   date_open,
-  time_valid,
+  date_valid,
   time_after,
   time_before,
-  time_break,
   time_slot
+}
+
+export function checkTimeValid (node: FormKitNode, rosters: RosterRow[]): boolean {
+  const { value } = node as FormKitNode<string>
+
+  if (!value || !rosters.length) {
+    return false
+  }
+
+  let valid = false
+
+  rosters.forEach(({ start, end }) => {
+    const validStart = beforeTime(value, end) || sameTime(value, end)
+    const validEnd = afterTime(value, start) || sameTime(value, start)
+
+    if (validStart && validEnd) {
+      valid = true
+    }
+  })
+
+  return valid
 }

@@ -1,5 +1,4 @@
 import Stripe from 'stripe'
-import { minTimeSlot, minTimeSlotRental, maxSpots } from '~/constants/info'
 import type { ThemeRow } from '~/types/supabase'
 
 export const useReservationStore = defineStore('useReservationStore', () => {
@@ -56,23 +55,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         return foundEvent
       }
     }
-  })
-
-  const opening = computed<RosterRow|undefined>(() => {
-    return form.value.day ? rosterStore.getDayRoster(form.value.day) : undefined
-  })
-
-  const spots = computed<{ min: number, max: number}>(() => {
-    return {
-      min: selectedEvent.value?.min_spots ?? opening.value?.minSpots ?? 2,
-      max: selectedEvent.value?.spots
-        ? selectedEvent.value.spots - getReservedSpots(selectedEvent.value.reservations)
-        : maxSpots
-    }
-  })
-
-  const timeSlot = computed<number>(() => {
-    return route.query.type === 'reservation' ? minTimeSlot : minTimeSlotRental
   })
 
   watch(() => route.query, (query) => {
@@ -301,9 +283,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     paymentPending,
     activeStep,
     form,
-    timeSlot,
-    spots,
-    opening,
     selectedThemes,
     shownDate,
     init,

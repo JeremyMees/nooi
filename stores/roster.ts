@@ -5,6 +5,12 @@ export const useRosterStore = defineStore('useRosterStore', () => {
   const loading = ref<boolean>(false)
   const rosters = ref<RosterRow[]>([])
 
+  const current = computed<RosterRow[]>(() => {
+    return reservationStore.form.day
+      ? getDayRoster(reservationStore.form.day)
+      : []
+  })
+
   watch(() => reservationStore.shownDate, async () => await getData())
 
   async function getData (): Promise<void> {
@@ -25,12 +31,14 @@ export const useRosterStore = defineStore('useRosterStore', () => {
     }
   }
 
-  function getDayRoster (date?: string): RosterRow | undefined {
-    return rosters.value.find(r => r.day === date)
+  function getDayRoster (date?: string): RosterRow[] {
+    return rosters.value.filter(r => r.day === date)
   }
 
   function checkIfOpen (date?: Date): boolean {
-    return !!getDayRoster(formatDay(date || new Date()))
+    const dayRoster = getDayRoster(formatDay(date || new Date()))
+
+    return !!dayRoster.length
   }
 
   onMounted(async () => await getData())
@@ -38,6 +46,7 @@ export const useRosterStore = defineStore('useRosterStore', () => {
   return {
     rosters,
     loading,
+    current,
     getData,
     getDayRoster,
     checkIfOpen
