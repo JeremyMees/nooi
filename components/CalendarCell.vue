@@ -4,7 +4,7 @@ import { sameDay } from '@formkit/tempo'
 const props = defineProps<{
   day: CalendarTile
   events: EventRow[]
- }>()
+}>()
 
 const roster = useRosterStore()
 const toast = useToast()
@@ -18,14 +18,14 @@ const currentRoster = computed<RosterRow[]>(() => {
   return roster.getDayRoster(formatDay(props.day.dateFull))
 })
 
-function handleClick (event: MouseEvent): void {
+function handleClick(event: MouseEvent): void {
   const rosterItems = currentRoster.value.length
 
   if (
-    dateInPast(props.day.dateFull) ||
-    !roster.checkIfOpen(props.day.dateFull) ||
-    !rosterItems ||
-    !cell.value
+    dateInPast(props.day.dateFull)
+    || !roster.checkIfOpen(props.day.dateFull)
+    || !rosterItems
+    || !cell.value
   ) { return }
 
   const row = rosterItems === 1
@@ -37,20 +37,23 @@ function handleClick (event: MouseEvent): void {
       severity: 'info',
       summary: 'Bezet!',
       detail: 'Dit tijdslot is al volzet, maar reserveer gerust een andere dag.',
-      life: 5000
+      life: 5000,
     })
     removeQuery(['date', 'type'])
-  } else if (sameDay(row.day, new Date())) {
+  }
+  else if (sameDay(row.day, new Date())) {
     toast.add({
       severity: 'info',
       summary: 'Vandaag reserveren gaat niet',
       detail: 'Je kan niet reserveren op dezelfde dag. Wil je toch langs komen? Bel ons even op!',
-      life: 5000
+      life: 5000,
     })
     removeQuery(['date', 'type'])
-  } else if (row.status === 'reservation') {
+  }
+  else if (row.status === 'reservation') {
     addQuery({ date: formatDay(props.day.dateFull), type: 'reservation' })
-  } else {
+  }
+  else {
     addQuery({ date: formatDay(props.day.dateFull), type: 'game' })
   }
 }
@@ -63,7 +66,7 @@ function handleClick (event: MouseEvent): void {
     class="transition-all duration-200 border border-b-0 p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-16"
     :class="{
       'lines-calendar': !day.currentMonth,
-      'cursor-not-allowed': isPast || !isOpen
+      'cursor-not-allowed': isPast || !isOpen,
     }"
     :style="{ background: generateCellBg(currentRoster) }"
     @click="handleClick"
@@ -72,8 +75,8 @@ function handleClick (event: MouseEvent): void {
       :datetime="day.key"
       class="flex h-6 w-6 items-center justify-center rounded-lg text-white"
       :class="{
-        'bg-surface-50 shadow font-bold !text-surface-700' : day.today,
-        '!text-surface-200': isPast || !isOpen
+        'bg-surface-50 shadow font-bold !text-surface-700': day.today,
+        '!text-surface-200': isPast || !isOpen,
       }"
     >
       {{ day.date }}
@@ -82,7 +85,7 @@ function handleClick (event: MouseEvent): void {
       v-for="event in events"
       :key="event.id"
       :event="event"
-      @click.stop="addQuery({ event :event.id, status: 'info' })"
+      @click.stop="addQuery({ event: event.id, status: 'info' })"
     />
   </button>
 </template>

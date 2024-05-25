@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import type { ThemeRow } from '~/types/supabase'
 
 export const useReservationStore = defineStore('useReservationStore', () => {
@@ -19,7 +19,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   const shownDate = ref<DisplayDate>({
     month: new Date().getMonth(),
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
   })
 
   const form = ref<BasicForm>({
@@ -28,7 +28,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     number: '',
     mail: '',
     spots: '',
-    exclusive: false
+    exclusive: false,
   })
 
   const informationEvent = computed<EventReservation | undefined>(() => {
@@ -73,11 +73,12 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         severity: 'info',
         summary: 'Volzet!',
         detail: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
-        life: 5000
+        life: 5000,
       })
 
       removeQuery(['event', 'status'])
-    } else if (event || day) {
+    }
+    else if (event || day) {
       if (reservationInfo.value) {
         form.value.name = reservationInfo.value.name
         form.value.number = reservationInfo.value.number
@@ -85,7 +86,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       }
 
       sidebarOpen.value = true
-    } else {
+    }
+    else {
       sidebarOpen.value = false
     }
   }, { immediate: true })
@@ -98,14 +100,15 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
       form.value.day = undefined
       removeQuery(['date', 'type', 'event', 'status'])
-    } else {
+    }
+    else {
       paymentPending.value = undefined
     }
   })
 
   watch(shownDate, async () => await getData())
 
-  async function createReservation (insert: ReservationInsert): Promise<ReservationRow> {
+  async function createReservation(insert: ReservationInsert): Promise<ReservationRow> {
     const { name, number, email } = insert
 
     reservationInfo.value = { name, number, email }
@@ -122,7 +125,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     return data?.[0]
   }
 
-  async function removeReservation (id: number): Promise<void> {
+  async function removeReservation(id: number): Promise<void> {
     const { error } = await supabase
       .from('reservations')
       .delete()
@@ -133,7 +136,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   }
 
-  async function updateReservation (id: number, payload: ReservationUpdate): Promise<void> {
+  async function updateReservation(id: number, payload: ReservationUpdate): Promise<void> {
     const { error } = await supabase
       .from('reservations')
       .update(payload)
@@ -144,44 +147,46 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   }
 
-  async function checkPaymentStatus (reservation: number, session: string): Promise<void> {
+  async function checkPaymentStatus(reservation: number, session: string): Promise<void> {
     try {
       const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/session/status', {
-        query: { id: session }
+        query: { id: session },
       })
 
       if (currentSession.payment_status === 'paid') {
         await updateReservation(reservation, {
           paymentNeeded: false,
-          paymentIdentifier: currentSession.payment_intent as string
+          paymentIdentifier: currentSession.payment_intent as string,
         })
 
         toast.add({
           severity: 'success',
           summary: 'Betaling gelukt!',
           detail: 'De betaling is succesvol verwerkt en de reservering is bevestigd',
-          life: 5000
+          life: 5000,
         })
       }
-    } catch (error) {
+    }
+    catch (error) {
       cancelUnpaidReservation(+reservation)
-    } finally {
+    }
+    finally {
       removeQuery(['reservation_id', 'session_id'])
     }
   }
 
-  async function cancelUnpaidReservation (id: number): Promise<void> {
+  async function cancelUnpaidReservation(id: number): Promise<void> {
     await removeReservation(id)
 
     toast.add({
       severity: 'error',
       summary: 'Oeps!',
       detail: 'Het lijkt erop dat er een probleem is met de betaling',
-      life: 5000
+      life: 5000,
     })
   }
 
-  async function init (): Promise<void> {
+  async function init(): Promise<void> {
     loading.value = true
 
     try {
@@ -199,37 +204,40 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         isValidDateString(day as string) && rosterStore.getDayRoster(date)
           ? form.value.day = date
           : removeQuery(['day'])
-      } else if (reservation_id && session_id) {
+      }
+      else if (reservation_id && session_id) {
         await checkPaymentStatus(+reservation_id, session_id as string)
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({
         severity: 'error',
         summary: 'Oeps!',
         detail: 'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
-        life: 5000
+        life: 5000,
       })
-    } finally {
+    }
+    finally {
       loading.value = false
     }
   }
 
-  async function getData (): Promise<void> {
+  async function getData(): Promise<void> {
     const date = new Date(shownDate.value.year, shownDate.value.month)
 
     events.value = await sbFetch<EventReservation[]>({
       table: 'events',
       select: '*, reservations:reservations(id, spots)',
-      date
+      date,
     })
 
     reservations.value = await sbFetch<ReservationRow[]>({
       table: 'reservations',
-      date
+      date,
     })
   }
 
-  function subscribe () {
+  function subscribe() {
     const { gte } = sbDateFilters()
 
     supabase
@@ -240,17 +248,17 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           event: '*',
           schema: 'public',
           table: 'reservations',
-          filter: `day=gte.${gte}`
+          filter: `day=gte.${gte}`,
         },
-        async () => await getData()
+        async () => await getData(),
       ).subscribe()
   }
 
-  function unsubscribe () {
+  function unsubscribe() {
     supabase.removeAllChannels()
   }
 
-  async function createSession (id: number): Promise<{ clientSecret: string }> {
+  async function createSession(id: number): Promise<{ clientSecret: string }> {
     const spotsNumber = form.value?.spots && !isNaN(+form.value.spots)
       ? +form.value.spots
       : 1
@@ -261,8 +269,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         url: `?reservation_id=${id}`,
         name: selectedEvent.value?.name,
         amount: selectedEvent.value?.price,
-        quantity: selectedEvent.value?.unitPrice ? spotsNumber : 1
-      }
+        quantity: selectedEvent.value?.unitPrice ? spotsNumber : 1,
+      },
     })
 
     if (!clientSecret) {
@@ -289,6 +297,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     subscribe,
     unsubscribe,
     createReservation,
-    createSession
+    createSession,
   }
 })

@@ -38,7 +38,10 @@ const availableEvents = computed<EventReservation[]>(() => {
         :key="event.id"
         class="max-w-md aspect-[9/12]"
       >
-        <EventCard :event="event" class="w-full h-full" />
+        <EventCard
+          :event="event"
+          class="w-full h-full"
+        />
       </SwiperSlide>
     </Swiper>
   </div>

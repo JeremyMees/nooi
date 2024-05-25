@@ -13,12 +13,12 @@ export default defineEventHandler(async (event): Promise<{ clientSecret: string 
       price_data: {
         currency: 'eur',
         product_data: { name },
-        unit_amount: amount * 100
+        unit_amount: amount * 100,
       },
-      quantity
+      quantity,
     }],
     return_url: `${publicUrl}${url}&session_id={CHECKOUT_SESSION_ID}`,
-    allow_promotion_codes: true
+    allow_promotion_codes: true,
   })
 
   return { clientSecret: session.client_secret }

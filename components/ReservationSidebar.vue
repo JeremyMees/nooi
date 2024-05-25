@@ -17,7 +17,7 @@ watch(() => store.paymentPending, (pending) => {
   }
 })
 
-async function submit (form: ReservationInsert): Promise<void> {
+async function submit(form: ReservationInsert): Promise<void> {
   loading.value = true
 
   try {
@@ -28,12 +28,13 @@ async function submit (form: ReservationInsert): Promise<void> {
         day: store.selectedEvent.day,
         start: store.selectedEvent.start,
         end: store.selectedEvent.end,
-        type: 'event'
+        type: 'event',
       }
-    } else {
+    }
+    else {
       form = {
         ...form,
-        type: route.query.type === 'game' ? 'game' : 'reservation'
+        type: route.query.type === 'game' ? 'game' : 'reservation',
       }
     }
 
@@ -45,16 +46,18 @@ async function submit (form: ReservationInsert): Promise<void> {
         severity: 'success',
         summary: 'Gelukt!',
         detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
-        life: 5000
+        life: 5000,
       })
-  } catch (error) {
+  }
+  catch (error) {
     toast.add({
       severity: 'error',
       summary: 'Oeps!',
       detail: 'Het lijkt erop dat er een probleem was met het maken van een reservatie',
-      life: 5000
+      life: 5000,
     })
-  } finally {
+  }
+  finally {
     if (!payment.value) {
       loading.value = false
       store.sidebarOpen = false
@@ -62,7 +65,7 @@ async function submit (form: ReservationInsert): Promise<void> {
   }
 }
 
-async function loadEmbed (id: number): Promise<void> {
+async function loadEmbed(id: number): Promise<void> {
   const payload = await store.createSession(id)
   checkout.value = await stripe.value?.initEmbeddedCheckout(payload)
 
@@ -84,12 +87,18 @@ async function loadEmbed (id: number): Promise<void> {
             ? 'Reservatie maken voor '
             : $route.query.type === 'game' ? 'Boek een tafel' : 'Reservatie / Verhuur'
         }}
-        <span v-if="store.selectedEvent" class="text-secondary">
+        <span
+          v-if="store.selectedEvent"
+          class="text-secondary"
+        >
           {{ store.selectedEvent?.name }}
         </span>
       </span>
     </template>
-    <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
+    <Loader
+      v-if="loading"
+      class="w-[120px] mx-auto text-primary"
+    />
     <FormKit
       v-else-if="!store.paymentPending"
       type="form"

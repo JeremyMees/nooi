@@ -13,7 +13,7 @@ export interface DisplayDate {
 }
 
 export interface Time {
-  hour: number,
+  hour: number
   minutes: number
 }
 

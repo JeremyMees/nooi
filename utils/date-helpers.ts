@@ -5,45 +5,45 @@ const formatDefault: Format = { date: 'medium', time: 'short' }
 const locale = 'nl'
 const gridSize = 42
 
-export function padDate (date: number): string {
+export function padDate(date: number): string {
   return date.toString().padStart(2, '0')
 }
 
-export function isValidDateString (dateString: string): boolean {
+export function isValidDateString(dateString: string): boolean {
   const date = new Date(dateString)
 
   return (
-    dateString.length === 10 &&
-    !isNaN(date.getTime()) &&
-    !dateInPast(date)
+    dateString.length === 10
+    && !isNaN(date.getTime())
+    && !dateInPast(date)
   )
 }
 
-export function isBeforeDeadline (date: Date, deadline: Date): boolean {
+export function isBeforeDeadline(date: Date, deadline: Date): boolean {
   return isBefore(date, deadline) || sameDay(date, deadline)
 }
 
-export function dateInPast (date: Date): boolean {
+export function dateInPast(date: Date): boolean {
   return isBefore(date, addDay(new Date(), -1))
 }
 
-export function sameYear (date: DisplayDate, current: Date): boolean {
+export function sameYear(date: DisplayDate, current: Date): boolean {
   return current.getFullYear() === date.year
 }
 
-export function sameMonth (date: DisplayDate, current: Date): boolean {
+export function sameMonth(date: DisplayDate, current: Date): boolean {
   return current.getMonth() === date.month && sameYear(date, current)
 }
 
-export function formatDateUI (date: string): string {
+export function formatDateUI(date: string): string {
   return format(new Date(date), { date: 'medium' }, locale)
 }
 
-export function formatDateUrl (date: string): string {
+export function formatDateUrl(date: string): string {
   return date.split('-').reverse().join('-')
 }
 
-export function formatDay (date: Date): string {
+export function formatDay(date: Date): string {
   const day = date.getDate()
   const month = date.getMonth() + 1
   const year = date.getFullYear()
@@ -51,51 +51,54 @@ export function formatDay (date: Date): string {
   return `${year}-${padDate(month)}-${padDate(day)}`
 }
 
-export function formatHour (time: string): string {
+export function formatHour(time: string): string {
   const { hour, minutes } = splitTime(time)
 
   return `${padDate(hour)}:${padDate(minutes)}`
 }
 
-export function getYesterday (): Date {
+export function getYesterday(): Date {
   return addDay(new Date(), -1)
 }
 
-export function getNextYear (): Date {
+export function getNextYear(): Date {
   return addYear(new Date(), 1)
 }
 
-export function roundTime (time: string): string {
+export function roundTime(time: string): string {
   const [hour, minutes] = time.split(':')
 
   if (+minutes <= 15) {
     return `${hour}:00`
-  } else if (+minutes >= 45) {
+  }
+  else if (+minutes >= 45) {
     const newHour = +hour + 1
     return `${newHour === 24 ? '00' : padDate(newHour)}:00`
-  } else {
+  }
+  else {
     return `${hour}:30`
   }
 }
 
-export function getMonths (): string[] {
+export function getMonths(): string[] {
   return range('MMMM', locale)
 }
 
-export function getDaysOfWeek (): string[] {
+export function getDaysOfWeek(): string[] {
   const [sunday, ...remainingDays] = range('ddd', locale)
 
   return [...remainingDays, sunday]
 }
 
-export function addMonth (date: DisplayDate, increment: number): DisplayDate {
+export function addMonth(date: DisplayDate, increment: number): DisplayDate {
   let month = date.month + increment
   let year = date.year
 
   if (month > 12) {
     year = +1
     month -= 12
-  } else if (month < 1) {
+  }
+  else if (month < 1) {
     year -= 1
     month = 12
   }
@@ -103,11 +106,11 @@ export function addMonth (date: DisplayDate, increment: number): DisplayDate {
   return { ...date, year, month }
 }
 
-export function daysInMonth (year: number, month: number): number {
+export function daysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate()
 }
 
-export function getCalenderDays ({ year, month }: DisplayDate): CalendarTile[] {
+export function getCalenderDays({ year, month }: DisplayDate): CalendarTile[] {
   const today = new Date()
   const firstDayOfMonth = new Date(year, month, 1)
   const firstDayOfWeek = firstDayOfMonth.getDay()
@@ -122,7 +125,7 @@ export function getCalenderDays ({ year, month }: DisplayDate): CalendarTile[] {
       date: date.getDate(),
       dateFull: date,
       currentMonth,
-      today: currentMonth && sameDay(date, today)
+      today: currentMonth && sameDay(date, today),
     })
   }
 
@@ -147,27 +150,27 @@ export function getCalenderDays ({ year, month }: DisplayDate): CalendarTile[] {
   return dates
 }
 
-export function splitTime (time: string): Time {
+export function splitTime(time: string): Time {
   const [hour, minutes] = time.split(':')
 
   return { hour: +hour, minutes: +minutes }
 }
 
-export function beforeTime (time: string, compare: string): boolean {
+export function beforeTime(time: string, compare: string): boolean {
   const { hour, minutes } = splitTime(time)
   const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
 
   return hour < compareHour || (hour === compareHour && minutes < compareMinutes)
 }
 
-export function afterTime (time: string, compare: string): boolean {
+export function afterTime(time: string, compare: string): boolean {
   const { hour, minutes } = splitTime(time)
   const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
 
   return hour > compareHour || (hour === compareHour && minutes > compareMinutes)
 }
 
-export function sameTime (time: string, compare: string): boolean {
+export function sameTime(time: string, compare: string): boolean {
   const { hour, minutes } = splitTime(time)
   const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
 

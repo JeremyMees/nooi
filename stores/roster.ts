@@ -13,29 +13,31 @@ export const useRosterStore = defineStore('useRosterStore', () => {
 
   watch(() => reservationStore.shownDate, async () => await getData())
 
-  async function getData (): Promise<void> {
+  async function getData(): Promise<void> {
     loading.value = true
     const date = new Date(reservationStore.shownDate.year, reservationStore.shownDate.month)
 
     try {
       rosters.value = await sbFetch<RosterRow[]>({ table: 'roster', date })
-    } catch (error) {
+    }
+    catch (error) {
       toast.add({
         severity: 'error',
         summary: 'Oeps!',
         detail: 'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
-        life: 5000
+        life: 5000,
       })
-    } finally {
+    }
+    finally {
       loading.value = false
     }
   }
 
-  function getDayRoster (date?: string): RosterRow[] {
+  function getDayRoster(date?: string): RosterRow[] {
     return rosters.value.filter(r => r.day === date)
   }
 
-  function checkIfOpen (date?: Date): boolean {
+  function checkIfOpen(date?: Date): boolean {
     const dayRoster = getDayRoster(formatDay(date || new Date()))
 
     return !!dayRoster.length
@@ -49,6 +51,6 @@ export const useRosterStore = defineStore('useRosterStore', () => {
     current,
     getData,
     getDayRoster,
-    checkIfOpen
+    checkIfOpen,
   }
 })

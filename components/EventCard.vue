@@ -16,8 +16,14 @@ defineProps<{ event: EventReservation }>()
         <h2>
           {{ event.name }}
         </h2>
-        <EventTags :event="event" class="hidden sm:flex" />
-        <p v-if="event.description" class="line-clamp-4">
+        <EventTags
+          :event="event"
+          class="hidden sm:flex"
+        />
+        <p
+          v-if="event.description"
+          class="line-clamp-4"
+        >
           {{ event.description }}
         </p>
       </div>

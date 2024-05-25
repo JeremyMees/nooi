@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import type Stripe from 'stripe'
 import { useServerStripe } from '#stripe/server'
 
 export default defineEventHandler(async (event): Promise<Stripe.Checkout.Session> => {

@@ -7,13 +7,13 @@ export default {
     'layouts/*.vue',
     'components/**/*.vue',
     'presets/**/*.ts',
-    'formkit/*.ts'
+    'formkit/*.ts',
   ],
   theme: {
     extend: {
       fontFamily: {
         mukta: ['Mukta', 'sans-serif'],
-        madi: ['MsMadi', 'sans-serif']
+        madi: ['MsMadi', 'sans-serif'],
       },
       colors: {
         white: '#FEFDF7',
@@ -30,7 +30,7 @@ export default {
           700: 'rgb(var(--primary-700))',
           800: 'rgb(var(--primary-800))',
           900: 'rgb(var(--primary-900))',
-          950: 'rgb(var(--primary-950))'
+          950: 'rgb(var(--primary-950))',
         },
         secondary: '#C35200',
         teal: '#53A688',
@@ -47,9 +47,9 @@ export default {
           700: 'rgb(var(--surface-700))',
           800: 'rgb(var(--surface-800))',
           900: 'rgb(var(--surface-900))',
-          950: 'rgb(var(--surface-950))'
-        }
-      }
-    }
-  }
+          950: 'rgb(var(--surface-950))',
+        },
+      },
+    },
+  },
 }

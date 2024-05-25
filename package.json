@@ -7,18 +7,17 @@
     "dev": "nuxt dev",
     "prod": "nuxt build && nuxt start",
     "lint": "eslint .",
-    "fix": "eslint . --fix",
+    "lint:fix": "eslint . --fix",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "sb:types": "npx supabase gen types typescript --project-id aikknsewvgsoxiorzdzo > types/database.ts "
   },
   "devDependencies": {
+    "@nuxt/eslint": "^0.3.13",
     "@nuxt/image": "^1.7.0",
-    "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@nuxtjs/supabase": "^1.2.1",
     "@nuxtjs/tailwindcss": "^6.11.4",
-    "eslint": "^8.57.0",
     "nuxt": "^3.11.2",
     "nuxt-primevue": "^0.3.1"
   },

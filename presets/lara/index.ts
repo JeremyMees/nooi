@@ -17,5 +17,5 @@ export default {
   inlinemessage,
   skeleton,
   button,
-  sidebar
+  sidebar,
 }

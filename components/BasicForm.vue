@@ -19,12 +19,12 @@ const timeSlot = computed<number>(() => {
   return route.query.type === 'reservation' ? minTimeSlot : minTimeSlotRental
 })
 
-const spots = computed<{ min: number, max: number}>(() => {
+const spots = computed<{ min: number, max: number }>(() => {
   return {
     min: store.selectedEvent?.min_spots ?? filteredRoster.value?.[0]?.minSpots ?? 2,
     max: store.selectedEvent?.spots
       ? store.selectedEvent.spots - getReservedSpots(store.selectedEvent.reservations)
-      : maxSpots
+      : maxSpots,
   }
 })
 
@@ -33,7 +33,7 @@ const themeOptions = computed<string[]>(() => {
 })
 
 watch([start, end], (v) => {
-  v.forEach((value: string|undefined, i: number) => {
+  v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1])) {
       i === 0 ? start.value = roundTime(value) : end.value = roundTime(value)
     }
@@ -106,7 +106,7 @@ watch([start, end], (v) => {
         :max="formatHour(filteredRoster[filteredRoster.length - 1].end)"
         step="1800"
         :validation-rules="{
-          time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster)
+          time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster),
         }"
         validation="required|time_valid"
         validation-visibility="live"
@@ -123,7 +123,7 @@ watch([start, end], (v) => {
       :max="formatHour(filteredRoster[filteredRoster.length - 1].end)"
       step="1800"
       :validation-rules="{
-        time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster)
+        time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster),
       }"
       :validation="`required|time_valid|time_slot:${timeSlot},${start}`"
       validation-visibility="live"

@@ -9,7 +9,7 @@ export default {
       // Size
       {
         'h-full w-full md:w-[500px]': props.position === 'left' || props.position === 'right',
-        'h-auto w-full max-w-3xl mx-auto rounded-t-lg overflow-hidden': props.position === 'top' || props.position === 'bottom'
+        'h-auto w-full max-w-3xl mx-auto rounded-t-lg overflow-hidden': props.position === 'top' || props.position === 'bottom',
       },
       // Shape
       'border-0 dark:border',
@@ -22,26 +22,26 @@ export default {
       'transition-transform',
       'duration-300',
       // Misc
-      'pointer-events-auto'
-    ]
+      'pointer-events-auto',
+    ],
   }),
   header: {
-    class: ['flex items-center justify-between', 'shrink-0', 'p-5', 'bg-surface-0 dark:bg-surface-800', 'text-surface-700 dark:text-surface-0/80']
+    class: ['flex items-center justify-between', 'shrink-0', 'p-5', 'bg-surface-0 dark:bg-surface-800', 'text-surface-700 dark:text-surface-0/80'],
   },
   title: {
-    class: ['font-bold text-lg']
+    class: ['font-bold text-lg'],
   },
   icons: {
-    class: ['flex items-center']
+    class: ['flex items-center'],
   },
   closeButton: {
-    class: ['relative', 'flex items-center justify-center', 'mr-2', 'last:mr-0', 'w-8 h-8', 'border-0', 'rounded-full', 'text-surface-500', 'bg-transparent', 'transition duration-200 ease-in-out', 'hover:text-surface-700 dark:hover:text-white/80', 'hover:bg-surface-100 dark:hover:bg-surface-800/80', 'focus:outline-none focus:outline-offset-0 focus:ring focus:ring-inset', 'focus:ring-primary-400/50 dark:focus:ring-primary-300/50', 'overflow-hidden']
+    class: ['relative', 'flex items-center justify-center', 'mr-2', 'last:mr-0', 'w-8 h-8', 'border-0', 'rounded-full', 'text-surface-500', 'bg-transparent', 'transition duration-200 ease-in-out', 'hover:text-surface-700 dark:hover:text-white/80', 'hover:bg-surface-100 dark:hover:bg-surface-800/80', 'focus:outline-none focus:outline-offset-0 focus:ring focus:ring-inset', 'focus:ring-primary-400/50 dark:focus:ring-primary-300/50', 'overflow-hidden'],
   },
   closeButtonIcon: {
-    class: ['inline-block', 'w-4', 'h-4']
+    class: ['inline-block', 'w-4', 'h-4'],
   },
   content: {
-    class: ['p-5', 'pt-0', 'h-full', 'w-full', 'grow', 'overflow-y-auto']
+    class: ['p-5', 'pt-0', 'h-full', 'w-full', 'grow', 'overflow-y-auto'],
   },
   mask: ({ props }: any) => ({
     class: [
@@ -50,33 +50,33 @@ export default {
       'duration-300',
       { 'p-5': props.position === 'full' },
       // Background and Effects
-      { 'has-[.mask-active]:bg-transparent bg-black/40': props.modal, 'has-[.mask-active]:backdrop-blur-none backdrop-blur-sm': props.modal }
-    ]
+      { 'has-[.mask-active]:bg-transparent bg-black/40': props.modal, 'has-[.mask-active]:backdrop-blur-none backdrop-blur-sm': props.modal },
+    ],
   }),
   transition: ({ props }: any) => props.position === 'top'
     ? {
         enterFromClass: 'translate-x-0 -translate-y-full translate-z-0 mask-active',
-        leaveToClass: 'translate-x-0 -translate-y-full translate-z-0 mask-active'
+        leaveToClass: 'translate-x-0 -translate-y-full translate-z-0 mask-active',
       }
     : props.position === 'bottom'
       ? {
           enterFromClass: 'translate-x-0 translate-y-full translate-z-0 mask-active',
-          leaveToClass: 'translate-x-0 translate-y-full translate-z-0 mask-active'
+          leaveToClass: 'translate-x-0 translate-y-full translate-z-0 mask-active',
         }
       : props.position === 'left'
         ? {
             enterFromClass: '-translate-x-full translate-y-0 translate-z-0 mask-active',
-            leaveToClass: '-translate-x-full translate-y-0 translate-z-0 mask-active'
+            leaveToClass: '-translate-x-full translate-y-0 translate-z-0 mask-active',
           }
         : props.position === 'right'
           ? {
               enterFromClass: 'translate-x-full translate-y-0 translate-z-0 mask-active',
-              leaveToClass: 'translate-x-full translate-y-0 translate-z-0 mask-active'
+              leaveToClass: 'translate-x-full translate-y-0 translate-z-0 mask-active',
             }
           : {
               enterFromClass: 'opacity-0 mask-active',
               enterActiveClass: 'transition-opacity duration-400 ease-in',
               leaveActiveClass: 'transition-opacity duration-400 ease-in',
-              leaveToClass: 'opacity-0 mask-active'
-            }
+              leaveToClass: 'opacity-0 mask-active',
+            },
 }

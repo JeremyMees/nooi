@@ -58,10 +58,10 @@ export const rules = {
   date_valid,
   time_after,
   time_before,
-  time_slot
+  time_slot,
 }
 
-export function checkTimeValid (node: FormKitNode, rosters: RosterRow[]): boolean {
+export function checkTimeValid(node: FormKitNode, rosters: RosterRow[]): boolean {
   const { value } = node as FormKitNode<string>
 
   if (!value || !rosters.length) {

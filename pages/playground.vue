@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const toast = useToast()
 
-function showMultiple (): void {
+function showMultiple(): void {
   toast.add({ severity: 'success', summary: 'Success', detail: 'Message Content', life: 3000 })
   toast.add({ severity: 'info', summary: 'Info', detail: 'Message Content', life: 3050 })
   toast.add({ severity: 'warn', summary: 'Warning', detail: 'Message Content', life: 3100 })
@@ -105,10 +105,22 @@ function showMultiple (): void {
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <Skeleton class="mb-2" />
-        <Skeleton width="10rem" class="mb-2" />
-        <Skeleton width="5rem" class="mb-2" />
-        <Skeleton height="2rem" class="mb-2" />
-        <Skeleton width="10rem" height="4rem" />
+        <Skeleton
+          width="10rem"
+          class="mb-2"
+        />
+        <Skeleton
+          width="5rem"
+          class="mb-2"
+        />
+        <Skeleton
+          height="2rem"
+          class="mb-2"
+        />
+        <Skeleton
+          width="10rem"
+          height="4rem"
+        />
       </div>
     </div>
   </NuxtLayout>

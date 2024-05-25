@@ -17,27 +17,32 @@ watch(() => store.informationEvent, (event) => {
       severity: 'info',
       summary: 'Te Laat!',
       detail: `De inschrijvingsperiode voor ${event.name} is helaas afgelopen.`,
-      life: 5000
+      life: 5000,
     })
 
     removeQuery(['event', 'status'])
-  } else if (event?.spots && event.spots <= getReservedSpots(event.reservations)) {
+  }
+  else if (event?.spots && event.spots <= getReservedSpots(event.reservations)) {
     toast.add({
       severity: 'info',
       summary: 'Event zit vol!',
       detail: `Je bent net te laat. ${event.name} is helaas volzet.`,
-      life: 5000
+      life: 5000,
     })
 
     removeQuery(['event', 'status'])
-  } else {
+  }
+  else {
     visible.value = !!store.informationEvent
   }
 })
 </script>
 
 <template>
-  <Sidebar v-model:visible="visible" position="bottom">
+  <Sidebar
+    v-model:visible="visible"
+    position="bottom"
+  >
     <template #header>
       <p class="head-3 sm:head-1">
         {{ store.informationEvent?.name }}
@@ -48,7 +53,10 @@ watch(() => store.informationEvent, (event) => {
       v-if="store.informationEvent"
       :event="store.informationEvent"
     />
-    <p v-if="store.informationEvent?.description" class="pt-6 text-pretty">
+    <p
+      v-if="store.informationEvent?.description"
+      class="pt-6 text-pretty"
+    >
       {{ store.informationEvent.description }}
     </p>
 

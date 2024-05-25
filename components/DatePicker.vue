@@ -8,12 +8,12 @@ const { shownDate } = storeToRefs(store)
 const grid = computed<CalendarTile[]>(() => getCalenderDays(shownDate.value))
 const isCurrentMonth = computed<boolean>(() => sameMonth(shownDate.value, currentDate))
 
-function navigateCalendar (modifier: number): void {
+function navigateCalendar(modifier: number): void {
   const date = new Date(shownDate.value.year, shownDate.value.month + modifier)
 
   shownDate.value = {
     month: date.getMonth(),
-    year: date.getFullYear()
+    year: date.getFullYear(),
   }
 }
 </script>
@@ -48,7 +48,10 @@ function navigateCalendar (modifier: number): void {
     <template #content>
       <div class="space-y-2 w-full">
         <div class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center">
-          <div v-for="(day, index) in daysOfWeek" :key="index">
+          <div
+            v-for="(day, index) in daysOfWeek"
+            :key="index"
+          >
             {{ day }}
           </div>
         </div>
@@ -74,7 +77,7 @@ function navigateCalendar (modifier: number): void {
             :class="{
               'bg-primary': status === 'reservation',
               'bg-teal': status === 'game',
-              'bg-secondary': status === 'full'
+              'bg-secondary': status === 'full',
             }"
           />
           <span> {{ translateStatus(status) }} </span>
@@ -90,7 +93,7 @@ function navigateCalendar (modifier: number): void {
           @click="() => {
             shownDate = {
               month: currentDate.getMonth(),
-              year: currentDate.getFullYear()
+              year: currentDate.getFullYear(),
             }
           }"
         />

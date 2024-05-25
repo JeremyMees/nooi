@@ -13,5 +13,5 @@ export default defineFormKitConfig({
   locale: 'nl',
   config: { rootClasses },
   rules,
-  messages
+  messages,
 })

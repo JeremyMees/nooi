@@ -1,4 +1,4 @@
-export function translateStatus (status: CalendarStatus): string {
+export function translateStatus(status: CalendarStatus): string {
   switch (status) {
     case 'full':
       return 'bezet'
@@ -9,7 +9,7 @@ export function translateStatus (status: CalendarStatus): string {
   }
 }
 
-export function removeQuery (names: string[]): void {
+export function removeQuery(names: string[]): void {
   const router = useRouter()
   const route = useRoute()
 
@@ -20,23 +20,23 @@ export function removeQuery (names: string[]): void {
   router.push({ query })
 }
 
-export function addQuery (values: Record<string, any>): void {
+export function addQuery(values: Record<string, any>): void {
   const router = useRouter()
   const route = useRoute()
 
   router.push({
     query: {
       ...route.query,
-      ...values
-    }
+      ...values,
+    },
   })
 }
 
-export function getReservedSpots (arr: EventReservation['reservations']): number {
+export function getReservedSpots(arr: EventReservation['reservations']): number {
   return arr.reduce((acc, { spots }) => acc + spots, 0)
 }
 
-export function calculateCellClick (event: MouseEvent, cell: HTMLButtonElement, max: number): number {
+export function calculateCellClick(event: MouseEvent, cell: HTMLButtonElement, max: number): number {
   const { y: yEvent, target } = event
   const { y: yCell } = cell.getBoundingClientRect()
   const height = (target as HTMLElement)?.offsetHeight
@@ -46,10 +46,12 @@ export function calculateCellClick (event: MouseEvent, cell: HTMLButtonElement, 
   return Math.floor(start / part)
 }
 
-export function generateCellBg (rosters: RosterRow[]): string {
+export function generateCellBg(rosters: RosterRow[]): string {
   const rosterItems = rosters.length
 
-  if (!rosterItems) { return '' }
+  if (!rosterItems) {
+    return ''
+  }
 
   const parts = 100 / rosterItems
   let bg = ''
@@ -61,7 +63,8 @@ export function generateCellBg (rosters: RosterRow[]): string {
 
     if (row.status === 'occupied') {
       color = '#C35200'
-    } else if (row.status === 'reservation') {
+    }
+    else if (row.status === 'reservation') {
       color = '#315546'
     }
 

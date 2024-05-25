@@ -1,7 +1,9 @@
 const legends = ['checkbox_multi', 'radio_multi', 'repeater', 'transferlist']
 
-function createAsteriskPlugin (node: any) {
-  if (['button', 'submit', 'hidden', 'group', 'list', 'meta'].includes(node.props.type)) { return }
+function createAsteriskPlugin(node: any) {
+  if (['button', 'submit', 'hidden', 'group', 'list', 'meta'].includes(node.props.type)) {
+    return
+  }
 
   node.on('created', () => {
     const legendOrLabel = legends.includes(`${node.props.type}${node.props.options ? '_multi' : ''}`) ? 'legend' : 'label'
@@ -11,16 +13,16 @@ function createAsteriskPlugin (node: any) {
     };
 
     const schemaFn = node.props.definition.schema
-    node.props.definition.schema = (sectionsSchema = {}) => {
-      sectionsSchema[legendOrLabel] = {
+    node.props.definition.schema = (sectionsSchema = {} as any) => {
+      sectionsSchema[legendOrLabel as keyof typeof sectionsSchema] = {
         children: ['$label', {
           $el: 'span',
           if: '$state.required',
           attrs: {
-            class: 'text-secondary'
+            class: 'text-secondary',
           },
-          children: ['*']
-        }]
+          children: ['*'],
+        }],
       }
 
       return schemaFn(sectionsSchema)

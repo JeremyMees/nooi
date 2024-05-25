@@ -6,7 +6,7 @@ export const messages = {
       time_valid: 'Wij zijn niet open op dit uur',
       time_after: ({ args }: any) => `Je kan pas boeken vanaf ${formatHour(args[0])}`,
       time_before: ({ args }: any) => `Wij sluiten om ${formatHour(args[0])}`,
-      time_slot: ({ args }: any) => `Reservatie mag minimum ${args[0]} uur zijn`
-    }
-  }
+      time_slot: ({ args }: any) => `Reservatie mag minimum ${args[0]} uur zijn`,
+    },
+  },
 }
