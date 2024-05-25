@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen w-full flex flex-col px-2 md:px-4 xl:px-8 mx-auto max-w-[1800px]">
-    <!-- <Header /> -->
+  <div class="min-h-screen flex flex-col">
+    <Navigation />
 
-    <main class="relative grow py-20">
+    <main class="relative grow pt-10 pb-[140px] flex flex-col gap-[120px] overflow-hidden">
       <slot />
     </main>
 
-    <!-- <Footer /> -->
+    <Footer />
   </div>
 </template>

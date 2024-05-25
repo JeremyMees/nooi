@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .container {
+    @apply px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto;
+  }
+}
+
 @layer base {
   html {
     @apply font-mukta scroll-smooth text-black bg-white accent-primary;

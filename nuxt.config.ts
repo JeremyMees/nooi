@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@unlok-co/nuxt-stripe',
     '@nuxt/eslint',
+    'nuxt-icon',
   ],
   css: [
     './assets/css/base.css',
