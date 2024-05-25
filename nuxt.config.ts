@@ -1,4 +1,5 @@
 import path from 'path'
+import seo from './constants/seo'
 
 export default defineNuxtConfig({
   modules: [
@@ -12,6 +13,7 @@ export default defineNuxtConfig({
     '@unlok-co/nuxt-stripe',
     '@nuxt/eslint',
     'nuxt-icon',
+    '@nuxtjs/seo',
   ],
   css: [
     './assets/css/base.css',
@@ -37,6 +39,12 @@ export default defineNuxtConfig({
   image: { quality: 80 },
   eslint: {
     config: { stylistic: true },
+  },
+  site: {
+    url: seo.meta.url,
+    name: seo.meta.name,
+    description: seo.meta.description,
+    defaultLocale: 'nl',
   },
   devtools: { enabled: true },
 })
