@@ -16,6 +16,7 @@ export type Database = {
           day: string
           description: string | null
           end: string | null
+          external: boolean
           id: number
           imageUrl: string | null
           min_spots: number
@@ -33,6 +34,7 @@ export type Database = {
           day: string
           description?: string | null
           end?: string | null
+          external?: boolean
           id?: number
           imageUrl?: string | null
           min_spots?: number
@@ -50,6 +52,7 @@ export type Database = {
           day?: string
           description?: string | null
           end?: string | null
+          external?: boolean
           id?: number
           imageUrl?: string | null
           min_spots?: number

@@ -65,9 +65,13 @@ watch(() => store.informationEvent, (event) => {
         v-if="store.informationEvent?.bookingDeadline"
         class="mr-4 text-secondary body-small text-pretty text-left"
       >
+        {{ store.informationEvent?.external ? ' externe' : '' }}
         reservaties sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
       </p>
-      <Button @click="addQuery({ status: 'reservation' })">
+      <Button
+        v-if="store.informationEvent && !store.informationEvent.external"
+        @click="addQuery({ status: 'reservation' })"
+      >
         Reserveren
       </Button>
     </div>
