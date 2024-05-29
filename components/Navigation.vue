@@ -4,7 +4,7 @@
       <div class="h-[100px] flex flex-col justify-center flex-1">
         <div class="flex flex-wrap justify-center gap-x-16 font-bold body-normal">
           <NuxtLink to="/">
-            kalendar
+            kalender
           </NuxtLink>
           <NuxtLink to="https://nooi.be/aanbod/">
             aanbod
