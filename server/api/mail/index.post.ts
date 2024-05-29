@@ -1,10 +1,10 @@
 import { Resend } from 'resend'
 import { useCompiler } from '#vue-email'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export default defineEventHandler(async (event) => {
+  const { resendApiKey } = useRuntimeConfig()
   const body = await readBody(event)
+
   const { props, from, to, subject, template } = body
 
   if (!props || !from || !to || !subject || !template) {
@@ -12,6 +12,8 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const resend = new Resend(resendApiKey)
+
     const compiled = await useCompiler(template, { props })
 
     await resend.emails.send({ from, to, subject, html: compiled.html })

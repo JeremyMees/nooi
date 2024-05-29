@@ -20,7 +20,10 @@ export default defineNuxtConfig({
     './assets/css/base.css',
     '~/node_modules/primeicons/primeicons.css',
   ],
-  runtimeConfig: { url: process.env.NUXT_PUBLIC_URL },
+  runtimeConfig: { 
+    url: process.env.NUXT_PUBLIC_URL,
+    resendApiKey: process.env.RESEND_API_KEY,
+   },
   supabase: { redirect: false },
   primevue: {
     options: { unstyled: true },
