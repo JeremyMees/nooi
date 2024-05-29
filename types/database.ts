@@ -82,7 +82,6 @@ export type Database = {
           paymentNeeded: boolean
           spots: number
           start: string
-          theme: string | null
           type: Database['public']['Enums']['bookingType']
         }
         Insert: {
@@ -100,7 +99,6 @@ export type Database = {
           paymentNeeded?: boolean
           spots: number
           start: string
-          theme?: string | null
           type: Database['public']['Enums']['bookingType']
         }
         Update: {
@@ -118,7 +116,6 @@ export type Database = {
           paymentNeeded?: boolean
           spots?: number
           start?: string
-          theme?: string | null
           type?: Database['public']['Enums']['bookingType']
         }
         Relationships: [
@@ -158,24 +155,6 @@ export type Database = {
           minSpots?: number
           start?: string
           status?: Database['public']['Enums']['rosterStatus']
-        }
-        Relationships: []
-      }
-      themes: {
-        Row: {
-          created_at: string
-          id: number
-          label: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          label: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          label?: string
         }
         Relationships: []
       }

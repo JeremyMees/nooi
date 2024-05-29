@@ -18,13 +18,7 @@ export type RosterInsert = Database['public']['Tables']['roster']['Insert']
 
 export type RosterUpdate = Database['public']['Tables']['roster']['Update']
 
-export type ThemeRow = Database['public']['Tables']['themes']['Row']
-
-export type ThemeInsert = Database['public']['Tables']['themes']['Insert']
-
-export type ThemeUpdate = Database['public']['Tables']['themes']['Update']
-
-export type DatabaseTable = 'events' | 'reservations' | 'roster' | 'themes'
+export type DatabaseTable = 'events' | 'reservations' | 'roster'
 
 export interface EventReservation extends EventRow {
   reservations: {

@@ -28,10 +28,6 @@ const spots = computed<{ min: number, max: number }>(() => {
   }
 })
 
-const themeOptions = computed<string[]>(() => {
-  return store.themes.map(({ label }: ThemeRow) => label)
-})
-
 watch([start, end], (v) => {
   v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1])) {
@@ -63,31 +59,10 @@ watch([start, end], (v) => {
     label="Email"
     validation="required|email|length:5,25"
   />
-  <FormKit
-    v-if="route.query.type === 'reservation' && themeOptions.length"
-    type="select"
-    name="theme"
-    label="Thema"
-    validation="required"
-    :value="themeOptions[0]"
-    :options="themeOptions"
-  />
   <template v-if="!store.selectedEvent">
-    <FormKit
-      v-model="store.form.day"
-      type="date"
-      name="day"
-      label="Datum"
-      :validation="`
-        required|
-        date_open:${store.form.day ? roster.checkIfOpen(new Date(store.form.day)): false}|
-        date_after:${getYesterday()}|
-        date_before:${getNextYear()}
-      `"
-    />
     <div v-if="filteredRoster.length">
       <p class="body-small text-surface pb-2">
-        Onze openingsuren zijn vandaag:
+        Reserveren of huren is vandaag mogelijk tussen deze uren:
         <template
           v-for="(item, i) in filteredRoster"
           :key="item.id"

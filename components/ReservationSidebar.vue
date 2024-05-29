@@ -36,6 +36,7 @@ async function submit(form: ReservationInsert): Promise<void> {
       form = {
         ...form,
         type: route.query.type === 'game' ? 'game' : 'reservation',
+        day: store.form.day || '',
       }
     }
 
