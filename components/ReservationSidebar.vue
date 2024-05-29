@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { format } from '@formkit/tempo'
+
 const stripe = await useClientStripe()
 const store = useReservationStore()
 const toast = useToast()
 const route = useRoute()
+const mail = useMail()
 
 const loading = ref<boolean>(false)
 const checkout = ref()
@@ -40,14 +43,26 @@ async function submit(form: ReservationInsert): Promise<void> {
 
     const { id } = await store.createReservation({ ...form, paymentNeeded: payment.value })
 
-    payment.value
-      ? loadEmbed(id)
-      : toast.add({
+    if (payment.value) {
+      loadEmbed(id)
+    }
+    else {
+      await mail.reservationSuccess({
+        props: {
+          name: form.name,
+          date: formatDateUI(form.day),
+          time: formatHour(form.start),
+        },
+        to: form.email,
+      })
+
+      toast.add({
         severity: 'success',
         summary: 'Gelukt!',
         detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
         life: 5000,
       })
+    }
   }
   catch (error) {
     toast.add({

@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     'nuxt-icon',
     '@nuxtjs/seo',
+    '@vue-email/nuxt',
   ],
   css: [
     './assets/css/base.css',
@@ -45,6 +46,10 @@ export default defineNuxtConfig({
     name: seo.meta.name,
     description: seo.meta.description,
     defaultLocale: 'nl',
+  },
+  vueEmail: {
+    baseUrl: seo.meta.url,
+    autoImport: true,
   },
   devtools: { enabled: true },
 })

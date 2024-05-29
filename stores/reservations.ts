@@ -5,6 +5,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const rosterStore = useRosterStore()
   const supabase = useSupabaseClient<Database>()
   const toast = useToast()
+  const mail = useMail()
   const route = useRoute()
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
@@ -108,6 +109,19 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   watch(shownDate, async () => await getData())
 
+  async function getReservation(id: number): Promise<ReservationRow> {
+    const { error, data } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
+
+    return data?.[0]
+  }
+
   async function createReservation(insert: ReservationInsert): Promise<ReservationRow> {
     const { name, number, email } = insert
 
@@ -154,6 +168,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       })
 
       if (currentSession.payment_status === 'paid') {
+        const res = await getReservation(reservation)
+
         await updateReservation(reservation, {
           paymentNeeded: false,
           paymentIdentifier: currentSession.payment_intent as string,
@@ -164,6 +180,15 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           summary: 'Betaling gelukt!',
           detail: 'De betaling is succesvol verwerkt en de reservering is bevestigd',
           life: 5000,
+        })
+
+        await mail.reservationSuccess({
+          props: {
+            name: res.name,
+            date: formatDateUI(res.day),
+            time: formatHour(res.start),
+          },
+          to: res.email,
         })
       }
     }
