@@ -62,7 +62,11 @@ watch([start, end], (v) => {
   <template v-if="!store.selectedEvent">
     <div v-if="filteredRoster.length">
       <p class="body-small text-surface pb-2">
-        Reserveren of huren is vandaag mogelijk tussen deze uren:
+        {{
+          route.query.type === 'reservation'
+            ? 'Reserveren of huren is vandaag mogelijk tussen deze uren:'
+            : 'Onze openingsuren zijn vandaag:'
+        }}
         <template
           v-for="(item, i) in filteredRoster"
           :key="item.id"
