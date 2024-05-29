@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build && cp -r ./node_modules/esbuild-linux-64 ./.netlify/functions-internal/server/node_modules/esbuild-linux-64",
     "dev": "nuxt dev",
     "prod": "nuxt build && nuxt start",
     "lint": "eslint .",
