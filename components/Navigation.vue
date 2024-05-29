@@ -1,5 +1,5 @@
 <template>
-  <nav class="container pt-[10px]">
+  <nav class="pt-[10px]">
     <div class="flex flex-col sm:flex-row sm:items-center max-w-[750px] mx-auto py-[10px]">
       <div class="h-[100px] flex flex-col justify-center flex-1">
         <div class="flex flex-wrap justify-center gap-x-16 font-bold body-normal">
