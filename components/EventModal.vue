@@ -63,7 +63,7 @@ watch(() => store.informationEvent, (event) => {
     <div class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8">
       <p
         v-if="store.informationEvent?.bookingDeadline"
-        class="mr-4 text-secondary body-small text-pretty text-left"
+        class="mr-4 body-small text-pretty text-left"
       >
         {{ store.informationEvent?.external ? ' externe' : '' }}
         reservaties sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
