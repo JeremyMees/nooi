@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { format } from '@formkit/tempo'
-
 const stripe = await useClientStripe()
 const store = useReservationStore()
 const toast = useToast()
@@ -96,19 +94,30 @@ async function loadEmbed(id: number): Promise<void> {
     position="right"
   >
     <template #header>
-      <span class="head-3">
-        {{
-          store.selectedEvent
-            ? 'Reservatie maken voor '
-            : $route.query.type === 'game' ? 'Boek een tafel' : 'Reservatie / Verhuur'
-        }}
+      <div>
+        <p class="head-3">
+          {{
+            store.selectedEvent
+              ? 'Inschrijven voor '
+              : $route.query.type === 'game' ? 'Boek een tafel' : 'Reservatie / Verhuur'
+          }}
+          <span
+            v-if="store.selectedEvent"
+            class="text-secondary"
+          >
+            {{ store.selectedEvent?.name }}
+          </span>
+        </p>
         <span
           v-if="store.selectedEvent"
-          class="text-secondary"
+          class="font-medium"
         >
-          {{ store.selectedEvent?.name }}
+          {{ formatHour(store.selectedEvent.start) }}
+          <span v-if="store.selectedEvent.end">
+            - {{ formatHour(store.selectedEvent.end) }}
+          </span>
         </span>
-      </span>
+      </div>
     </template>
     <Loader
       v-if="loading"
@@ -117,7 +126,10 @@ async function loadEmbed(id: number): Promise<void> {
     <FormKit
       v-else-if="!store.paymentPending"
       type="form"
-      :submit-label="payment ? 'Verder naar betalen' : 'Reservatie maken'"
+      :submit-label="
+        payment
+          ? 'Verder naar betalen'
+          : store.selectedEvent ? 'Inschrijven' : 'Reservatie maken'"
       :config="{ validationVisibility: 'blur' }"
       @submit="submit"
     >

@@ -72,7 +72,7 @@ watch(() => store.informationEvent, (event) => {
         v-if="store.informationEvent && !store.informationEvent.external"
         @click="addQuery({ status: 'reservation' })"
       >
-        Reserveren
+        Inschrijven
       </Button>
     </div>
   </Sidebar>
