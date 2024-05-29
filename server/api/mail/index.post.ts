@@ -21,6 +21,8 @@ export default defineEventHandler(async (event) => {
     return { message: 'Email sent' }
   }
   catch (error) {
-    throw new Error('Error sending email')
+    const message = (error as Error).message
+
+    throw new Error(message)
   }
 })
