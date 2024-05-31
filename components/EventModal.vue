@@ -66,7 +66,7 @@ watch(() => store.informationEvent, (event) => {
         class="mr-4 body-small text-pretty text-left"
       >
         {{ store.informationEvent?.external ? ' externe' : '' }}
-        reservaties sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
+        Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
       </p>
       <Button
         v-if="store.informationEvent && !store.informationEvent.external"
