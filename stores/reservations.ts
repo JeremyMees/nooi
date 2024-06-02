@@ -241,6 +241,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   async function getData(): Promise<void> {
+    const { event } = route.query
     const date = new Date(shownDate.value.year, shownDate.value.month)
 
     events.value = await sbFetch<EventReservation[]>({
@@ -248,6 +249,18 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       select: '*, reservations:reservations(id, spots)',
       date,
     })
+
+    // Fetch single event if query param is present and its not in the current fetched month
+    if (event && !isNaN(+event) && !events.value.find(({ id }) => id === +event)) {
+      const fetchedEvent = await supabase
+        .from('events')
+        .select('*, reservations:reservations(id, spots)')
+        .eq('id', +event)
+
+      if (fetchedEvent.data?.length) {
+        events.value.push(fetchedEvent.data[0])
+      }
+    }
 
     reservations.value = await sbFetch<ReservationRow[]>({
       table: 'reservations',
