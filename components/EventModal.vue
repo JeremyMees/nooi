@@ -77,13 +77,14 @@ watch(() => store.informationEvent, (event) => {
       v-else
       class="pt-8"
     >
-      Het evenement is volzet. wil je op de wachtlijst? Stuur dan een mailtje naar
+      Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
       <a
         href="mailto:zin@nooi.be"
         class="text-primary underline"
       >
         zin@nooi.be
       </a>.
+      Vermeld ook je telefoonnummer.
     </p>
   </Sidebar>
 </template>
