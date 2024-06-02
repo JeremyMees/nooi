@@ -129,7 +129,7 @@ watch([start, end], (v) => {
     v-model="store.form.exclusive"
     type="checkbox"
     label="Exclusief"
-    help="Exclusief reserveren is tegen betaling"
+    help="Voor exclusief gebruik betaal je € 40 per uur, ter plaatse te voldoen. Om een feest of event te organiseren, werken we op maat (zie 'locatie')."
     name="exclusive"
   />
   <FormKit

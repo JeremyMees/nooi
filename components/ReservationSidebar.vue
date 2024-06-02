@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ToastMessageOptions } from 'primevue/toast'
+
 const stripe = await useClientStripe()
 const store = useReservationStore()
 const toast = useToast()
@@ -62,16 +64,36 @@ async function submit(form: ReservationInsert): Promise<void> {
         to: form.email,
       }
 
-      if (form.type === 'event') await mail.eventSuccess(payload)
-      else if (form.type === 'game') await mail.bookingSuccess(payload)
-      else await mail.reservationSuccess(payload)
-
-      toast.add({
+      const defaultToast: ToastMessageOptions = {
         severity: 'success',
         summary: 'Gelukt!',
-        detail: 'Je reservatie is succesvol aangemaakt. We kijken er naar uit je te verwelkomen!',
         life: 5000,
-      })
+      }
+
+      if (form.type === 'event') {
+        await mail.eventSuccess(payload)
+
+        toast.add({
+          detail: `Je bent ingeschreven voor ${form.name}. Tot binnenkort!`,
+          ...defaultToast,
+        })
+      }
+      else if (form.type === 'game') {
+        await mail.bookingSuccess(payload)
+
+        toast.add({
+          detail: 'We hebben je boeking goed ontvangen. Tot binnenkort!',
+          ...defaultToast,
+        })
+      }
+      else {
+        await mail.reservationSuccess(payload)
+
+        toast.add({
+          detail: 'Je reservatie is bevestigd. Tot binnenkort!',
+          ...defaultToast,
+        })
+      }
     }
   }
   catch (error) {

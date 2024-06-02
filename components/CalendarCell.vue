@@ -36,7 +36,7 @@ function handleClick(event: MouseEvent): void {
     toast.add({
       severity: 'info',
       summary: 'Bezet!',
-      detail: 'Dit tijdslot is al volzet, maar reserveer gerust een andere dag.',
+      detail: 'Voor deze dag kan je niet meer reserveren. Wees welkom op een ander moment!',
       life: 5000,
     })
     removeQuery(['date', 'type'])
