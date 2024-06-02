@@ -17,7 +17,11 @@ watch(visible, (value) => {
 })
 
 watch(() => store.informationEvent, (event) => {
-  if (event && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))) {
+  if (
+    event
+    && !event.external
+    && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))
+  ) {
     toast.add({
       severity: 'info',
       summary: 'Te Laat!',
@@ -56,25 +60,21 @@ watch(() => store.informationEvent, (event) => {
     </p>
 
     <div
-      v-if="!isFull"
+      v-if="!isFull && store.informationEvent && !store.informationEvent?.external"
       class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8"
     >
       <p
-        v-if="store.informationEvent?.bookingDeadline"
+        v-if="store.informationEvent.bookingDeadline"
         class="mr-4 body-small text-pretty text-left"
       >
-        {{ store.informationEvent?.external ? ' externe' : '' }}
         Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
       </p>
-      <Button
-        v-if="store.informationEvent && !store.informationEvent.external"
-        @click="addQuery({ status: 'reservation' })"
-      >
+      <Button @click="addQuery({ status: 'reservation' })">
         Inschrijven
       </Button>
     </div>
     <p
-      v-else
+      v-else-if="!store.informationEvent?.external"
       class="pt-8"
     >
       Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
