@@ -12,6 +12,13 @@ const payment = computed<boolean>(() => {
   return !!(store.selectedEvent?.onlinePayment && store.selectedEvent?.price)
 })
 
+const submitLabel = computed<string>(() => {
+  if (payment.value) return 'Verder naar betalen'
+  else if (store.selectedEvent) return 'Inschrijven'
+  else if (route.query.type === 'game') return 'Boeken'
+  else return 'Reserven'
+})
+
 watch(() => store.paymentPending, (pending) => {
   if (!pending) {
     checkout.value?.destroy()
@@ -127,10 +134,7 @@ async function loadEmbed(id: number): Promise<void> {
     <FormKit
       v-else-if="!store.paymentPending"
       type="form"
-      :submit-label="
-        payment
-          ? 'Verder naar betalen'
-          : store.selectedEvent ? 'Inschrijven' : 'Reservatie maken'"
+      :submit-label="submitLabel"
       :config="{ validationVisibility: 'blur' }"
       @submit="submit"
     >
