@@ -53,14 +53,18 @@ async function submit(form: ReservationInsert): Promise<void> {
       loadEmbed(id)
     }
     else {
-      await mail.reservationSuccess({
+      const payload = {
         props: {
           name: form.name,
           date: formatDateUI(form.day),
           time: formatHour(form.start),
         },
         to: form.email,
-      })
+      }
+
+      if (form.type === 'event') await mail.eventSuccess(payload)
+      else if (form.type === 'game') await mail.bookingSuccess(payload)
+      else await mail.reservationSuccess(payload)
 
       toast.add({
         severity: 'success',

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build && cp -r ./node_modules/esbuild-linux-64 ./.netlify/functions-internal/server/node_modules/esbuild-linux-64",
+    "build": "nuxt build && cp -r ./node_modules/esbuild-linux-64 ./.vercel/output/functions/__nitro.func/node_modules/esbuild-linux-64",
     "dev": "nuxt dev",
     "prod": "nuxt build && nuxt start",
     "lint": "eslint .",
