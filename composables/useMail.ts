@@ -1,5 +1,5 @@
 export function useMail() {
-  const from = 'Nooi <info@nooi.be>'
+  const from = 'Nooi <zin@nooi.be>'
 
   async function reservationSuccess(body: Pick<Mail, 'to' | 'props'>): Promise<void> {
     try {
