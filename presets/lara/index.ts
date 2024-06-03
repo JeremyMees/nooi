@@ -8,6 +8,8 @@ import skeleton from './skeleton'
 import button from './button'
 import sidebar from './sidebar'
 import dialog from './dialog'
+import dataTable from './data-table'
+import paginator from './paginator'
 
 export default {
   global,
@@ -20,4 +22,6 @@ export default {
   button,
   sidebar,
   dialog,
+  dataTable,
+  paginator,
 }

@@ -32,3 +32,29 @@ export interface SbFetchOptions {
   select?: string
   date?: Date
 }
+
+export interface SbQueryOptions {
+  table: DatabaseTable
+  fields?: string[]
+  select?: string
+  page?: number
+  perPage?: number
+  search?: string
+  eq?: SbEq
+  fuzzy?: boolean
+}
+
+export interface SbEq {
+  field: string
+  value: string | number
+}
+
+export interface SbRange {
+  from: number
+  to: number
+}
+
+export interface SbQuery<T> {
+  data: T[]
+  count: number
+}
