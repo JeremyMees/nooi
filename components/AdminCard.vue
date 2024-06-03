@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { values } from '@/constants/admin'
 
-const props = defineProps<{ type: AdminDataTypes }>()
+const props = defineProps<{ type: DatabaseTable }>()
 
 const store = useAdminStore()
 
@@ -10,8 +10,6 @@ watch(() => store.needsAuth, async (value) => {
 }, { immediate: true })
 
 function getType(type: string): string {
-  console.log(type)
-
   switch (type) {
     case 'event':
       return 'evenement'

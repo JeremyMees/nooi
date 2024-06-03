@@ -14,7 +14,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     rosters: { ...defaultOptions },
   })
 
-  async function fetchData(type: AdminDataTypes): Promise<void> {
+  async function fetchData(type: DatabaseTable): Promise<void> {
     try {
       data.value[type].loading = true
 
@@ -30,7 +30,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
         response = await sbQuery<ReservationRow[]>({ table: 'reservations' })
       }
       else {
-        response = await sbQuery<RosterRow[]>({ table: 'roster' })
+        response = await sbQuery<RosterRow[]>({ table: 'rosters' })
       }
 
       const { data: fetchedData, count } = response

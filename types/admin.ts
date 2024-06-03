@@ -1,5 +1,3 @@
-type AdminDataTypes = 'events' | 'reservations' | 'rosters'
-
 interface AdminDataChild<T> {
   data: T[]
   loading: boolean
@@ -16,6 +14,6 @@ interface AdminData {
 }
 
 interface AdminConstants {
-  title: Record<AdminDataTypes, string>
-  table: Record<AdminDataTypes, TableColumn[]>
+  title: Record<DatabaseTable, string>
+  table: Record<DatabaseTable, TableColumn[]>
 }

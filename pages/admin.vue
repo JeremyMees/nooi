@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const store = useAdminStore()
 
-const types: AdminDataTypes[] = ['reservations', 'events', 'rosters']
+const types: DatabaseTable[] = ['reservations', 'events', 'rosters']
 </script>
 
 <template>

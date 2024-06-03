@@ -12,13 +12,13 @@ export type ReservationUpdate = Database['public']['Tables']['reservations']['Up
 
 export type BookingType = Database['public']['Enums']['bookingType']
 
-export type RosterRow = Database['public']['Tables']['roster']['Row']
+export type RosterRow = Database['public']['Tables']['rosters']['Row']
 
-export type RosterInsert = Database['public']['Tables']['roster']['Insert']
+export type RosterInsert = Database['public']['Tables']['rosters']['Insert']
 
-export type RosterUpdate = Database['public']['Tables']['roster']['Update']
+export type RosterUpdate = Database['public']['Tables']['rosters']['Update']
 
-export type DatabaseTable = 'events' | 'reservations' | 'roster'
+export type DatabaseTable = 'events' | 'reservations' | 'rosters'
 
 export interface EventReservation extends EventRow {
   reservations: {

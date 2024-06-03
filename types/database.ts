@@ -128,7 +128,7 @@ export type Database = {
           },
         ]
       }
-      roster: {
+      rosters: {
         Row: {
           created_at: string
           day: string
