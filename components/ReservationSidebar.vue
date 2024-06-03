@@ -60,6 +60,7 @@ async function submit(form: ReservationInsert): Promise<void> {
           name: form.name,
           date: formatDateUI(form.day),
           time: formatHour(form.start),
+          ...(form.type === 'event' ? { event: store.selectedEvent?.name } : {}),
         },
         to: form.email,
       }
@@ -74,7 +75,7 @@ async function submit(form: ReservationInsert): Promise<void> {
         await mail.eventSuccess(payload)
 
         toast.add({
-          detail: `Je bent ingeschreven voor ${form.name}. Tot binnenkort!`,
+          detail: `Je bent ingeschreven voor ${store.selectedEvent?.name}. Tot binnenkort!`,
           ...defaultToast,
         })
       }

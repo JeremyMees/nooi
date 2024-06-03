@@ -52,17 +52,17 @@ defineProps<{
   >
     <EHtml lang="nl">
       <EHead />
-      <EPreview> Boeking Nooi </EPreview>
+      <EPreview> Jouw boeking voor Nooi </EPreview>
       <EBody>
         <EContainer>
           <EText class="text-[60px] font-medium pb-10">
             NOOI
           </EText>
           <EText>
-            Hey {{ name }},
+            Hallo {{ name }}
           </EText>
           <EText>
-            Wij hebben je Boeking met veel plezier goed ontvangen. We kijken er alvast enorm naar uit om je te mogen verwelkomen op
+            We hebben je boeking goed ontvangen en kijken uit naar je komst. Fijn dat we je mogen verwelkomen op
             <span class="font-bold text-primary">
               {{ date }}
             </span>
@@ -72,10 +72,10 @@ defineProps<{
                 {{ time }}
               </span>
             </template>.
-            Mocht je nog vragen hebben of aanvullende wensen, aarzel dan niet om contact met ons op te nemen. Tot dan!
+            Mocht je nog vragen hebben, aarzel dan niet om contact met ons op te nemen. Tot binnenkort!
           </EText>
           <EText>
-            Het Nooi team
+            Thomas & An
           </EText>
           <EHr />
           <EText>
@@ -85,14 +85,52 @@ defineProps<{
             >
               Schotelstraat 3, 3290 Diest
             </ELink>
-            <span class="mx-4 text-gray-light">
-              -
+            <span class="text-primary">
+              |
             </span>
             <ELink
               href="tel:0496 67 23 61"
               class="text-primary"
             >
               0496 67 23 61
+            </ELink>
+            <span class="text-primary">
+              |
+            </span>
+            <ELink
+              href="https://nooi.be"
+              class="text-primary"
+            >
+              nooi.be
+            </ELink>
+          </EText>
+          <EText>
+            <span class="text-primary">
+              @nooidiest op
+            </span>
+            <ELink
+              href="https://www.facebook.com/nooidiest"
+              class="text-primary"
+            >
+              Facebook
+            </ELink>
+            <span class="text-primary">
+              |
+            </span>
+            <ELink
+              href="https://www.instagram.com/nooidiest/"
+              class="text-primary"
+            >
+              Instagram
+            </ELink>
+            <span class="text-primary">
+              |
+            </span>
+            <ELink
+              href="https://www.tiktok.com/@nooidiest"
+              class="text-primary"
+            >
+              TikTok
             </ELink>
           </EText>
         </EContainer>

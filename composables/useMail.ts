@@ -7,7 +7,7 @@ export function useMail() {
         method: 'POST',
         body: {
           from,
-          subject: 'Reservatie Nooi',
+          subject: 'Jouw reservatie voor Nooi',
           template: 'ReservationSuccess.vue',
           ...body,
         },
@@ -24,7 +24,7 @@ export function useMail() {
         method: 'POST',
         body: {
           from,
-          subject: 'Event reservatie Nooi',
+          subject: 'Jouw inschrijving bij Nooi',
           template: 'EventSuccess.vue',
           ...body,
         },
@@ -41,7 +41,7 @@ export function useMail() {
         method: 'POST',
         body: {
           from,
-          subject: 'Boeking Nooi',
+          subject: 'Jouw boeking voor Nooi',
           template: 'BookingSuccess.vue',
           ...body,
         },
