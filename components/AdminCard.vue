@@ -87,7 +87,7 @@ function getType(type: string): string {
           <Icon
             v-if="column.field === 'exclusive'"
             :name="data.exclusive ? 'radix-icons:check' : 'radix-icons:cross-2'"
-            :class="[data.exclusive ? 'text-green-400' : 'text-red-400']"
+            :class="[data.exclusive ? 'text-teal' : 'text-secondary']"
             class="h-6 w-6"
           />
           <a

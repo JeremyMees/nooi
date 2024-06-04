@@ -76,7 +76,7 @@ export default {
         // Spacing
         (context == null ? void 0 : context.size) === 'small' ? 'p-2' : (context == null ? void 0 : context.size) === 'large' ? 'p-5' : 'p-4',
         // Color
-        (props.sortable === '' || props.sortable) && context.sorted ? 'bg-primary-highlight text-primary-highlight-inverse' : 'text-surface-700 dark:text-white/80 dark:bg-surface-800',
+        (props.sortable === '' || props.sortable) && context.sorted ? 'bg-primary-highlight text-primary-highlight-inverse bg-primary/10' : 'text-surface-700 dark:text-white/80 dark:bg-surface-800',
         'border-surface-200 dark:border-surface-700 ',
         // States
         { 'hover:bg-surface-100 dark:hover:bg-surface-400/30': (props.sortable === '' || props.sortable) && !(context != null && context.sorted) },
@@ -95,7 +95,7 @@ export default {
       class: 'flex items-center',
     },
     sort: ({ context }: any) => ({
-      class: [context.sorted ? 'text-primary-500' : 'text-surface-700', context.sorted ? 'dark:text-primary-400' : 'dark:text-white/80'],
+      class: [context.sorted ? 'text-primary' : 'text-surface-700', context.sorted ? 'dark:text-primary-400' : 'dark:text-white/80'],
     }),
     bodycell: ({ props, context, state, parent }: any) => ({
       class: [
