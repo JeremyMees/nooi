@@ -46,7 +46,7 @@ function getType(type: string): string {
 <template>
   <div>
     <p class="head-2 pb-4">
-      {{ values.title[type] }}
+      {{ values[type].title }}
     </p>
     <DataTable
       v-model:filters="filters"
@@ -56,7 +56,7 @@ function getType(type: string): string {
       :rows="10"
       :total-records="store.data[type].count"
       :loading="store.data[type].loading"
-      :global-filter-fields="values.filter[type]"
+      :global-filter-fields="values[type].filter"
       paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       current-page-report-template="{first} tot {last} van {totalRecords}"
     >
@@ -77,7 +77,7 @@ function getType(type: string): string {
       </template>
 
       <Column
-        v-for="column in values.table[type]"
+        v-for="column in values[type].table"
         :key="column.field"
         sortable
         :field="column.field"
@@ -105,7 +105,7 @@ function getType(type: string): string {
 
       <template #empty>
         <p class="text-center">
-          Geen {{ values.title[type].toLowerCase() }} gevonden met deze filters
+          Geen {{ values[type].title.toLowerCase() }} gevonden met deze filters
         </p>
       </template>
     </DataTable>

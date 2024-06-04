@@ -12,8 +12,10 @@ interface AdminData {
   rosters: AdminDataChild<RosterRow>
 }
 
-interface AdminConstants {
-  title: Record<DatabaseTable, string>
-  table: Record<DatabaseTable, TableColumn[]>
-  filter: Record<DatabaseTable, string[]>
+interface AdminConstantChild {
+  title: string
+  table: TableColumn[]
+  filter: string[]
 }
+
+type AdminConstants = Record<DatabaseTable, AdminConstantChild>
