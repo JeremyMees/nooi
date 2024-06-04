@@ -11,17 +11,25 @@ export const values: AdminConstants = {
       { header: 'Email', field: 'email' },
       { header: 'Nummer', field: 'number' },
       { header: 'Exclusief', field: 'exclusive' },
+      { header: 'Event', field: 'event' },
     ],
     events: [
       { header: 'Naam', field: 'name' },
-      { header: 'Dag', field: 'day' },
       { header: 'Plaatsen', field: 'spots' },
-      { header: 'Reservaties', field: 'reservations.length' },
+      { header: 'Reservaties', field: 'reservations' },
       { header: 'Start', field: 'start' },
       { header: 'Einde', field: 'end' },
     ],
     rosters: [
       { header: 'Status', field: 'status' },
+      { header: 'Start', field: 'start' },
+      { header: 'Einde', field: 'end' },
+      { header: 'Min Plaatsen', field: 'minSpots' },
     ],
+  },
+  filter: {
+    reservations: ['name', 'event.name', 'type'],
+    events: ['name'],
+    rosters: ['status'],
   },
 }

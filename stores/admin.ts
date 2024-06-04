@@ -5,7 +5,6 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     data: [],
     loading: true,
     date: formatDay(new Date()),
-    search: '',
   }
 
   const data = ref<AdminData>({
@@ -27,7 +26,10 @@ export const useAdminStore = defineStore('useAdminStore', () => {
         })
       }
       else if (type === 'reservations') {
-        response = await sbQuery<ReservationRow[]>({ table: 'reservations' })
+        response = await sbQuery<ReservationRow[]>({
+          table: 'reservations',
+          select: '*, event(name)',
+        })
       }
       else {
         response = await sbQuery<RosterRow[]>({ table: 'rosters' })
