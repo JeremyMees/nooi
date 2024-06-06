@@ -70,8 +70,8 @@ function getType(type: string): string {
       current-page-report-template="{first} tot {last} van {totalRecords}"
     >
       <template #header>
-        <div class="flex items-center gap-4 justify-between">
-          <div class="flex gap-4 items-center">
+        <div class="flex items-center gap-4 justify-between flex-wrap">
+          <div class="flex gap-4 items-center flex-wrap">
             <FormKit
               v-model="filters.global.value"
               type="search"
@@ -86,7 +86,6 @@ function getType(type: string): string {
             <AnimationReveal>
               <Button
                 v-if="!isToday"
-                size="small"
                 text
                 icon="pi pi-directions"
                 label="Vandaag tonen"
@@ -95,7 +94,7 @@ function getType(type: string): string {
             </AnimationReveal>
           </div>
           <Button
-            size="small"
+            v-if="type !== 'reservations'"
             icon="pi pi-plus"
             :label="`Nieuw ${values[type].title.toLowerCase()}`"
             @click="store.data[type].date = formatDay(new Date())"
@@ -143,7 +142,6 @@ function getType(type: string): string {
     <AnimationReveal>
       <Button
         v-if="selected.length"
-        size="small"
         severity="danger"
         icon="pi pi-trash"
         label="Verwijder geselecteerde"
