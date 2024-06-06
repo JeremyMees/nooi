@@ -1,4 +1,6 @@
 export const useAdminStore = defineStore('useAdminStore', () => {
+  const supabase = useSupabaseClient()
+
   const needsAuth = ref<boolean>(true)
 
   const defaultOptions = {
@@ -16,26 +18,21 @@ export const useAdminStore = defineStore('useAdminStore', () => {
   async function fetchData(type: DatabaseTable): Promise<void> {
     try {
       data.value[type].loading = true
+      data.value[type].error = undefined
 
-      let response
+      const options: SbQueryOptions = {
+        table: type,
+        eq: { field: 'day', value: data.value[type].date },
+      }
 
       if (type === 'events') {
-        response = await sbQuery<EventReservation[]>({
-          table: 'events',
-          select: '*, reservations:reservations(id, spots)',
-        })
+        options.select = '*, reservations:reservations(id, spots)'
       }
       else if (type === 'reservations') {
-        response = await sbQuery<ReservationRow[]>({
-          table: 'reservations',
-          select: '*, event(name)',
-        })
-      }
-      else {
-        response = await sbQuery<RosterRow[]>({ table: 'rosters' })
+        options.select = '*, event(name)'
       }
 
-      const { data: fetchedData, count } = response
+      const { data: fetchedData, count } = await sbQuery<RosterRow[]>(options)
 
       data.value[type] = {
         ...data.value[type],
@@ -51,9 +48,34 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     }
   }
 
+  async function removeData(type: DatabaseTable, arr: any[]): Promise<void> {
+    try {
+      data.value[type].loading = true
+      data.value[type].error = undefined
+
+      const { error } = await supabase.from(type)
+        .delete()
+        .in('id', arr.map((item: any) => item.id))
+
+      if (error) {
+        data.value[type].error = 'Error tijdens items verwijderen in database'
+      }
+      else {
+        fetchData(type)
+      }
+    }
+    catch (error) {
+      data.value[type].error = (error as Error).message
+    }
+    finally {
+      data.value[type].loading = false
+    }
+  }
+
   return {
     needsAuth,
     data,
     fetchData,
+    removeData,
   }
 })

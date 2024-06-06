@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { FilterMatchMode } from 'primevue/api'
+import { sameDay } from '@formkit/tempo'
 import { values } from '@/constants/admin'
 
 const props = defineProps<{ type: DatabaseTable }>()
 
 const store = useAdminStore()
 
-// only get data from specific day
-// multi select remove
 // create records
 // update records
 
+const selected = ref<any[]>([])
 const filters = ref<Record<string, TableFilter>>({
   global: {
     value: '',
@@ -18,8 +18,16 @@ const filters = ref<Record<string, TableFilter>>({
   },
 })
 
+const isToday = computed<boolean>(() => {
+  return sameDay(store.data[props.type].date, new Date())
+})
+
 watch(() => store.needsAuth, async (value) => {
   if (!value) store.fetchData(props.type)
+}, { immediate: true })
+
+watch(() => store.data[props.type].date, async (value) => {
+  if (value) store.fetchData(props.type)
 }, { immediate: true })
 
 function generateString(data: Record<string, any>, field: string): string {
@@ -44,12 +52,13 @@ function getType(type: string): string {
 </script>
 
 <template>
-  <div>
+  <div class="space-y-4">
     <p class="head-2 pb-4">
       {{ values[type].title }}
     </p>
     <DataTable
       v-model:filters="filters"
+      v-model:selection="selected"
       :value="store.data[type].data"
       paginator
       removable-sort
@@ -61,21 +70,43 @@ function getType(type: string): string {
       current-page-report-template="{first} tot {last} van {totalRecords}"
     >
       <template #header>
-        <div class="flex gap-4">
-          <FormKit
-            v-model="filters.global.value"
-            type="search"
-            prefix-icon="search"
-            outer-class="$remove:mb-4 $remove:max-w-none max-w-sm mb-0"
-          />
-          <FormKit
-            v-model="store.data[type].date"
-            type="date"
-            outer-class="$remove:mb-4 $remove:max-w-none max-w-sm mb-0"
+        <div class="flex items-center gap-4 justify-between">
+          <div class="flex gap-4 items-center">
+            <FormKit
+              v-model="filters.global.value"
+              type="search"
+              prefix-icon="search"
+              outer-class="$remove:mb-4 $remove:max-w-none max-w-[200px] mb-0"
+            />
+            <FormKit
+              v-model="store.data[type].date"
+              type="date"
+              outer-class="$remove:mb-4 $remove:max-w-none max-w-[150px] mb-0"
+            />
+            <AnimationReveal>
+              <Button
+                v-if="!isToday"
+                size="small"
+                text
+                icon="pi pi-directions"
+                label="Vandaag tonen"
+                @click="store.data[type].date = formatDay(new Date())"
+              />
+            </AnimationReveal>
+          </div>
+          <Button
+            size="small"
+            icon="pi pi-plus"
+            :label="`Nieuw ${values[type].title.toLowerCase()}`"
+            @click="store.data[type].date = formatDay(new Date())"
           />
         </div>
       </template>
 
+      <Column
+        selection-mode="multiple"
+        header-style="width: 3rem"
+      />
       <Column
         v-for="column in values[type].table"
         :key="column.field"
@@ -109,5 +140,18 @@ function getType(type: string): string {
         </p>
       </template>
     </DataTable>
+    <AnimationReveal>
+      <Button
+        v-if="selected.length"
+        size="small"
+        severity="danger"
+        icon="pi pi-trash"
+        label="Verwijder geselecteerde"
+        @click="() => {
+          store.removeData(type, selected)
+          selected = []
+        }"
+      />
+    </AnimationReveal>
   </div>
 </template>
