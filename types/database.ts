@@ -19,7 +19,7 @@ export type Database = {
           external: boolean
           id: number
           imageUrl: string | null
-          min_spots: number
+          minSpots: number
           name: string
           onlinePayment: boolean
           price: number | null
@@ -37,7 +37,7 @@ export type Database = {
           external?: boolean
           id?: number
           imageUrl?: string | null
-          min_spots?: number
+          minSpots?: number
           name: string
           onlinePayment?: boolean
           price?: number | null
@@ -55,7 +55,7 @@ export type Database = {
           external?: boolean
           id?: number
           imageUrl?: string | null
-          min_spots?: number
+          minSpots?: number
           name?: string
           onlinePayment?: boolean
           price?: number | null

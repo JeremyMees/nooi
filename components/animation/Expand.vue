@@ -1,4 +1,6 @@
 <script setup lang="ts">
+const props = defineProps<{ height?: string }>()
+
 function enter(element: any): void {
   const width = getComputedStyle(element).width
 
@@ -20,7 +22,7 @@ function enter(element: any): void {
 }
 
 function afterEnter(element: any): void {
-  element.style.height = 'auto'
+  element.style.height = props.height ?? 'auto'
 }
 
 function leave(element: any): void {

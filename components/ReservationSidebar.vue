@@ -165,7 +165,7 @@ async function loadEmbed(id: number): Promise<void> {
       :config="{ validationVisibility: 'blur' }"
       @submit="submit"
     >
-      <BasicForm :payment="payment" />
+      <FormReservation :payment="payment" />
     </FormKit>
     <div
       v-show="store.paymentPending"

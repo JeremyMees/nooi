@@ -38,10 +38,10 @@ const freeSpots = computed<number | undefined>(() => {
       {{ freeSpots }} vrije plaatsen
     </IconLabel>
     <IconLabel
-      v-if="event?.min_spots && event.min_spots > 1"
+      v-if="event?.minSpots && event.minSpots > 1"
       icon="users"
     >
-      minimum voor {{ event.min_spots }} reserveren
+      minimum voor {{ event.minSpots }} reserveren
     </IconLabel>
     <template v-if="event?.theme">
       <IconLabel

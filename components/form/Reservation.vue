@@ -21,7 +21,7 @@ const timeSlot = computed<number>(() => {
 
 const spots = computed<{ min: number, max: number }>(() => {
   return {
-    min: store.selectedEvent?.min_spots ?? filteredRoster.value?.[0]?.minSpots ?? 2,
+    min: store.selectedEvent?.minSpots ?? filteredRoster.value?.[0]?.minSpots ?? 2,
     max: store.selectedEvent?.spots
       ? store.selectedEvent.spots - getReservedSpots(store.selectedEvent.reservations)
       : maxSpots,

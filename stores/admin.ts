@@ -1,7 +1,7 @@
 export const useAdminStore = defineStore('useAdminStore', () => {
   const supabase = useSupabaseClient()
 
-  const needsAuth = ref<boolean>(true)
+  const needsAuth = ref<boolean>(false)
 
   const defaultOptions = {
     data: [],
@@ -48,7 +48,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     }
   }
 
-  async function removeData(type: DatabaseTable, arr: any[]): Promise<void> {
+  async function removeData(type: DatabaseTable, arr: (RosterRow | EventRow | ReservationRow)[]): Promise<void> {
     try {
       data.value[type].loading = true
       data.value[type].error = undefined
@@ -72,10 +72,33 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     }
   }
 
+  async function createData(type: DatabaseTable, insert: RosterInsert | EventInsert): Promise<void> {
+    try {
+      data.value[type].loading = true
+      data.value[type].error = undefined
+
+      const { error } = await supabase.from(type).insert([insert] as never[])
+
+      if (error) {
+        data.value[type].error = 'Error tijdens toevoegen in database'
+      }
+      else {
+        fetchData(type)
+      }
+    }
+    catch (error) {
+      data.value[type].error = (error as Error).message
+    }
+    finally {
+      data.value[type].loading = false
+    }
+  }
+
   return {
     needsAuth,
     data,
     fetchData,
     removeData,
+    createData,
   }
 })

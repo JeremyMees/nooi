@@ -1,4 +1,4 @@
-interface BasicForm {
+interface ReservationForm {
   day?: string
   name?: string
   number?: string
@@ -9,4 +9,9 @@ interface BasicForm {
 
 interface AdminForm {
   password: string
+}
+
+interface Option<T> {
+  value: T
+  label: string
 }

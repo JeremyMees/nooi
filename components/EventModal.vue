@@ -52,12 +52,15 @@ watch(() => store.informationEvent, (event) => {
       v-if="store.informationEvent"
       :event="store.informationEvent"
     />
-    <p
-      v-if="store.informationEvent?.description"
-      class="pt-6 text-pretty"
-    >
-      {{ store.informationEvent.description }}
-    </p>
+    <ClientOnly>
+      <div class="pt-6">
+        <v-md-editor
+          v-if="store.informationEvent?.description"
+          v-model="store.informationEvent.description"
+          mode="preview"
+        />
+      </div>
+    </ClientOnly>
 
     <div
       v-if="!isFull && store.informationEvent && !store.informationEvent?.external"
@@ -88,3 +91,13 @@ watch(() => store.informationEvent, (event) => {
     </p>
   </Sidebar>
 </template>
+
+<style>
+.v-md-editor--preview {
+  @apply max-h-[400px] overflow-y-hidden;
+}
+
+.github-markdown-body {
+  @apply p-0;
+}
+</style>

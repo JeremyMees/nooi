@@ -10,7 +10,7 @@ const types: DatabaseTable[] = ['reservations', 'events', 'rosters']
       v-if="!store.needsAuth"
       class="container flex flex-col gap-20"
     >
-      <AdminCard
+      <AdminTable
         v-for="type in types"
         :key="type"
         :type="type"

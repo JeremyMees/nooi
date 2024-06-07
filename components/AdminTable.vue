@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { FilterMatchMode } from 'primevue/api'
 import { sameDay } from '@formkit/tempo'
+import { reset } from '@formkit/core'
 import { values } from '@/constants/admin'
 
 const props = defineProps<{ type: DatabaseTable }>()
 
 const store = useAdminStore()
 
-// create records
 // update records
 
+const content = ref<string>('')
+const creating = ref<boolean>(false)
 const selected = ref<any[]>([])
 const filters = ref<Record<string, TableFilter>>({
   global: {
@@ -49,6 +51,20 @@ function getType(type: string): string {
       return 'vehuur'
   }
 }
+
+async function submit(form: RosterInsert | EventInsert): Promise<void> {
+  if (props.type === 'events') {
+    form = {
+      ...form,
+      description: content.value,
+    }
+  }
+
+  await store.createData(props.type, form)
+
+  reset(props.type)
+  content.value = ''
+}
 </script>
 
 <template>
@@ -70,35 +86,66 @@ function getType(type: string): string {
       current-page-report-template="{first} tot {last} van {totalRecords}"
     >
       <template #header>
-        <div class="flex items-center gap-4 justify-between flex-wrap">
-          <div class="flex gap-4 items-center flex-wrap">
-            <FormKit
-              v-model="filters.global.value"
-              type="search"
-              prefix-icon="search"
-              outer-class="$remove:mb-4 $remove:max-w-none max-w-[200px] mb-0"
-            />
-            <FormKit
-              v-model="store.data[type].date"
-              type="date"
-              outer-class="$remove:mb-4 $remove:max-w-none max-w-[150px] mb-0"
-            />
-            <AnimationReveal>
-              <Button
-                v-if="!isToday"
-                text
-                icon="pi pi-directions"
-                label="Vandaag tonen"
-                @click="store.data[type].date = formatDay(new Date())"
+        <div class="flex flex-col gap-4">
+          <div class="flex items-center gap-4 justify-between flex-wrap">
+            <div class="flex gap-4 items-center flex-wrap">
+              <FormKit
+                v-model="filters.global.value"
+                :disabled="creating"
+                type="search"
+                prefix-icon="search"
+                outer-class="$remove:mb-4 $remove:max-w-none max-w-[200px] mb-0"
               />
-            </AnimationReveal>
+              <FormKit
+                v-model="store.data[type].date"
+                :disabled="creating"
+                type="date"
+                outer-class="$remove:mb-4 $remove:max-w-none max-w-[150px] mb-0"
+              />
+              <AnimationReveal>
+                <Button
+                  v-if="!isToday"
+                  :disabled="creating"
+                  text
+                  icon="pi pi-directions"
+                  label="Vandaag tonen"
+                  @click="store.data[type].date = formatDay(new Date())"
+                />
+              </AnimationReveal>
+            </div>
+            <Button
+              v-if="type !== 'reservations'"
+              :icon="`pi pi-${creating ? 'times' : 'plus'}`"
+              :severity="creating ? 'danger' : undefined"
+              :label="creating ? 'Annuleer creëren' : `Creër ${values[type].title.toLowerCase()}`"
+              @click="creating = !creating"
+            />
           </div>
-          <Button
-            v-if="type !== 'reservations'"
-            icon="pi pi-plus"
-            :label="`Nieuw ${values[type].title.toLowerCase()}`"
-            @click="store.data[type].date = formatDay(new Date())"
-          />
+          <ClientOnly>
+            <AnimationExpand>
+              <FormKit
+                v-if="creating"
+                :id="type"
+                type="form"
+                submit-label="Creëren"
+                :config="{ validationVisibility: 'blur' }"
+                @submit="submit"
+              >
+                <FormRoster v-if="type === 'rosters'" />
+                <FormEvent v-else-if="type === 'events'" />
+                <div
+                  v-if="type === 'events'"
+                  class="h-[400px] mb-10"
+                >
+                  <span class="text-sm text-black">
+                    Omscrijving
+                    <span class="text-secondary relative -left-[2px]">*</span>
+                  </span>
+                  <Editor v-model:content="content" />
+                </div>
+              </FormKit>
+            </AnimationExpand>
+          </ClientOnly>
         </div>
       </template>
 

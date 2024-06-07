@@ -20,7 +20,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     year: new Date().getFullYear(),
   })
 
-  const form = ref<BasicForm>({
+  const form = ref<ReservationForm>({
     day: '',
     name: '',
     number: '',
