@@ -1,7 +1,12 @@
+import { addMonth, monthDays } from '@formkit/tempo'
+
+type EventOption = Pick<EventRow, 'id' | 'name' | 'spots' | 'minSpots' | 'day' | 'start' | 'end'>
+
 export const useAdminStore = defineStore('useAdminStore', () => {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient<Database>()
 
   const needsAuth = ref<boolean>(false)
+  const events = ref<EventOption[]>([])
 
   const defaultOptions = {
     data: [],
@@ -72,7 +77,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     }
   }
 
-  async function createData(type: DatabaseTable, insert: RosterInsert | EventInsert): Promise<void> {
+  async function createData(type: DatabaseTable, insert: RosterInsert | EventInsert | ReservationInsert): Promise<void> {
     try {
       data.value[type].loading = true
       data.value[type].error = undefined
@@ -94,11 +99,32 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     }
   }
 
+  async function getEvents(): Promise<void> {
+    try {
+      const today = new Date()
+      const day = `${today.getFullYear()}-${padDate(today.getMonth())}-${padDate(monthDays(today))}`
+
+      const { data } = await supabase
+        .from('events')
+        .select('id, name, spots, minSpots, day, start, end')
+        .gte('day', day)
+
+      if (data) {
+        events.value = data
+      }
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
+
   return {
     needsAuth,
     data,
+    events,
     fetchData,
     removeData,
     createData,
+    getEvents,
   }
 })

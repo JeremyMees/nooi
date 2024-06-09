@@ -70,7 +70,7 @@ watch([start, end], (v) => {
     />
     <FormKit
       type="number"
-      name="spots"
+      name="price"
       label="Prijs"
       validation="number|min:1|max:100"
       :min="1"

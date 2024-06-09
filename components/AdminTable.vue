@@ -52,12 +52,23 @@ function getType(type: string): string {
   }
 }
 
-async function submit(form: RosterInsert | EventInsert): Promise<void> {
+async function submit(form: RosterInsert | EventInsert | ReservationInsert): Promise<void> {
   if (props.type === 'events') {
     form = {
       ...form,
       description: content.value,
     }
+  }
+  else if (props.type === 'reservations') {
+    const event = store.events.find(({ id }) => id === (form as ReservationInsert).event)
+
+    form = {
+      ...form,
+      ...(event
+        ? { day: event.day, start: event.start, end: event.end }
+        : {}
+      ),
+    } as ReservationInsert
   }
 
   await store.createData(props.type, form)
@@ -114,10 +125,9 @@ async function submit(form: RosterInsert | EventInsert): Promise<void> {
               </AnimationReveal>
             </div>
             <Button
-              v-if="type !== 'reservations'"
               :icon="`pi pi-${creating ? 'times' : 'plus'}`"
               :severity="creating ? 'danger' : undefined"
-              :label="creating ? 'Annuleer creëren' : `Creër ${values[type].title.toLowerCase()}`"
+              :label="creating ? 'Annuleer toevoegen' : 'Toevoegen'"
               @click="creating = !creating"
             />
           </div>
@@ -127,12 +137,13 @@ async function submit(form: RosterInsert | EventInsert): Promise<void> {
                 v-if="creating"
                 :id="type"
                 type="form"
-                submit-label="Creëren"
+                submit-label="Toevoegen"
                 :config="{ validationVisibility: 'blur' }"
                 @submit="submit"
               >
                 <FormRoster v-if="type === 'rosters'" />
                 <FormEvent v-else-if="type === 'events'" />
+                <FormAdminReservation v-else-if="type === 'reservations'" />
                 <div
                   v-if="type === 'events'"
                   class="h-[400px] mb-10"
