@@ -6,6 +6,8 @@ export const values: AdminConstants = {
       { header: 'Naam', field: 'name' },
       { header: 'Email', field: 'email' },
       { header: 'Nummer', field: 'number' },
+      { header: 'Start', field: 'start' },
+      { header: 'Einde', field: 'end' },
       { header: 'Exclusief', field: 'exclusive' },
       { header: 'Event', field: 'event' },
     ],
