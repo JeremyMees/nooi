@@ -40,4 +40,34 @@
   .lines-calendar {
     background: repeating-linear-gradient(-50deg,#e6e4e140,#e6e4e140 10px,#e6e4e120 10px,#e6e4e120 20px)
   }
+
+  .github-markdown-body h1 {
+    @apply !head-1 !border-none !pb-0;
+  }
+  
+  .github-markdown-body h2 {
+    @apply !head-2 !border-none !pb-0;
+  }
+  
+  .github-markdown-body h3 {
+    @apply !head-3 !pb-0;
+  }
+  
+  .github-markdown-body h4,
+  .github-markdown-body h5,
+  .github-markdown-body h6 {
+    @apply !pb-0;
+  }
+  
+  .github-markdown-body hr {
+    @apply !h-px !bg-surface;
+  }
+  
+  .github-markdown-body a {
+    @apply !mb-4;
+  }
+  
+  .github-markdown-body img {
+    @apply !rounded-lg !my-4 !w-full !max-w-[350px] !max-h-[350px];
+  }
 }
