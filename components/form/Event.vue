@@ -88,7 +88,7 @@ watch([start, end], (v) => {
     <FormKit
       :value="false"
       type="checkbox"
-      label="Unit price"
+      label="Online betalen"
       name="onlinePayment"
       outer-class="$remove:mb-4 mb-0"
     />

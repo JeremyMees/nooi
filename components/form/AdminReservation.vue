@@ -6,7 +6,7 @@ const store = useAdminStore()
 const start = ref<string>()
 const end = ref<string>()
 const type = ref<string>('game')
-const selectedEvent = ref<EventReservation>()
+const selectedEvent = ref<string>()
 
 const typeOptions: Option<string>[] = [
   { label: 'Spel café', value: 'game' },
@@ -22,11 +22,19 @@ const eventOptions = computed<Option<string>[]>(() => {
 })
 
 const spots = computed<{ min: number, max: number }>(() => {
-  return {
-    min: selectedEvent.value?.minSpots ?? 2,
-    max: selectedEvent.value?.spots
-      ? selectedEvent.value?.spots - getReservedSpots(selectedEvent.value?.reservations)
-      : maxSpots,
+  if (selectedEvent.value) {
+    const id = +selectedEvent.value
+    const event = store.events.find(event => event.id === id)
+
+    return {
+      min: event?.minSpots ?? 2,
+      max: event?.spots
+        ? event?.spots - getReservedSpots(event?.reservations)
+        : maxSpots,
+    }
+  }
+  else {
+    return { min: 2, max: maxSpots }
   }
 })
 
@@ -70,11 +78,12 @@ watch([start, end], (v) => {
     />
     <template v-if="type === 'event'">
       <FormKit
+        v-model="selectedEvent"
         name="event"
         type="select"
         label="Event"
         validation="required"
-        :value="eventOptions[0].value"
+        placeholder="Selecteer een event"
         :options="eventOptions"
       />
     </template>

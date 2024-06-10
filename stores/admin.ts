@@ -1,12 +1,10 @@
-import { addMonth, monthDays } from '@formkit/tempo'
-
-type EventOption = Pick<EventRow, 'id' | 'name' | 'spots' | 'minSpots' | 'day' | 'start' | 'end'>
+import { monthDays } from '@formkit/tempo'
 
 export const useAdminStore = defineStore('useAdminStore', () => {
   const supabase = useSupabaseClient<Database>()
 
   const needsAuth = ref<boolean>(false)
-  const events = ref<EventOption[]>([])
+  const events = ref<EventReservation[]>([])
 
   const defaultOptions = {
     data: [],
@@ -106,7 +104,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
 
       const { data } = await supabase
         .from('events')
-        .select('id, name, spots, minSpots, day, start, end')
+        .select('*, reservations:reservations(id, spots)')
         .gte('day', day)
 
       if (data) {

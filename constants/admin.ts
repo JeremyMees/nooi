@@ -8,6 +8,7 @@ export const values: AdminConstants = {
       { header: 'Nummer', field: 'number' },
       { header: 'Start', field: 'start' },
       { header: 'Einde', field: 'end' },
+      { header: 'Plaatsen', field: 'spots' },
       { header: 'Exclusief', field: 'exclusive' },
       { header: 'Event', field: 'event' },
     ],
