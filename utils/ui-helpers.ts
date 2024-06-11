@@ -9,6 +9,28 @@ export function translateStatus(status: CalendarStatus): string {
   }
 }
 
+export function getType(type: string): string {
+  switch (type) {
+    case 'event':
+      return 'evenement'
+    case 'game':
+      return 'reservering'
+    default:
+      return 'vehuur'
+  }
+}
+
+export function getStatus(type: string): string {
+  switch (type) {
+    case 'reservation':
+      return 'Reservatie'
+    case 'game':
+      return 'Open spelcafé'
+    default:
+      return 'Bezet'
+  }
+}
+
 export function removeQuery(names: string[]): void {
   const router = useRouter()
   const route = useRoute()

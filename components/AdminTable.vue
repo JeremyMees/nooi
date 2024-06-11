@@ -8,11 +8,11 @@ const props = defineProps<{ type: DatabaseTable }>()
 
 const store = useAdminStore()
 
-// update records
-
 const content = ref<string>('')
 const creating = ref<boolean>(false)
 const selected = ref<any[]>([])
+const expandedRows = ref<Record<string, boolean>>()
+
 const filters = ref<Record<string, TableFilter>>({
   global: {
     value: '',
@@ -24,10 +24,6 @@ const isToday = computed<boolean>(() => {
   return sameDay(store.data[props.type].date, new Date())
 })
 
-watch(() => store.needsAuth, async (value) => {
-  if (!value) store.fetchData(props.type)
-}, { immediate: true })
-
 watch(() => store.data[props.type].date, async (value) => {
   if (value) store.fetchData(props.type)
 }, { immediate: true })
@@ -35,21 +31,11 @@ watch(() => store.data[props.type].date, async (value) => {
 function generateString(data: Record<string, any>, field: string): string {
   if (!data[field]) return ''
   else if (['start', 'end'].includes(field)) return formatHour(data[field])
-  else if (['status', 'type'].includes(field)) return getType(data[field])
+  else if (field === 'type') return getType(data[field])
+  else if (field === 'status') return getStatus(data[field])
   else if (field === 'reservations') return data[field].length
   else if (field === 'event') return data[field].name
   else return data[field]
-}
-
-function getType(type: string): string {
-  switch (type) {
-    case 'event':
-      return 'evenement'
-    case 'game':
-      return 'reservering'
-    default:
-      return 'vehuur'
-  }
 }
 
 async function submit(form: RosterInsert | EventInsert | ReservationInsert): Promise<void> {
@@ -71,10 +57,38 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
     } as ReservationInsert
   }
 
-  await store.createData(props.type, form)
+  if (form.id) {
+    const { id, created_at, ...payload } = form
 
-  reset(props.type)
+    if ('reservations' in payload) {
+      delete payload.reservations
+    }
+
+    await store.updateData(id, props.type, payload)
+    expandedRows.value = {}
+  }
+  else {
+    await store.createData(props.type, form)
+  }
+
+  reset(form?.id ? `${props.type}-${form.id}` : props.type)
   content.value = ''
+}
+
+function onRowExpand({ data }: { data: Record<string, any> }): void {
+  expandedRows.value = { [data.id]: true }
+
+  if (props.type === 'events') {
+    content.value = data.description
+  }
+}
+
+function onRowCollapse({ data }: { data: Record<string, any> }): void {
+  reset(`${props.type}-${data.id}`)
+
+  if (props.type === 'events') {
+    content.value = ''
+  }
 }
 </script>
 
@@ -86,6 +100,9 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
     <DataTable
       v-model:filters="filters"
       v-model:selection="selected"
+      v-model:expandedRows="expandedRows"
+      data-key="id"
+      size="small"
       :value="store.data[type].data"
       paginator
       removable-sort
@@ -95,6 +112,8 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
       :global-filter-fields="values[type].filter"
       paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       current-page-report-template="{first} tot {last} van {totalRecords}"
+      @row-expand="onRowExpand"
+      @row-collapse="onRowCollapse"
     >
       <template #header>
         <div class="flex flex-col gap-4">
@@ -102,21 +121,21 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
             <div class="flex gap-4 items-center flex-wrap">
               <FormKit
                 v-model="filters.global.value"
-                :disabled="creating"
+                :disabled="creating || !!Object.keys(expandedRows || {}).length"
                 type="search"
                 prefix-icon="search"
                 outer-class="$remove:mb-4 $remove:max-w-none max-w-[200px] mb-0"
               />
               <FormKit
                 v-model="store.data[type].date"
-                :disabled="creating"
+                :disabled="creating || !!Object.keys(expandedRows || {}).length"
                 type="date"
                 outer-class="$remove:mb-4 $remove:max-w-none max-w-[150px] mb-0"
               />
               <AnimationReveal>
                 <Button
                   v-if="!isToday"
-                  :disabled="creating"
+                  :disabled="creating || !!Object.keys(expandedRows || {}).length"
                   text
                   icon="pi pi-directions"
                   label="Vandaag tonen"
@@ -125,6 +144,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
               </AnimationReveal>
             </div>
             <Button
+              :disabled="!!Object.keys(expandedRows || {}).length"
               :icon="`pi pi-${creating ? 'times' : 'plus'}`"
               :severity="creating ? 'danger' : undefined"
               :label="creating ? 'Annuleer toevoegen' : 'Toevoegen'"
@@ -134,7 +154,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
           <ClientOnly>
             <AnimationExpand>
               <FormKit
-                v-if="creating"
+                v-if="creating && !Object.keys(expandedRows || {}).length"
                 :id="type"
                 type="form"
                 submit-label="Toevoegen"
@@ -162,12 +182,13 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
 
       <Column
         selection-mode="multiple"
-        header-style="width: 3rem"
+        header-style="width: 2rem"
       />
+      <Column expander />
       <Column
         v-for="column in values[type].table"
         :key="column.field"
-        sortable
+        :sortable="column.field !== 'update'"
         :field="column.field"
         :header="column.header"
       >
@@ -178,18 +199,46 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
             :class="[data.exclusive ? 'text-teal' : 'text-secondary']"
             class="h-6 w-6"
           />
-          <a
-            v-else-if="['email', 'number'].includes(column.field)"
-            :href="`${column.field === 'email' ? 'mailto' : 'tel'}:${data[column.field]}`"
-            class="underline"
-          >
-            {{ data[column.field] }}
-          </a>
+          <Button
+            v-else-if="column.field === 'update'"
+            icon="pi pi-cog"
+            outlined
+            size="small"
+          />
           <span v-else>
             {{ generateString(data, column.field) }}
           </span>
         </template>
       </Column>
+
+      <template #expansion="slotProps">
+        <div class="p-3">
+          <ClientOnly>
+            <FormKit
+              :id="`${type}-${slotProps.data.id}`"
+              type="form"
+              submit-label="Bijwerken"
+              :value="slotProps.data"
+              :config="{ validationVisibility: 'blur' }"
+              @submit="submit"
+            >
+              <FormRoster v-if="type === 'rosters'" />
+              <FormEvent v-else-if="type === 'events'" />
+              <FormAdminReservation v-else-if="type === 'reservations'" />
+              <div
+                v-if="type === 'events'"
+                class="h-[400px] mb-10"
+              >
+                <span class="text-sm text-black">
+                  Omscrijving
+                  <span class="text-secondary relative -left-[2px]">*</span>
+                </span>
+                <Editor v-model:content="content" />
+              </div>
+            </FormKit>
+          </ClientOnly>
+        </div>
+      </template>
 
       <template #empty>
         <p class="text-center">

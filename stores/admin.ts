@@ -3,7 +3,7 @@ import { monthDays } from '@formkit/tempo'
 export const useAdminStore = defineStore('useAdminStore', () => {
   const supabase = useSupabaseClient<Database>()
 
-  const needsAuth = ref<boolean>(false)
+  const needsAuth = ref<boolean>(true)
   const events = ref<EventReservation[]>([])
 
   const defaultOptions = {
@@ -97,6 +97,32 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     }
   }
 
+  async function updateData(
+    id: number,
+    type: DatabaseTable,
+    payload: RosterUpdate | EventUpdate | ReservationUpdate,
+  ): Promise<void> {
+    try {
+      data.value[type].loading = true
+      data.value[type].error = undefined
+
+      const { error } = await supabase.from(type).update(payload).eq('id', id)
+
+      if (error) {
+        data.value[type].error = 'Error tijdens bijwerken in database'
+      }
+      else {
+        fetchData(type)
+      }
+    }
+    catch (error) {
+      data.value[type].error = (error as Error).message
+    }
+    finally {
+      data.value[type].loading = false
+    }
+  }
+
   async function getEvents(): Promise<void> {
     try {
       const today = new Date()
@@ -123,6 +149,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     fetchData,
     removeData,
     createData,
+    updateData,
     getEvents,
   }
 })
