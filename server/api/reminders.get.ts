@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
 
   const { data, error } = await supabase
     .from('reservations')
-    .select('*')
+    .select('*, event(name)')
     .eq('day', day)
 
   if (error) {
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (data?.length) {
-    await Promise.all(data.map(async (reservation) => {
+    for (const reservation of data) {
       const options = {
         from: 'Nooi <zin@nooi.be>',
         subject: 'Reservatie Nooi',
@@ -35,6 +35,8 @@ export default defineEventHandler(async (event) => {
         options.template = 'BookingSuccess.vue'
       }
 
+      const event = (reservation?.event as unknown as { name: string })?.name || undefined
+
       await $fetch('/api/mail', {
         method: 'POST',
         body: {
@@ -43,15 +45,16 @@ export default defineEventHandler(async (event) => {
             name: reservation.name,
             date: formatDateUI(reservation.day),
             time: formatHour(reservation.start),
+            ...(event ? { event } : {}),
           },
           ...options,
         },
       })
-    }))
+    }
 
-    return 'Reminders sent'
+    return `Reminders sent for ${day}`
   }
   else {
-    return 'No reminders to send'
+    return `No reminders for ${day}`
   }
 })
