@@ -68,6 +68,6 @@
   }
   
   .github-markdown-body img {
-    @apply !rounded-lg !my-4 !w-full !max-w-[350px] !max-h-[350px];
+    @apply !rounded-lg !my-4 !w-full !max-w-[350px] !max-h-[350px] mx-auto;
   }
 }

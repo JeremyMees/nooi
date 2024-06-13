@@ -63,7 +63,7 @@ function handleClick(event: MouseEvent): void {
   <button
     ref="cell"
     :aria-label="`Reservatie voor ${day.key}`"
-    class="transition-all duration-200 border border-b-0 p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-16"
+    class="transition-all duration-200 border border-b-0 p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-[85px]"
     :class="{
       'lines-calendar': !day.currentMonth,
       'cursor-not-allowed': isPast || !isOpen,

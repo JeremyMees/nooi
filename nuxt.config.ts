@@ -66,6 +66,10 @@ export default defineNuxtConfig({
     defaultLocale: 'nl',
   },
 
+  robots: {
+    disallow: ['/_nuxt', '/admin'],
+  },
+
   vueEmail: {
     baseUrl: seo.meta.url,
     autoImport: true,

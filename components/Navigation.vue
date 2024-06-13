@@ -28,6 +28,6 @@
         </div>
       </div>
     </div>
-    <hr class="py-[15px] border-surface-200 my-[10px]">
+    <hr class="pt-[15px] border-surface-200 my-[10px]">
   </nav>
 </template>
