@@ -1,4 +1,4 @@
-const name = 'Nooi'
+const name = 'Kalender – Nooi'
 const url = 'https://nooi.be'
 const description = 'inspirerende ontmoetingsplek in het hart van Diest.'
 const logo = `${url}/logo.png`
