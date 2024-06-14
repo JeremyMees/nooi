@@ -7,11 +7,11 @@ onBeforeUnmount(() => store.unsubscribe())
 
 <template>
   <NuxtLayout>
-    <div class="space-y-5">
+    <div class="space-y-5 container">
       <p class="text-[37px] font-medium text-center tracking-[1.5px]">
         KALENDER
       </p>
-      <div class="flex flex-col gap-[10px] font-thin">
+      <div class="flex flex-col gap-[10px] font-light text-[18px] leading-[29px]">
         <p class="text-center">
           Vind in Nooi gelijkgestemden voor zinvolle vrijetijdsbeleving, creatieve initiatieven, veilig experimenteren en sociale verdieping.
         </p>
