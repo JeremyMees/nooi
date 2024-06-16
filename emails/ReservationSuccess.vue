@@ -51,7 +51,9 @@ defineProps<{
     }"
   >
     <EHtml lang="nl">
-      <EHead />
+      <EHead>
+        <title> Jouw reservatie voor Nooi</title>
+      </EHead>
       <EPreview> Jouw reservatie voor Nooi </EPreview>
       <EBody>
         <EContainer>

@@ -52,19 +52,19 @@ defineProps<{
   >
     <EHtml lang="nl">
       <EHead>
-        <title> Jouw boeking voor Nooi</title>
+        <title>We zien je snel in Nooi!</title>
       </EHead>
-      <EPreview> Jouw boeking voor Nooi </EPreview>
+      <EPreview> We zien je snel in Nooi! </EPreview>
       <EBody>
         <EContainer>
           <EText class="text-[60px] font-medium pb-10">
             NOOI
           </EText>
           <EText>
-            Hallo {{ name }}
+            Hoi {{ name }}
           </EText>
           <EText>
-            We hebben je boeking goed ontvangen en kijken uit naar je komst. Fijn dat we je mogen verwelkomen op
+            Graag herinneren wij je aan je boeking bij ons op
             <span class="font-bold text-primary">
               {{ date }}
             </span>
@@ -74,9 +74,13 @@ defineProps<{
                 {{ time }}
               </span>
             </template>.
-            Mocht je nog vragen hebben, aarzel dan niet om contact met ons op te nemen. Tot binnenkort!
           </EText>
           <EText>
+            Heb je nog vragen? Laat het ons weten.
+          </EText>
+          <EText>
+            Tot snel!
+            <br>
             Thomas & An
           </EText>
           <EHr />

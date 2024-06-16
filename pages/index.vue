@@ -20,6 +20,7 @@ onBeforeUnmount(() => store.unsubscribe())
         </p>
       </div>
     </div>
+    <Reminder />
     <DatePicker class="max-w-5xl mx-auto" />
     <EventModal />
     <ReservationSidebar />
