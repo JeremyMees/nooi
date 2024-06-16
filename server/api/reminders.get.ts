@@ -6,7 +6,7 @@ import type { Database } from '~/types/database'
 export default defineEventHandler(async (event) => {
   const supabase = serverSupabaseServiceRole<Database>(event)
 
-  const date = addDay(new Date(), 3)
+  const date = addDay(new Date(), 2)
   const day = `${date.getFullYear()}-${padDate(date.getMonth() + 1)}-${padDate(date.getDate())}`
 
   const { data, error } = await supabase
