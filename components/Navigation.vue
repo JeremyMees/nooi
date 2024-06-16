@@ -22,7 +22,7 @@
           <NuxtLink to="https://nooi.be/locatie/">
             locatie
           </NuxtLink>
-          <NuxtLink to="/">
+          <NuxtLink to="https://nooi.be/info/">
             info
           </NuxtLink>
         </div>
