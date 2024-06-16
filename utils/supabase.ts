@@ -31,11 +31,12 @@ export function sbDateFilters(date?: Date): { gte: string, lte: string } {
 export async function sbQuery<T>(options: SbQueryOptions): Promise<SbQuery<T>> {
   const supabase = useSupabaseClient()
 
-  const { table, select, page, perPage, search, eq, fuzzy, fields } = options
+  const { table, select, page, perPage, search, eq, fuzzy, fields, sort } = options
 
   let query = supabase
     .from(table)
     .select(select || '*', { count: 'exact' })
+    .gte('day', formatDay(new Date()))
 
   if (typeof page === 'number' && typeof perPage === 'number') {
     const { from, to } = generateRange(page, perPage)
@@ -49,6 +50,13 @@ export async function sbQuery<T>(options: SbQueryOptions): Promise<SbQuery<T>> {
 
   if (search && fuzzy) {
     query = query.or(sbOrQuery(fields || ['title'], search))
+  }
+
+  if (sort?.field && sort?.order) {
+    query = query.order(sort.field, { ascending: sort.order === 'asc' })
+  }
+  else {
+    query = query.order('day', { ascending: true })
   }
 
   const { data, error, count } = await query

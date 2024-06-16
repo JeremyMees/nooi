@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { FilterMatchMode } from 'primevue/api'
-import { sameDay } from '@formkit/tempo'
 import { reset } from '@formkit/core'
+import DataTable from 'primevue/datatable'
 import { values } from '@/constants/admin'
 
 const props = defineProps<{ type: DatabaseTable }>()
@@ -12,21 +11,22 @@ const content = ref<string>('')
 const creating = ref<boolean>(false)
 const selected = ref<any[]>([])
 const expandedRows = ref<Record<string, boolean>>()
+const first = ref<number>(0)
 
-const filters = ref<Record<string, TableFilter>>({
-  global: {
-    value: '',
-    matchMode: FilterMatchMode.CONTAINS,
-  },
+const filters = ref<Record<string, any>>({
+  search: '',
+  first: 0,
+  sortField: null,
+  sortOrder: null,
 })
 
-const isToday = computed<boolean>(() => {
-  return sameDay(store.data[props.type].date, new Date())
-})
+watchDebounced(() => filters.value.search, async () => {
+  await onTableEvent()
+}, { debounce: 500, maxWait: 1000 })
 
-watch(() => store.data[props.type].date, async (value) => {
-  if (value) store.fetchData(props.type)
-}, { immediate: true })
+onMounted(async () => {
+  await store.fetchData(props.type)
+})
 
 function generateString(data: Record<string, any>, field: string): string {
   if (!data[field]) return ''
@@ -35,6 +35,7 @@ function generateString(data: Record<string, any>, field: string): string {
   else if (field === 'status') return getStatus(data[field])
   else if (field === 'reservations') return data[field].length
   else if (field === 'event') return data[field].name
+  else if (field === 'day') return formatDateUI(data[field])
   else return data[field]
 }
 
@@ -75,6 +76,26 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
   content.value = ''
 }
 
+async function onTableEvent(data?: TableEvent): Promise<void> {
+  filters.value = { ...filters.value, ...(data || {}) }
+  const page = data ? filters.value.first ? filters.value.first / 10 : 0 : 0
+
+  const options: Partial<SbQueryOptions> = {
+    fuzzy: true,
+    page,
+    search: filters.value.search,
+    fields: values[props.type].filter,
+    sort: filters.value.sortField
+      ? {
+          field: filters.value.sortField,
+          order: filters.value.sortOrder === 1 ? 'asc' : 'desc',
+        }
+      : undefined,
+  }
+
+  await store.fetchData(props.type, options)
+}
+
 function onRowExpand({ data }: { data: Record<string, any> }): void {
   expandedRows.value = { [data.id]: true }
 
@@ -98,7 +119,6 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
       {{ values[type].title }}
     </p>
     <DataTable
-      v-model:filters="filters"
       v-model:selection="selected"
       v-model:expandedRows="expandedRows"
       data-key="id"
@@ -106,43 +126,32 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
       :value="store.data[type].data"
       paginator
       removable-sort
+      lazy
+      sort-field="day"
+      :sort-order="1"
+      :first="first"
       :rows="10"
       :total-records="store.data[type].count"
       :loading="store.data[type].loading"
-      :global-filter-fields="values[type].filter"
       paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
       current-page-report-template="{first} tot {last} van {totalRecords}"
+      @page="onTableEvent"
+      @sort="onTableEvent"
       @row-expand="onRowExpand"
       @row-collapse="onRowCollapse"
     >
       <template #header>
         <div class="flex flex-col gap-4">
           <div class="flex items-center gap-4 justify-between flex-wrap">
-            <div class="flex gap-4 items-center flex-wrap">
-              <FormKit
-                v-model="filters.global.value"
-                :disabled="creating || !!Object.keys(expandedRows || {}).length"
-                type="search"
-                prefix-icon="search"
-                outer-class="$remove:mb-4 $remove:max-w-none max-w-[200px] mb-0"
-              />
-              <FormKit
-                v-model="store.data[type].date"
-                :disabled="creating || !!Object.keys(expandedRows || {}).length"
-                type="date"
-                outer-class="$remove:mb-4 $remove:max-w-none max-w-[150px] mb-0"
-              />
-              <AnimationReveal>
-                <Button
-                  v-if="!isToday"
-                  :disabled="creating || !!Object.keys(expandedRows || {}).length"
-                  text
-                  icon="pi pi-directions"
-                  label="Vandaag tonen"
-                  @click="store.data[type].date = formatDay(new Date())"
-                />
-              </AnimationReveal>
-            </div>
+            <FormKit
+              v-if="values[type].filter.length"
+              v-model="filters.search"
+              :disabled="creating || !!Object.keys(expandedRows || {}).length"
+              type="search"
+              prefix-icon="search"
+              outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+            />
+            <div v-else />
             <Button
               :disabled="!!Object.keys(expandedRows || {}).length"
               :icon="`pi pi-${creating ? 'times' : 'plus'}`"
@@ -188,7 +197,7 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
       <Column
         v-for="column in values[type].table"
         :key="column.field"
-        :sortable="column.field !== 'update'"
+        :sortable="['name', 'day'].includes(column.field)"
         :field="column.field"
         :header="column.header"
       >

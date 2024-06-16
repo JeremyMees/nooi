@@ -1,7 +1,6 @@
 interface AdminDataChild<T> {
   data: T[]
   loading: boolean
-  date: string
   count?: number
   error?: string
 }

@@ -6,11 +6,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
   const needsAuth = ref<boolean>(true)
   const events = ref<EventReservation[]>([])
 
-  const defaultOptions = {
-    data: [],
-    loading: true,
-    date: formatDay(new Date()),
-  }
+  const defaultOptions = { data: [], loading: true }
 
   const data = ref<AdminData>({
     events: { ...defaultOptions },
@@ -18,14 +14,16 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     rosters: { ...defaultOptions },
   })
 
-  async function fetchData(type: DatabaseTable): Promise<void> {
+  async function fetchData(type: DatabaseTable, query: Partial<SbQueryOptions> = {}): Promise<void> {
     try {
       data.value[type].loading = true
       data.value[type].error = undefined
 
       const options: SbQueryOptions = {
         table: type,
-        eq: { field: 'day', value: data.value[type].date },
+        page: 0,
+        perPage: 10,
+        ...query,
       }
 
       if (type === 'events') {

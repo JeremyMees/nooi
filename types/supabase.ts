@@ -42,6 +42,12 @@ export interface SbQueryOptions {
   search?: string
   eq?: SbEq
   fuzzy?: boolean
+  sort?: SbSort
+}
+
+export interface SbSort {
+  field: string
+  order: 'asc' | 'desc'
 }
 
 export interface SbEq {
