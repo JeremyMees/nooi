@@ -24,7 +24,7 @@ watch(() => store.informationEvent, (event) => {
   ) {
     toast.add({
       severity: 'info',
-      summary: 'Te Laat!',
+      summary: 'Te laat',
       detail: `De inschrijvingsperiode voor ${event.name} is afgelopen.`,
       life: 5000,
     })
