@@ -7,7 +7,7 @@ const types: DatabaseTable[] = ['reservations', 'events', 'rosters']
 <template>
   <NuxtLayout>
     <div
-      v-if="!store.needsAuth"
+      v-if="store.authCookie === 'authenticated'"
       class="container flex flex-col gap-20"
     >
       <AdminTable

@@ -1,9 +1,7 @@
-import { monthDays } from '@formkit/tempo'
-
 export const useAdminStore = defineStore('useAdminStore', () => {
   const supabase = useSupabaseClient<Database>()
+  const authCookie = useCookie('auth', { maxAge: 60 * 60 * 24 * 7 })
 
-  const needsAuth = ref<boolean>(import.meta.dev ? false : true)
   const events = ref<EventReservation[]>([])
 
   const defaultOptions = { data: [], loading: true }
@@ -141,7 +139,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
   }
 
   return {
-    needsAuth,
+    authCookie,
     data,
     events,
     fetchData,

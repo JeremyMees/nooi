@@ -1,11 +1,13 @@
 <script setup lang="ts">
 const store = useAdminStore()
 const { adminPassword } = useRuntimeConfig().public
+
+const needsAuth = computed<boolean>(() => store.authCookie !== 'authenticated')
 </script>
 
 <template>
   <Dialog
-    v-model:visible="store.needsAuth"
+    v-model:visible="needsAuth"
     modal
     header="Inloggen op admin paneel"
     :closable="false"
@@ -13,7 +15,7 @@ const { adminPassword } = useRuntimeConfig().public
     <FormKit
       type="form"
       submit-label="Inloggen"
-      @submit="store.needsAuth = false"
+      @submit="store.authCookie = 'authenticated'"
     >
       <FormKit
         type="password"
