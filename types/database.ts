@@ -18,7 +18,6 @@ export type Database = {
           end: string | null
           external: boolean
           id: number
-          imageUrl: string | null
           minSpots: number
           name: string
           onlinePayment: boolean
@@ -36,7 +35,6 @@ export type Database = {
           end?: string | null
           external?: boolean
           id?: number
-          imageUrl?: string | null
           minSpots?: number
           name: string
           onlinePayment?: boolean
@@ -54,7 +52,6 @@ export type Database = {
           end?: string | null
           external?: boolean
           id?: number
-          imageUrl?: string | null
           minSpots?: number
           name?: string
           onlinePayment?: boolean
@@ -70,14 +67,14 @@ export type Database = {
         Row: {
           created_at: string
           day: string
-          email: string
+          email: string | null
           end: string | null
           event: number | null
           exclusive: boolean
           id: number
           info: string | null
           name: string
-          number: string
+          number: string | null
           paymentIdentifier: string | null
           paymentNeeded: boolean
           spots: number
@@ -87,14 +84,14 @@ export type Database = {
         Insert: {
           created_at?: string
           day: string
-          email: string
+          email?: string | null
           end?: string | null
           event?: number | null
           exclusive?: boolean
           id?: number
           info?: string | null
           name: string
-          number: string
+          number?: string | null
           paymentIdentifier?: string | null
           paymentNeeded?: boolean
           spots: number
@@ -104,14 +101,14 @@ export type Database = {
         Update: {
           created_at?: string
           day?: string
-          email?: string
+          email?: string | null
           end?: string | null
           event?: number | null
           exclusive?: boolean
           id?: number
           info?: string | null
           name?: string
-          number?: string
+          number?: string | null
           paymentIdentifier?: string | null
           paymentNeeded?: boolean
           spots?: number
