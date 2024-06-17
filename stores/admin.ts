@@ -3,7 +3,7 @@ import { monthDays } from '@formkit/tempo'
 export const useAdminStore = defineStore('useAdminStore', () => {
   const supabase = useSupabaseClient<Database>()
 
-  const needsAuth = ref<boolean>(true)
+  const needsAuth = ref<boolean>(import.meta.dev ? false : true)
   const events = ref<EventReservation[]>([])
 
   const defaultOptions = { data: [], loading: true }
@@ -123,13 +123,13 @@ export const useAdminStore = defineStore('useAdminStore', () => {
 
   async function getEvents(): Promise<void> {
     try {
-      const today = new Date()
-      const day = `${today.getFullYear()}-${padDate(today.getMonth())}-${padDate(monthDays(today))}`
+      const day = formatDay(new Date())
 
       const { data } = await supabase
         .from('events')
         .select('*, reservations:reservations(id, spots)')
         .gte('day', day)
+        .order('day', { ascending: true })
 
       if (data) {
         events.value = data

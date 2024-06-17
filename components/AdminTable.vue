@@ -74,6 +74,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
 
   reset(form?.id ? `${props.type}-${form.id}` : props.type)
   content.value = ''
+  creating.value = false
 }
 
 async function onTableEvent(data?: TableEvent): Promise<void> {
@@ -179,7 +180,6 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
                 >
                   <span class="text-sm text-black">
                     Omscrijving
-                    <span class="text-secondary relative -left-[2px]">*</span>
                   </span>
                   <Editor v-model:content="content" />
                 </div>
@@ -231,6 +231,9 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
               :config="{ validationVisibility: 'blur' }"
               @submit="submit"
             >
+              <pre>
+              {{ content }}
+            </pre>
               <FormRoster v-if="type === 'rosters'" />
               <FormEvent v-else-if="type === 'events'" />
               <FormAdminReservation v-else-if="type === 'reservations'" />
@@ -240,7 +243,6 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
               >
                 <span class="text-sm text-black">
                   Omscrijving
-                  <span class="text-secondary relative -left-[2px]">*</span>
                 </span>
                 <Editor v-model:content="content" />
               </div>

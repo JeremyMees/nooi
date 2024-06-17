@@ -60,13 +60,13 @@ watch([start, end], (v) => {
       type="tel"
       name="number"
       label="Telefoonnummer"
-      validation="required|matches:/^[0-9]*$/|length:10,12"
+      validation="matches:/^[0-9]*$/|length:10,12"
     />
     <FormKit
       type="email"
       name="email"
       label="Email"
-      validation="required|email|length:5,25"
+      validation="email|length:5,25"
     />
     <FormKit
       v-model="type"
