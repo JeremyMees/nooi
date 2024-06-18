@@ -11,12 +11,12 @@ onBeforeUnmount(() => store.unsubscribe())
       <p class="text-[37px] font-medium text-center tracking-[1.5px]">
         KALENDER
       </p>
-      <div class="flex flex-col gap-[10px] font-light text-[18px] leading-[29px]">
-        <p class="text-center">
-          Vind in Nooi gelijkgestemden voor zinvolle vrijetijdsbeleving, creatieve initiatieven, veilig experimenteren en sociale verdieping.
+      <div class="flex flex-col justify-center gap-[10px] font-light text-[18px] leading-[29px] max-w-5xl text-center mx-auto">
+        <p>
+          In de kalender krijg je een overzicht van onze events en openingstijden. Klik op één van de vakken om te boeken.
         </p>
-        <p class="text-center">
-          Beleef onze activiteiten, sluit je aan bij één van onze clubs, of werk samen met ons jouw idee uit.
+        <p>
+          Tijdens het open spelcafé staat onze deur open voor iedereen. Op de donkergroene momenten kan je Nooi reserveren voor je eigen activiteit. Dat is gratis, tenzij je Nooi voor jezelf wilt.
         </p>
       </div>
     </div>
