@@ -8,9 +8,9 @@ onBeforeUnmount(() => store.unsubscribe())
 <template>
   <NuxtLayout>
     <div class="space-y-5 container">
-      <p class="text-[37px] font-medium text-center tracking-[1.5px]">
+      <h1 class="text-[37px] font-medium text-center tracking-[1.5px]">
         KALENDER
-      </p>
+      </h1>
       <div class="flex flex-col justify-center gap-[10px] font-light text-[18px] leading-[29px] max-w-5xl text-center mx-auto">
         <p>
           In de kalender krijg je een overzicht van onze events en openingstijden. Klik op één van de vakken om te boeken.
