@@ -15,12 +15,13 @@ const first = ref<number>(0)
 
 const filters = ref<Record<string, any>>({
   search: '',
+  date: null,
   first: 0,
   sortField: null,
   sortOrder: null,
 })
 
-watchDebounced(() => filters.value.search, async () => {
+watchDebounced([() => filters.value.search, () => filters.value.date], async () => {
   await onTableEvent()
 }, { debounce: 500, maxWait: 1000 })
 
@@ -72,6 +73,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
     await store.createData(props.type, form)
   }
 
+  clearFilters()
   reset(form?.id ? `${props.type}-${form.id}` : props.type)
   content.value = ''
   creating.value = false
@@ -85,6 +87,7 @@ async function onTableEvent(data?: TableEvent): Promise<void> {
     fuzzy: true,
     page,
     search: filters.value.search,
+    ...(filters.value.date ? { eq: { field: 'day', value: filters.value.date } } : {}),
     fields: values[props.type].filter,
     sort: filters.value.sortField
       ? {
@@ -111,6 +114,11 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
   if (props.type === 'events') {
     content.value = ''
   }
+}
+
+function clearFilters(): void {
+  filters.value.search = ''
+  filters.value.date = null
 }
 </script>
 
@@ -144,15 +152,33 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
       <template #header>
         <div class="flex flex-col gap-4">
           <div class="flex items-center gap-4 justify-between flex-wrap">
-            <FormKit
-              v-if="values[type].filter.length"
-              v-model="filters.search"
-              :disabled="creating || !!Object.keys(expandedRows || {}).length"
-              type="search"
-              prefix-icon="search"
-              outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
-            />
-            <div v-else />
+            <div class="flex gap-4 flex-wrap items-center">
+              <FormKit
+                v-if="values[type].filter.length"
+                v-model="filters.search"
+                :disabled="creating || !!Object.keys(expandedRows || {}).length"
+                type="search"
+                prefix-icon="search"
+                outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+              />
+              <FormKit
+                v-model="filters.date"
+                :disabled="creating || !!Object.keys(expandedRows || {}).length"
+                type="date"
+                outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+              />
+              <AnimationReveal>
+                <Button
+                  v-if="filters.search || filters.date"
+                  :disabled="creating || !!Object.keys(expandedRows || {}).length"
+                  icon="pi pi-trash"
+                  label="Filters verwijderen"
+                  severity="danger"
+                  text
+                  @click="clearFilters"
+                />
+              </AnimationReveal>
+            </div>
             <Button
               :disabled="!!Object.keys(expandedRows || {}).length"
               :icon="`pi pi-${creating ? 'times' : 'plus'}`"
@@ -231,9 +257,6 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
               :config="{ validationVisibility: 'blur' }"
               @submit="submit"
             >
-              <pre>
-              {{ content }}
-            </pre>
               <FormRoster v-if="type === 'rosters'" />
               <FormEvent v-else-if="type === 'events'" />
               <FormAdminReservation v-else-if="type === 'reservations'" />
@@ -266,6 +289,7 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
         @click="() => {
           store.removeData(type, selected)
           selected = []
+          clearFilters()
         }"
       />
     </AnimationReveal>
