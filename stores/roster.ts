@@ -34,7 +34,9 @@ export const useRosterStore = defineStore('useRosterStore', () => {
   }
 
   function getDayRoster(date?: string): RosterRow[] {
-    return rosters.value.filter(r => r.day === date)
+    return rosters.value
+      .filter(r => r.day === date)
+      .sort((a, b) => a.start.localeCompare(b.start))
   }
 
   function checkIfOpen(date?: Date): boolean {
