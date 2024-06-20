@@ -122,7 +122,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   async function createReservation(insert: ReservationInsert): Promise<ReservationRow> {
     const { name, number, email } = insert
 
-    reservationInfo.value = { name, number, email }
+    reservationInfo.value = {
+      name,
+      number: number as string,
+      email: email as string,
+    }
 
     const { error, data } = await supabase
       .from('reservations')
@@ -185,8 +189,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
             date: formatDateUI(res.day),
             time: formatHour(res.start),
           },
-          to: res.email,
+          to: res.email as string,
         })
+      }
+      else {
+        cancelUnpaidReservation(+reservation)
       }
     }
     catch (error) {
