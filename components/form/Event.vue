@@ -72,9 +72,8 @@ watch([start, end], (v) => {
       type="number"
       name="price"
       label="Prijs"
-      validation="number|min:1|max:100"
+      validation="number|min:1"
       :min="1"
-      :max="100"
     />
   </div>
   <div class="flex flex-col">
