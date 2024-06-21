@@ -49,6 +49,21 @@ export function useSeo() {
         content: logo,
       },
       {
+        id: 'og:image:width',
+        property: 'og:image:width',
+        content: 1200,
+      },
+      {
+        id: 'og:image:height',
+        property: 'og:image:height',
+        content: 1200,
+      },
+      {
+        id: 'og:image:alt',
+        property: 'og:image:alt',
+        content: name,
+      },
+      {
         id: 'og:title',
         property: 'og:title',
         content: name,
