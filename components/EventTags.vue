@@ -29,7 +29,7 @@ const freeSpots = computed<number | undefined>(() => {
       v-if="event?.price"
       icon="wallet"
     >
-      €{{ event.price }} {{ event.onlinePayment ? 'online' : 'ter plaatse' }}
+      € {{ event.price }} {{ event.onlinePayment ? 'online' : 'ter plaatse' }}
     </IconLabel>
     <IconLabel
       v-if="freeSpots"
