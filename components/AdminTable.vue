@@ -119,6 +119,7 @@ function onRowCollapse({ data }: { data: Record<string, any> }): void {
 function clearFilters(): void {
   filters.value.search = ''
   filters.value.date = null
+  filters.value.first = 0
 }
 </script>
 
@@ -138,7 +139,7 @@ function clearFilters(): void {
       lazy
       sort-field="day"
       :sort-order="1"
-      :first="first"
+      :first="filters.first"
       :rows="10"
       :total-records="store.data[type].count"
       :loading="store.data[type].loading"
