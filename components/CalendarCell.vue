@@ -14,6 +14,12 @@ const cell = ref<HTMLButtonElement>()
 const isOpen = computed<boolean>(() => roster.checkIfOpen(props.day.dateFull))
 const isPast = computed<boolean>(() => dateInPast(props.day.dateFull))
 
+const sortedEvents = computed<EventRow[]>(() => {
+  const _events = props.events
+
+  return _events.sort((a, b) => a.start.localeCompare(b.start))
+})
+
 const currentRoster = computed<RosterRow[]>(() => {
   return roster.getDayRoster(formatDay(props.day.dateFull))
 })
@@ -82,7 +88,7 @@ function handleClick(event: MouseEvent): void {
       {{ day.date }}
     </time>
     <EventTag
-      v-for="event in events"
+      v-for="event in sortedEvents"
       :key="event.id"
       :event="event"
       @click.stop="addQuery({ event: event.id, status: 'info' })"
