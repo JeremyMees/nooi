@@ -54,7 +54,7 @@ watch([start, end], (v) => {
     <FormKit
       name="name"
       label="Naam"
-      validation="required|alpha_spaces:default|length:5,25"
+      validation="required|alpha_spaces:default|length:5,45"
     />
     <FormKit
       type="tel"
@@ -66,7 +66,7 @@ watch([start, end], (v) => {
       type="email"
       name="email"
       label="Email"
-      validation="email|length:5,25"
+      validation="email|length:5,65"
     />
     <FormKit
       v-model="type"

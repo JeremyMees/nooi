@@ -43,7 +43,7 @@ watch([start, end], (v) => {
     type="text"
     name="name"
     label="Volledige naam"
-    validation="required|alpha_spaces:default|length:5,25"
+    validation="required|alpha_spaces:default|length:5,45"
   />
   <FormKit
     v-model="store.form.number"
@@ -57,7 +57,7 @@ watch([start, end], (v) => {
     type="email"
     name="email"
     label="Email"
-    validation="required|email|length:5,25"
+    validation="required|email|length:5,65"
   />
   <template v-if="!store.selectedEvent">
     <div v-if="filteredRoster.length">
