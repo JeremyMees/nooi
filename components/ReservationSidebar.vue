@@ -29,6 +29,7 @@ watch(() => store.paymentPending, (pending) => {
 
 async function submit(form: ReservationInsert): Promise<void> {
   loading.value = true
+  const eventName = store.selectedEvent?.name
 
   try {
     if (store.selectedEvent && route.query.event) {
@@ -60,9 +61,9 @@ async function submit(form: ReservationInsert): Promise<void> {
           name: form.name,
           date: formatDateUI(form.day),
           time: formatHour(form.start),
-          ...(form.type === 'event' ? { event: store.selectedEvent?.name } : {}),
+          ...(form.type === 'event' ? { event: eventName } : {}),
         },
-        to: form.email,
+        to: form.email as string,
       }
 
       const defaultToast: ToastMessageOptions = {
@@ -75,7 +76,7 @@ async function submit(form: ReservationInsert): Promise<void> {
         await mail.eventSuccess(payload)
 
         toast.add({
-          detail: `Je bent ingeschreven voor ${store.selectedEvent?.name}. Tot binnenkort!`,
+          detail: `Je bent ingeschreven voor ${eventName}. Tot binnenkort!`,
           ...defaultToast,
         })
       }
