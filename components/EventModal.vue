@@ -94,10 +94,11 @@ watch(() => store.informationEvent, (event) => {
 
 <style>
 .v-md-editor--preview {
-  @apply max-h-[400px] overflow-y-hidden;
+  max-height: clamp(150px, calc(100vh - 400px), 400px);
+  @apply overflow-y-hidden;
 }
 
 .github-markdown-body {
-  @apply p-0;
+  @apply p-0 pr-2;
 }
 </style>
