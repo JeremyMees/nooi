@@ -39,6 +39,10 @@ export function formatDateUI(date: string): string {
   return format(new Date(date), { date: 'medium' }, locale)
 }
 
+export function formatDateMail(date: string): string {
+  return format(new Date(date), { date: 'full' }, locale)
+}
+
 export function formatDateUrl(date: string): string {
   return date.split('-').reverse().join('-')
 }
