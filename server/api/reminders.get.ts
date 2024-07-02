@@ -1,5 +1,5 @@
 import { addDay } from '@formkit/tempo'
-import { formatDateUI, formatHour, padDate } from '~/utils/date-helpers'
+import { formatDateMail, formatHour, padDate } from '~/utils/date-helpers'
 import { serverSupabaseServiceRole } from '#supabase/server'
 import type { Database } from '~/types/database'
 
@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
           template: 'Reminder.vue',
           props: {
             name: reservation.name,
-            date: formatDateUI(reservation.day),
+            date: formatDateMail(reservation.day),
             time: formatHour(reservation.start),
           },
         },

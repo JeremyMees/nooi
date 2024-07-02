@@ -37,10 +37,6 @@
     @apply text-[0.5rem] leading-[0.75rem];
   }
 
-  .lines-calendar {
-    background: repeating-linear-gradient(-50deg,#e6e4e140,#e6e4e140 10px,#e6e4e120 10px,#e6e4e120 20px)
-  }
-
   .github-markdown-body h1 {
     @apply !head-1 !border-none !pb-0;
   }

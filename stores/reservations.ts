@@ -186,7 +186,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         await mail.reservationSuccess({
           props: {
             name: res.name,
-            date: formatDateUI(res.day),
+            date: formatDateMail(res.day),
             time: formatHour(res.start),
           },
           to: res.email as string,
@@ -296,12 +296,12 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     supabase.removeAllChannels()
   }
 
-  async function createSession(id: number): Promise<{ clientSecret: string }> {
+  async function createSession(id: number): Promise<void> {
     const spotsNumber = form.value?.spots && !isNaN(+form.value.spots)
       ? +form.value.spots
       : 1
 
-    const { clientSecret } = await $fetch('/api/stripe/session', {
+    const url = await $fetch('/api/stripe/session', {
       method: 'POST',
       body: {
         url: `?reservation_id=${id}`,
@@ -311,11 +311,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       },
     })
 
-    if (!clientSecret) {
-      throw new Error('No client secret returned')
+    if (!url) {
+      throw new Error('No session url returned')
     }
 
-    return { clientSecret }
+    navigateTo(url, { external: true })
   }
 
   return {

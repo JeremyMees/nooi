@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import type { ToastMessageOptions } from 'primevue/toast'
 
-const stripe = await useClientStripe()
 const store = useReservationStore()
 const toast = useToast()
 const route = useRoute()
 const mail = useMail()
 
 const loading = ref<boolean>(false)
-const checkout = ref()
 
 const payment = computed<boolean>(() => {
   return !!(store.selectedEvent?.onlinePayment && store.selectedEvent?.price)
@@ -19,12 +17,6 @@ const submitLabel = computed<string>(() => {
   else if (store.selectedEvent) return 'Inschrijven'
   else if (route.query.type === 'game') return 'Boeken'
   else return 'Reserven'
-})
-
-watch(() => store.paymentPending, (pending) => {
-  if (!pending) {
-    checkout.value?.destroy()
-  }
 })
 
 async function submit(form: ReservationInsert): Promise<void> {
@@ -53,13 +45,13 @@ async function submit(form: ReservationInsert): Promise<void> {
     const { id } = await store.createReservation({ ...form, paymentNeeded: payment.value })
 
     if (payment.value) {
-      loadEmbed(id)
+      await store.createSession(id)
     }
     else {
       const payload = {
         props: {
           name: form.name,
-          date: formatDateUI(form.day),
+          date: formatDateMail(form.day),
           time: formatHour(form.start),
           ...(form.type === 'event' ? { event: eventName } : {}),
         },
@@ -113,15 +105,6 @@ async function submit(form: ReservationInsert): Promise<void> {
     }
   }
 }
-
-async function loadEmbed(id: number): Promise<void> {
-  const payload = await store.createSession(id)
-  checkout.value = await stripe.value?.initEmbeddedCheckout(payload)
-
-  checkout.value?.mount('#checkout-container')
-  store.paymentPending = id
-  loading.value = false
-}
 </script>
 
 <template>
@@ -160,7 +143,7 @@ async function loadEmbed(id: number): Promise<void> {
       class="w-[120px] mx-auto text-primary"
     />
     <FormKit
-      v-else-if="!store.paymentPending"
+      v-else
       type="form"
       :submit-label="submitLabel"
       :config="{ validationVisibility: 'blur' }"
@@ -168,10 +151,5 @@ async function loadEmbed(id: number): Promise<void> {
     >
       <FormReservation :payment="payment" />
     </FormKit>
-    <div
-      v-show="store.paymentPending"
-      id="checkout-container"
-      class="w-full"
-    />
   </Sidebar>
 </template>
