@@ -68,7 +68,8 @@ export function calculateCellClick(event: MouseEvent, cell: HTMLButtonElement, m
   return Math.floor(start / part)
 }
 
-export function generateCellBg(rosters: RosterRow[]): string {
+export function generateCellBg(rosters: RosterRow[], lines = false): string {
+  const striped = 'repeating-linear-gradient(-50deg,#e6e4e120,#e6e4e120 10px,#e6e4e110 10px,#e6e4e110 20px)'
   const rosterItems = rosters.length
 
   if (!rosterItems) {
@@ -93,5 +94,5 @@ export function generateCellBg(rosters: RosterRow[]): string {
     bg += `${color} ${partStart}, ${color} ${partEnd} ${i !== rosterItems - 1 ? ', ' : ''}`
   })
 
-  return `linear-gradient(to bottom, ${bg})`
+  return `${lines ? `${striped}, ` : ''}linear-gradient(to bottom, ${bg})`
 }

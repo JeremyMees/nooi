@@ -70,11 +70,8 @@ function handleClick(event: MouseEvent): void {
     ref="cell"
     :aria-label="`Reservatie voor ${day.key}`"
     class="transition-all duration-200 border border-b-0 p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-[85px]"
-    :class="{
-      'lines-calendar': !day.currentMonth,
-      'cursor-not-allowed': isPast || !isOpen,
-    }"
-    :style="{ background: generateCellBg(currentRoster) }"
+    :class="{ 'cursor-not-allowed': isPast || !isOpen }"
+    :style="{ backgroundImage: generateCellBg(currentRoster, !day.currentMonth) }"
     @click="handleClick"
   >
     <time
