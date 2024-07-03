@@ -27,14 +27,14 @@ const spots = computed<{ min: number, max: number }>(() => {
     const event = store.events.find(event => event.id === id)
 
     return {
-      min: event?.minSpots ?? 2,
+      min: event?.minSpots ?? 1,
       max: event?.spots
         ? event?.spots - getReservedSpots(event?.reservations)
         : maxSpots,
     }
   }
   else {
-    return { min: 2, max: maxSpots }
+    return { min: 1, max: maxSpots }
   }
 })
 
