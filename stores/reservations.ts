@@ -93,7 +93,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   watch(sidebarOpen, (value) => {
     if (!value) {
       if (paymentPending.value) {
-        cancelUnpaidReservation(paymentPending.value)
+        cancelUnpaidReservation()
       }
 
       form.value.day = undefined
@@ -162,20 +162,13 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   }
 
-  async function checkPaymentStatus(reservation: number, session: string): Promise<void> {
+  async function checkPaymentStatus(session: string): Promise<void> {
     try {
-      const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/session/status', {
+      const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/status', {
         query: { id: session },
       })
 
       if (currentSession.payment_status === 'paid') {
-        const res = await getReservation(reservation)
-
-        await updateReservation(reservation, {
-          paymentNeeded: false,
-          paymentIdentifier: currentSession.payment_intent as string,
-        })
-
         toast.add({
           severity: 'success',
           summary: 'Betaling gelukt!',
@@ -183,30 +176,28 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           life: 5000,
         })
 
-        await mail.reservationSuccess({
-          props: {
-            name: res.name,
-            date: formatDateMail(res.day),
-            time: formatHour(res.start),
-          },
-          to: res.email as string,
-        })
+        if (currentSession.metadata?.reservation) {
+          const res = await getReservation(+currentSession.metadata.reservation)
+
+          if (res) {
+            await mail.reservationSuccess({
+              props: {
+                name: res.name,
+                date: formatDateMail(res.day),
+                time: formatHour(res.start),
+              },
+              to: res.email as string,
+            })
+          }
+        }
       }
-      else {
-        cancelUnpaidReservation(+reservation)
-      }
-    }
-    catch (error) {
-      cancelUnpaidReservation(+reservation)
     }
     finally {
-      removeQuery(['reservation_id', 'session_id'])
+      removeQuery(['session_id'])
     }
   }
 
-  async function cancelUnpaidReservation(id: number): Promise<void> {
-    await removeReservation(id)
-
+  async function cancelUnpaidReservation(): Promise<void> {
     toast.add({
       severity: 'error',
       summary: 'Oeps!',
@@ -221,7 +212,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     try {
       subscribe()
 
-      const { day, reservation_id, session_id } = route.query
+      const { day, session_id } = route.query
 
       if (day) {
         const date = formatDay(new Date(day as string))
@@ -230,8 +221,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           ? form.value.day = date
           : removeQuery(['day'])
       }
-      else if (reservation_id && session_id) {
-        await checkPaymentStatus(+reservation_id, session_id as string)
+      else if (session_id) {
+        await checkPaymentStatus(session_id as string)
       }
     }
     catch (error) {
@@ -304,7 +295,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     const url = await $fetch('/api/stripe/session', {
       method: 'POST',
       body: {
-        url: `?reservation_id=${id}`,
+        reservation: id,
         name: selectedEvent.value?.name,
         amount: selectedEvent.value?.price,
         quantity: selectedEvent.value?.unitPrice ? spotsNumber : 1,
