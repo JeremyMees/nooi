@@ -35,6 +35,7 @@
     "@stripe/stripe-js": "^3.4.0",
     "@unlok-co/nuxt-stripe": "^3.0.0",
     "@vercel/analytics": "^1.3.1",
+    "@vercel/speed-insights": "^1.0.12",
     "@vue-email/nuxt": "^0.8.19",
     "@vueuse/nuxt": "^10.9.0",
     "hljs": "^6.2.3",
