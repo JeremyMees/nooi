@@ -1,42 +1,44 @@
 import { serverSupabaseClient } from '#supabase/server'
-import { useServerStripe } from '#stripe/server'
+// import { useServerStripe } from '#stripe/server'
 import type { Database } from '~/types/database'
+import { formatDateMail, formatHour } from '~/utils/date-helpers'
 
 export default defineEventHandler(async (event): Promise<any> => {
   const client = await serverSupabaseClient<Database>(event)
-  const webhookSecret = useRuntimeConfig().stripeWebhook
-  const stripe = await useServerStripe(event)
-  const raw = await readRawBody(event) as string
-  const signature = event.headers.get('stripe-signature') || ''
+  // const config = useRuntimeConfig()
+  // const stripe = await useServerStripe(event)
+  const body = await readBody(event)
+  // const raw = await readRawBody(event) as string
+  // const signature = event.headers.get('stripe-signature') || ''
 
   try {
-    const webhookEvent = stripe.webhooks.constructEvent(raw, signature, webhookSecret)
+    // const webhookSecret = config.stripeWebhook
+    // const webhookEvent = stripe.webhooks.constructEvent(raw, signature, webhookSecret)
 
     if (
       ![
         'payment_intent.succeeded',
-        'payment_intent.payment_failed',
         'payment_intent.canceled',
         'checkout.session.expired',
-      ].includes(webhookEvent.type)
+      ].includes(body.type)
     ) {
-      return `Webhook received but this event is not handled -> ${webhookEvent.type}`
+      return `Webhook received but this event is not handled -> ${body.type}`
     }
 
     let reservationId
 
-    if ('metadata' in webhookEvent.data.object && webhookEvent.data.object.metadata?.reservation) {
-      reservationId = +webhookEvent.data.object.metadata.reservation
+    if ('metadata' in body.data.object && body.data.object.metadata?.reservation) {
+      reservationId = +body.data.object.metadata.reservation
     }
     else {
       throw createError({ status: 400, message: 'No reservation id found' })
     }
 
-    if (webhookEvent.type === 'payment_intent.succeeded') {
+    if (body.type === 'payment_intent.succeeded') {
       await updateReservation(
         client,
         reservationId,
-        webhookEvent.data.object.id,
+        body.data.object.id,
       )
     }
     else {
@@ -62,9 +64,41 @@ async function updateReservation(client: any, id: number, payment: string): Prom
         paymentNeeded: false,
       })
       .eq('id', id)
+
+    const { error, data } = await client
+      .from('reservations')
+      .select('*')
+      .eq('id', id)
+
+    if (error) {
+      throw error
+    }
+
+    const reservation = data?.[0]
+
+    await $fetch('/api/mail', {
+      method: 'POST',
+      body: {
+        from: 'Nooi <zin@nooi.be>',
+        to: reservation.email,
+        subject: 'Jouw reservatie voor Nooi',
+        template: 'ReservationSuccess.vue',
+        props: {
+          name: reservation.name,
+          date: formatDateMail(reservation.day),
+          time: formatHour(reservation.start),
+
+        },
+      },
+    })
   }
   catch (error) {
-    throw createError({ status: 400, message: 'Error updating reservation' })
+    const { message } = error as Error
+
+    throw createError({
+      status: 400,
+      message: `Error updating reservation: ${message}`,
+    })
   }
 }
 
@@ -76,6 +110,11 @@ async function removeReservation(client: any, id: number): Promise<void> {
       .eq('id', id)
   }
   catch (error) {
-    throw createError({ status: 400, message: 'Error removing temporary reservation' })
+    const { message } = error as Error
+
+    throw createError({
+      status: 400,
+      message: `Error removing temporary reservation: ${message}`,
+    })
   }
 }

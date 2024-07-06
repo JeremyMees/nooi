@@ -93,7 +93,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   watch(sidebarOpen, (value) => {
     if (!value) {
       if (paymentPending.value) {
-        cancelUnpaidReservation()
+        cancelUnpaidReservation(paymentPending.value)
       }
 
       form.value.day = undefined
@@ -175,21 +175,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           detail: 'De betaling is succesvol verwerkt en de reservering is bevestigd',
           life: 5000,
         })
-
-        if (currentSession.metadata?.reservation) {
-          const res = await getReservation(+currentSession.metadata.reservation)
-
-          if (res) {
-            await mail.reservationSuccess({
-              props: {
-                name: res.name,
-                date: formatDateMail(res.day),
-                time: formatHour(res.start),
-              },
-              to: res.email as string,
-            })
-          }
-        }
+      }
+      else if (currentSession.payment_status === 'unpaid' && currentSession.metadata) {
+        cancelUnpaidReservation(+currentSession.metadata.reservation)
       }
     }
     finally {
@@ -197,7 +185,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   }
 
-  async function cancelUnpaidReservation(): Promise<void> {
+  async function cancelUnpaidReservation(id: number): Promise<void> {
+    await removeReservation(id)
+
     toast.add({
       severity: 'error',
       summary: 'Oeps!',
