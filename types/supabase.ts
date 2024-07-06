@@ -31,6 +31,7 @@ export interface SbFetchOptions {
   table: DatabaseTable
   select?: string
   date?: Date
+  eq?: SbEq
 }
 
 export interface SbQueryOptions {
@@ -40,7 +41,7 @@ export interface SbQueryOptions {
   page?: number
   perPage?: number
   search?: string
-  eq?: SbEq
+  eq?: SbEq[]
   fuzzy?: boolean
   sort?: SbSort
 }
@@ -52,7 +53,7 @@ export interface SbSort {
 
 export interface SbEq {
   field: string
-  value: string | number
+  value: string | number | boolean
 }
 
 export interface SbRange {

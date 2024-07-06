@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
     .from('reservations')
     .select('*, event(name)')
     .eq('day', day)
+    .eq('paymentNeeded', false)
 
   if (error) {
     return 'Error while fetching reminders'

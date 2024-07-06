@@ -26,9 +26,17 @@ export const useAdminStore = defineStore('useAdminStore', () => {
 
       if (type === 'events') {
         options.select = '*, reservations:reservations(id, spots)'
+
+        options.eq = options.eq?.length
+          ? [...options.eq, { field: 'reservations.paymentNeeded', value: false }]
+          : [{ field: 'reservations.paymentNeeded', value: false }]
       }
       else if (type === 'reservations') {
         options.select = '*, event(name)'
+
+        options.eq = options.eq?.length
+          ? [...options.eq, { field: 'paymentNeeded', value: false }]
+          : [{ field: 'paymentNeeded', value: false }]
       }
 
       const { data: fetchedData, count } = await sbQuery<RosterRow[]>(options)

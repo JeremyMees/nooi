@@ -87,7 +87,7 @@ async function onTableEvent(data?: TableEvent): Promise<void> {
     fuzzy: true,
     page,
     search: filters.value.search,
-    ...(filters.value.date ? { eq: { field: 'day', value: filters.value.date } } : {}),
+    ...(filters.value.date ? { eq: [{ field: 'day', value: filters.value.date }] } : {}),
     fields: values[props.type].filter,
     sort: filters.value.sortField
       ? {

@@ -25,6 +25,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     url: process.env.NUXT_PUBLIC_URL,
     resendApiKey: process.env.RESEND_API_KEY,
+    stripeWebhook: process.env.STRIPE_WEBHOOK,
     public: {
       adminPassword: process.env.ADMIN_PASSWORD || 'admin',
     },

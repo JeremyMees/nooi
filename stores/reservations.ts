@@ -162,45 +162,26 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   }
 
-  async function checkPaymentStatus(reservation: number, session: string): Promise<void> {
+  async function checkPaymentStatus(session: string): Promise<void> {
     try {
-      const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/session/status', {
+      const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/status', {
         query: { id: session },
       })
 
       if (currentSession.payment_status === 'paid') {
-        const res = await getReservation(reservation)
-
-        await updateReservation(reservation, {
-          paymentNeeded: false,
-          paymentIdentifier: currentSession.payment_intent as string,
-        })
-
         toast.add({
           severity: 'success',
           summary: 'Betaling gelukt!',
           detail: 'De betaling is succesvol verwerkt en de reservering is bevestigd',
           life: 5000,
         })
-
-        await mail.reservationSuccess({
-          props: {
-            name: res.name,
-            date: formatDateMail(res.day),
-            time: formatHour(res.start),
-          },
-          to: res.email as string,
-        })
       }
-      else {
-        cancelUnpaidReservation(+reservation)
+      else if (currentSession.payment_status === 'unpaid' && currentSession.metadata) {
+        cancelUnpaidReservation(+currentSession.metadata.reservation)
       }
-    }
-    catch (error) {
-      cancelUnpaidReservation(+reservation)
     }
     finally {
-      removeQuery(['reservation_id', 'session_id'])
+      removeQuery(['session_id'])
     }
   }
 
@@ -221,7 +202,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     try {
       subscribe()
 
-      const { day, reservation_id, session_id } = route.query
+      const { day, session_id } = route.query
 
       if (day) {
         const date = formatDay(new Date(day as string))
@@ -230,8 +211,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           ? form.value.day = date
           : removeQuery(['day'])
       }
-      else if (reservation_id && session_id) {
-        await checkPaymentStatus(+reservation_id, session_id as string)
+      else if (session_id) {
+        await checkPaymentStatus(session_id as string)
       }
     }
     catch (error) {
@@ -253,16 +234,18 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
     events.value = await sbFetch<EventReservation[]>({
       table: 'events',
-      select: '*, reservations:reservations(id, spots)',
+      select: '*, reservations:reservations(id, spots, paymentNeeded)',
       date,
+      eq: { field: 'reservations.paymentNeeded', value: false },
     })
 
     // Fetch single event if query param is present and its not in the current fetched month
     if (event && !isNaN(+event) && !events.value.find(({ id }) => id === +event)) {
       const fetchedEvent = await supabase
         .from('events')
-        .select('*, reservations:reservations(id, spots)')
+        .select('*, reservations:reservations(id, spots, paymentNeeded)')
         .eq('id', +event)
+        .eq('reservations.paymentNeeded', false)
 
       if (fetchedEvent.data?.length) {
         events.value.push(fetchedEvent.data[0])
@@ -272,6 +255,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     reservations.value = await sbFetch<ReservationRow[]>({
       table: 'reservations',
       date,
+      eq: { field: 'paymentNeeded', value: false },
     })
   }
 
@@ -286,7 +270,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           event: '*',
           schema: 'public',
           table: 'reservations',
-          filter: `day=gte.${gte}`,
+          filter: `day=gte.${gte},paymentNeeded=false`,
         },
         async () => await getData(),
       ).subscribe()
@@ -304,7 +288,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     const url = await $fetch('/api/stripe/session', {
       method: 'POST',
       body: {
-        url: `?reservation_id=${id}`,
+        reservation: id,
         name: selectedEvent.value?.name,
         amount: selectedEvent.value?.price,
         quantity: selectedEvent.value?.unitPrice ? spotsNumber : 1,
