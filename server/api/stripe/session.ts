@@ -13,6 +13,7 @@ export default defineEventHandler(async (event): Promise<string> => {
   }
 
   const id = reservation.toString()
+  const params = publicUrl.includes('?') ? '&' : '?'
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
@@ -25,8 +26,8 @@ export default defineEventHandler(async (event): Promise<string> => {
       },
       quantity,
     }],
-    success_url: `${publicUrl}?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${publicUrl}?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${publicUrl}${params}session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${publicUrl}${params}session_id={CHECKOUT_SESSION_ID}`,
     allow_promotion_codes: true,
     metadata: { reservation: id },
     payment_intent_data: {
