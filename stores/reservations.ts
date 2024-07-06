@@ -234,16 +234,18 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
     events.value = await sbFetch<EventReservation[]>({
       table: 'events',
-      select: '*, reservations:reservations(id, spots)',
+      select: '*, reservations:reservations(id, spots, paymentNeeded)',
       date,
+      eq: { field: 'reservations.paymentNeeded', value: false },
     })
 
     // Fetch single event if query param is present and its not in the current fetched month
     if (event && !isNaN(+event) && !events.value.find(({ id }) => id === +event)) {
       const fetchedEvent = await supabase
         .from('events')
-        .select('*, reservations:reservations(id, spots)')
+        .select('*, reservations:reservations(id, spots, paymentNeeded)')
         .eq('id', +event)
+        .eq('reservations.paymentNeeded', false)
 
       if (fetchedEvent.data?.length) {
         events.value.push(fetchedEvent.data[0])
@@ -253,6 +255,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     reservations.value = await sbFetch<ReservationRow[]>({
       table: 'reservations',
       date,
+      eq: { field: 'paymentNeeded', value: false },
     })
   }
 
@@ -267,7 +270,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           event: '*',
           schema: 'public',
           table: 'reservations',
-          filter: `day=gte.${gte}`,
+          filter: `day=gte.${gte},paymentNeeded=false`,
         },
         async () => await getData(),
       ).subscribe()
