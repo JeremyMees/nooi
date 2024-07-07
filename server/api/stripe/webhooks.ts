@@ -41,11 +41,26 @@ export default defineEventHandler(async (event): Promise<any> => {
         body.data.object.id,
       )
     }
-    else {
+    else if (body.type === 'payment_intent.canceled') {
       await removeReservation(
         client,
         reservationId,
       )
+    }
+    else {
+      try {
+        const reservation = await getReservation(client, reservationId)
+
+        if (reservation.paymentNeeded) {
+          await removeReservation(
+            client,
+            reservationId,
+          )
+        }
+      }
+      catch (error) {
+        return 'Session expired but reservation not found. Ignoring.'
+      }
     }
   }
   catch (err) {
@@ -54,6 +69,19 @@ export default defineEventHandler(async (event): Promise<any> => {
     throw createError({ status: 400, message: `Webhook Error: ${message}` })
   }
 })
+
+async function getReservation(client: any, id: number): Promise<any> {
+  const { error, data } = await client
+    .from('reservations')
+    .select('*')
+    .eq('id', id)
+
+  if (error) {
+    throw error
+  }
+
+  return data?.[0]
+}
 
 async function updateReservation(client: any, id: number, payment: string): Promise<void> {
   try {
@@ -65,16 +93,7 @@ async function updateReservation(client: any, id: number, payment: string): Prom
       })
       .eq('id', id)
 
-    const { error, data } = await client
-      .from('reservations')
-      .select('*')
-      .eq('id', id)
-
-    if (error) {
-      throw error
-    }
-
-    const reservation = data?.[0]
+    const reservation = await getReservation(client, id)
 
     await $fetch('/api/mail', {
       method: 'POST',
