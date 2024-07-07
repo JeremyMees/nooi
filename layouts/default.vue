@@ -11,5 +11,6 @@ import { SpeedInsights } from '@vercel/speed-insights/nuxt'
     </main>
 
     <Footer />
+    <SpeedInsights />
   </div>
 </template>
