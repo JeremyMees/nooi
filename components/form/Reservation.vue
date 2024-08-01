@@ -23,7 +23,7 @@ const spots = computed<{ min: number, max: number }>(() => {
     min: store.selectedEvent?.minSpots ?? filteredRoster.value?.[0]?.minSpots ?? 1,
     max: store.selectedEvent?.spots
       ? store.selectedEvent.spots - getReservedSpots(store.selectedEvent.reservations)
-      : maxSpots,
+      : route.query?.type === 'game' ? 8 : maxSpots,
   }
 })
 
@@ -123,6 +123,24 @@ watch([start, end], (v) => {
     :min="spots.min"
     :max="spots.max"
   />
+  <AnimationReveal>
+    <div
+      v-if="
+        route.query.type === 'game'
+          && store.form.spots
+          && !isNaN(+store.form.spots)
+          && +store.form.spots >= 8
+      "
+      class="pb-3"
+    >
+      <a
+        href="https://nooi.be/info/#contact"
+        class="body-small text-surface pb-4 underline"
+      >
+        Contacteer ons via deze link om te boeken voor grotere groepen
+      </a>
+    </div>
+  </AnimationReveal>
   <FormKit
     v-if="route.query.type === 'reservation'"
     v-model="store.form.exclusive"
