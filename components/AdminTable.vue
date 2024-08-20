@@ -11,7 +11,6 @@ const content = ref<string>('')
 const creating = ref<boolean>(false)
 const selected = ref<any[]>([])
 const expandedRows = ref<Record<string, boolean>>()
-const first = ref<number>(0)
 
 const filters = ref<Record<string, any>>({
   search: '',
@@ -34,10 +33,14 @@ function generateString(data: Record<string, any>, field: string): string {
   else if (['start', 'end'].includes(field)) return formatHour(data[field])
   else if (field === 'type') return getType(data[field])
   else if (field === 'status') return getStatus(data[field])
-  else if (field === 'reservations') return data[field].length
+  else if (field === 'reservations') return countSpots(data)
   else if (field === 'event') return data[field].name
   else if (field === 'day') return formatDateUI(data[field])
   else return data[field]
+}
+
+function countSpots(data: Record<string, any>): string {
+  return data.reservations.reduce((acc: number, curr: Record<string, number>) => acc + curr.spots, 0)
 }
 
 async function submit(form: RosterInsert | EventInsert | ReservationInsert): Promise<void> {
