@@ -65,6 +65,9 @@ export async function sbQuery<T>(options: SbQueryOptions): Promise<SbQuery<T>> {
     query = query.order('day', { ascending: true })
   }
 
+  // order by id for stable data ordering
+  query.order('id', { ascending: true })
+
   const { data, error, count } = await query
 
   if (error) {

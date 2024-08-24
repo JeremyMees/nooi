@@ -163,8 +163,18 @@ export function splitTime(time: string): Time {
 export function beforeTime(time: string, compare: string): boolean {
   const { hour, minutes } = splitTime(time)
   const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
+  let adjustedCompareHour = compareHour
+  let adjustedHour = hour
 
-  return hour < compareHour || (hour === compareHour && minutes < compareMinutes)
+  if (adjustedCompareHour < 6) {
+    adjustedCompareHour += 24
+  }
+
+  if (adjustedHour < 6) {
+    adjustedHour += 24
+  }
+
+  return adjustedHour < adjustedCompareHour || (adjustedHour === adjustedCompareHour && minutes < compareMinutes)
 }
 
 export function afterTime(time: string, compare: string): boolean {
