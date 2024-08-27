@@ -35,7 +35,7 @@ const freeSpots = computed<number | undefined>(() => {
       v-if="freeSpots"
       icon="user"
     >
-      {{ freeSpots }} vrije plaatsen
+      {{ freeSpots }} vrije {{ freeSpots > 1 ? 'plaatsen' : 'plaats' }}
     </IconLabel>
     <IconLabel
       v-if="event?.minSpots && event.minSpots > 1"
