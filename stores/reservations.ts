@@ -10,7 +10,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   const events = ref<EventReservation[]>([])
   const reservations = ref<ReservationRow[]>([])
-  const loading = ref<boolean>(true)
+  const loading = ref<boolean>(false)
   const paymentPending = ref<number>()
   const sidebarOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
@@ -104,7 +104,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   })
 
-  watch(shownDate, async () => await getData())
+  watch(shownDate, async () => {
+    if (!loading.value) {
+      await getData()
+    }
+  }, { immediate: true })
 
   async function getReservation(id: number): Promise<ReservationRow> {
     const { error, data } = await supabase
@@ -229,34 +233,41 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   async function getData(): Promise<void> {
-    const { event } = route.query
-    const date = new Date(shownDate.value.year, shownDate.value.month)
+    try {
+      loading.value = true
 
-    events.value = await sbFetch<EventReservation[]>({
-      table: 'events',
-      select: '*, reservations:reservations(id, spots, paymentNeeded)',
-      date,
-      eq: { field: 'reservations.paymentNeeded', value: false },
-    })
+      const { event } = route.query
+      const date = new Date(shownDate.value.year, shownDate.value.month)
 
-    // Fetch single event if query param is present and its not in the current fetched month
-    if (event && !isNaN(+event) && !events.value.find(({ id }) => id === +event)) {
-      const fetchedEvent = await supabase
-        .from('events')
-        .select('*, reservations:reservations(id, spots, paymentNeeded)')
-        .eq('id', +event)
-        .eq('reservations.paymentNeeded', false)
+      events.value = await sbFetch<EventReservation[]>({
+        table: 'events',
+        select: '*, reservations:reservations(id, spots, paymentNeeded)',
+        date,
+        eq: { field: 'reservations.paymentNeeded', value: false },
+      })
 
-      if (fetchedEvent.data?.length) {
-        events.value.push(fetchedEvent.data[0])
+      // Fetch single event if query param is present and its not in the current fetched month
+      if (event && !isNaN(+event) && !events.value.find(({ id }) => id === +event)) {
+        const fetchedEvent = await supabase
+          .from('events')
+          .select('*, reservations:reservations(id, spots, paymentNeeded)')
+          .eq('id', +event)
+          .eq('reservations.paymentNeeded', false)
+
+        if (fetchedEvent.data?.length) {
+          events.value.push(fetchedEvent.data[0])
+        }
       }
-    }
 
-    reservations.value = await sbFetch<ReservationRow[]>({
-      table: 'reservations',
-      date,
-      eq: { field: 'paymentNeeded', value: false },
-    })
+      reservations.value = await sbFetch<ReservationRow[]>({
+        table: 'reservations',
+        date,
+        eq: { field: 'paymentNeeded', value: false },
+      })
+    }
+    finally {
+      loading.value = false
+    }
   }
 
   function subscribe() {
