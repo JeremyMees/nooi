@@ -4,7 +4,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const rosterStore = useRosterStore()
   const supabase = useSupabaseClient<Database>()
   const toast = useToast()
-  const mail = useMail()
   const route = useRoute()
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
@@ -271,8 +270,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   function subscribe() {
-    const { gte } = sbDateFilters()
-
     supabase
       .channel('reservation')
       .on(
@@ -281,7 +278,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           event: '*',
           schema: 'public',
           table: 'reservations',
-          filter: `day=gte.${gte},paymentNeeded=false`,
         },
         async () => await getData(),
       ).subscribe()
