@@ -3,7 +3,7 @@ const props = defineProps<{ event: EventReservation }>()
 
 const freeSpots = computed<number | undefined>(() => {
   return props.event.spots
-    ? props.event.spots - getReservedSpots(props.event.reservations)
+    ? Math.max(props.event.spots - getReservedSpots(props.event.reservations), 0)
     : undefined
 })
 </script>
