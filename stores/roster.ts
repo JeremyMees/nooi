@@ -1,4 +1,5 @@
 export const useRosterStore = defineStore('useRosterStore', () => {
+  const supabase = useSupabaseClient<Database>()
   const reservationStore = useReservationStore()
   const toast = useToast()
 
@@ -33,6 +34,19 @@ export const useRosterStore = defineStore('useRosterStore', () => {
     }
   }
 
+  async function fetchRoster(date: Date): Promise<RosterRow[]> {
+    const { data, error } = await supabase
+      .from('rosters')
+      .select('*')
+      .eq('day', formatDay(date))
+
+    if (error) {
+      return []
+    }
+
+    return data
+  }
+
   function getDayRoster(date?: string): RosterRow[] {
     return rosters.value
       .filter(r => r.day === date)
@@ -54,5 +68,6 @@ export const useRosterStore = defineStore('useRosterStore', () => {
     getData,
     getDayRoster,
     checkIfOpen,
+    fetchRoster,
   }
 })
