@@ -39,7 +39,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
           : [{ field: 'paymentNeeded', value: false }]
       }
 
-      const { data: fetchedData, count } = await sbQuery<RosterRow[]>(options)
+      const { data: fetchedData, count } = await sbQuery<RosterRow[]>(supabase, options)
 
       data.value[type] = {
         ...data.value[type],

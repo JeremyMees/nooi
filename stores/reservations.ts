@@ -238,7 +238,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       const { event } = route.query
       const date = new Date(shownDate.value.year, shownDate.value.month)
 
-      events.value = await sbFetch<EventReservation[]>({
+      events.value = await sbFetch<EventReservation[]>(supabase, {
         table: 'events',
         select: '*, reservations:reservations(id, spots, paymentNeeded)',
         date,
@@ -258,7 +258,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         }
       }
 
-      reservations.value = await sbFetch<ReservationRow[]>({
+      reservations.value = await sbFetch<ReservationRow[]>(supabase, {
         table: 'reservations',
         date,
         eq: { field: 'paymentNeeded', value: false },

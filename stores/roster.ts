@@ -19,7 +19,7 @@ export const useRosterStore = defineStore('useRosterStore', () => {
     const date = new Date(reservationStore.shownDate.year, reservationStore.shownDate.month)
 
     try {
-      rosters.value = await sbFetch<RosterRow[]>({ table: 'rosters', date })
+      rosters.value = await sbFetch<RosterRow[]>(supabase, { table: 'rosters', date })
     }
     catch (error) {
       toast.add({
