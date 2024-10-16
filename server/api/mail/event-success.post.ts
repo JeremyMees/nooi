@@ -5,18 +5,23 @@ export default defineEventHandler(async (event) => {
   const { resendApiKey } = useRuntimeConfig()
   const body = await readBody(event)
 
-  const { props, from, to, subject, template } = body
+  const { props, to } = body
 
-  if (!props || !from || !to || !subject || !template) {
+  if (!props || !to) {
     throw new Error('Missing required fields')
   }
 
   try {
     const resend = new Resend(resendApiKey)
 
-    const compiled = await useCompiler(template, { props })
+    const compiled = await useCompiler('EventSuccess.vue', { props })
 
-    await resend.emails.send({ from, to, subject, html: compiled.html })
+    await resend.emails.send({
+      from: 'Nooi <zin@nooi.be>',
+      subject: 'Jouw inschrijving bij Nooi',
+      to,
+      html: compiled.html,
+    })
 
     return { message: 'Email sent' }
   }

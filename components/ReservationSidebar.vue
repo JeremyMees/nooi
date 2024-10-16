@@ -4,7 +4,6 @@ import type { ToastMessageOptions } from 'primevue/toast'
 const store = useReservationStore()
 const toast = useToast()
 const route = useRoute()
-const mail = useMail()
 
 const loading = ref<boolean>(false)
 
@@ -48,7 +47,7 @@ async function submit(form: ReservationInsert): Promise<void> {
       await store.createSession(id)
     }
     else {
-      const payload = {
+      await notifyUser(form.type, {
         props: {
           name: form.name,
           date: formatDateMail(form.day),
@@ -56,38 +55,7 @@ async function submit(form: ReservationInsert): Promise<void> {
           ...(form.type === 'event' ? { event: eventName } : {}),
         },
         to: form.email as string,
-      }
-
-      const defaultToast: ToastMessageOptions = {
-        severity: 'success',
-        summary: 'Gelukt!',
-        life: 5000,
-      }
-
-      if (form.type === 'event') {
-        await mail.eventSuccess(payload)
-
-        toast.add({
-          detail: `Je bent ingeschreven voor ${eventName}. Tot binnenkort!`,
-          ...defaultToast,
-        })
-      }
-      else if (form.type === 'game') {
-        await mail.bookingSuccess(payload)
-
-        toast.add({
-          detail: 'We hebben je boeking goed ontvangen. Tot binnenkort!',
-          ...defaultToast,
-        })
-      }
-      else {
-        await mail.reservationSuccess(payload)
-
-        toast.add({
-          detail: 'Je reservatie is bevestigd. Tot binnenkort!',
-          ...defaultToast,
-        })
-      }
+      })
     }
   }
   catch (error) {
@@ -104,6 +72,34 @@ async function submit(form: ReservationInsert): Promise<void> {
       store.sidebarOpen = false
     }
   }
+}
+
+async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>): Promise<void> {
+  const endpoints = [
+    '/api/mail/event-success',
+    '/api/mail/reservation-success',
+    '/api/mail/booking-success',
+  ]
+
+  const details = [
+    `Je bent ingeschreven voor ${payload.props.event}. Tot binnenkort!`,
+    'We hebben je boeking goed ontvangen. Tot binnenkort!',
+    'Je reservatie is bevestigd. Tot binnenkort!',
+  ]
+
+  const index = type === 'event' ? 0 : type === 'game' ? 1 : 2
+
+  await useFetch(endpoints[index], {
+    method: 'POST',
+    body: payload,
+  })
+
+  toast.add({
+    detail: details[index],
+    severity: 'success',
+    summary: 'Gelukt!',
+    life: 5000,
+  })
 }
 </script>
 

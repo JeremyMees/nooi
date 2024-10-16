@@ -95,18 +95,14 @@ async function updateReservation(client: any, id: number, payment: string): Prom
 
     const reservation = await getReservation(client, id)
 
-    await $fetch('/api/mail', {
+    await $fetch('/api/mail/reservation-success', {
       method: 'POST',
       body: {
-        from: 'Nooi <zin@nooi.be>',
         to: reservation.email,
-        subject: 'Jouw reservatie voor Nooi',
-        template: 'ReservationSuccess.vue',
         props: {
           name: reservation.name,
           date: formatDateMail(reservation.day),
           time: formatHour(reservation.start),
-
         },
       },
     })
