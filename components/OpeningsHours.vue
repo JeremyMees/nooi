@@ -3,7 +3,9 @@ const store = useRosterStore()
 const rosters = ref<RosterRow[]>([])
 
 const filteredRoster = computed<RosterRow[]>(() => {
-  return rosters.value.filter(({ status }) => status === 'game')
+  return rosters.value
+    .filter(({ status }) => status === 'game')
+    .sort((a, b) => a.start.localeCompare(b.start))
 })
 
 onMounted(async () => {

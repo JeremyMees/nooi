@@ -11,7 +11,9 @@ const start = ref<string>()
 const end = ref<string>()
 
 const filteredRoster = computed<RosterRow[]>(() => {
-  return roster.current.filter(({ status }: RosterRow) => status === route.query.type)
+  return roster.current
+    .filter(({ status }: RosterRow) => status === route.query.type)
+    .sort((a, b) => a.start.localeCompare(b.start))
 })
 
 const timeSlot = computed<number>(() => {
