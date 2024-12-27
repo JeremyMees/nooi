@@ -17,17 +17,15 @@ watch(visible, (value) => {
 })
 
 watch(() => store.informationEvent, (event) => {
-  if (
-    event
-    && !event.external
-    && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))
-  ) {
-    toast.add({
-      severity: 'info',
-      summary: 'Te laat',
-      detail: `De inschrijvingsperiode voor ${event.name} is afgelopen.`,
-      life: 5000,
-    })
+  if (event && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))) {
+    if (!event.external) {
+      toast.add({
+        severity: 'info',
+        summary: 'Te laat',
+        detail: `De inschrijvingsperiode voor ${event.name} is afgelopen.`,
+        life: 5000,
+      })
+    }
 
     removeQuery(['event', 'status'])
   }
