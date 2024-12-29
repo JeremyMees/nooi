@@ -88,7 +88,9 @@ function handleClick(event: MouseEvent): void {
       v-for="event in sortedEvents"
       :key="event.id"
       :event="event"
-      :class="{ 'opacity-60 pointer-events-none': isPast }"
+      :class="{
+        'opacity-60 pointer-events-none': isPast || countSpots(event) === event.spots,
+      }"
       @click.stop="addQuery({ event: event.id, status: 'info' })"
     />
   </button>

@@ -1,3 +1,7 @@
+export function countSpots(data: Record<string, any>): number {
+  return data.reservations.reduce((acc: number, curr: Record<string, number>) => acc + curr.spots, 0)
+}
+
 export function translateStatus(status: CalendarStatus): string {
   switch (status) {
     case 'full':
