@@ -89,7 +89,8 @@ function handleClick(event: MouseEvent): void {
       :key="event.id"
       :event="event"
       :class="{
-        'opacity-60 pointer-events-none': isPast || countSpots(event) === event.spots,
+        'pointer-events-none': isPast,
+        'opacity-60': isPast || countSpots(event) === event.spots,
       }"
       @click.stop="addQuery({ event: event.id, status: 'info' })"
     />
