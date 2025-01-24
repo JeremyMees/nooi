@@ -16,23 +16,7 @@ watch(visible, (value) => {
   }
 })
 
-watch(() => store.informationEvent, (event) => {
-  if (event && !isBeforeDeadline(new Date(), new Date(event.bookingDeadline))) {
-    if (!event.external) {
-      toast.add({
-        severity: 'info',
-        summary: 'Te laat',
-        detail: `De inschrijvingsperiode voor ${event.name} is afgelopen.`,
-        life: 5000,
-      })
-    }
-
-    removeQuery(['event', 'status'])
-  }
-  else {
-    visible.value = !!store.informationEvent
-  }
-})
+watch(() => store.informationEvent, () => visible.value = !!store.informationEvent)
 </script>
 
 <template>
@@ -86,6 +70,12 @@ watch(() => store.informationEvent, (event) => {
         zin@nooi.be
       </a>.
       Vermeld ook je telefoonnummer.
+    </p>
+    <p
+      v-else
+      class="pt-8"
+    >
+      Dit event is volzet.
     </p>
   </Sidebar>
 </template>
