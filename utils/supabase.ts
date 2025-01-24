@@ -55,15 +55,16 @@ export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promis
     query = query.or(sbOrQuery(fields || ['title'], search))
   }
 
-  if (sort?.field && sort?.order) {
-    query = query.order(sort.field, { ascending: sort.order === 'asc' })
+  if (sort) {
+    sort.forEach((sort) => {
+      query = query.order(sort.field, { ascending: sort.order === 'asc' })
+    })
   }
   else {
-    query = query.order('day', { ascending: true })
+    query = query
+      .order('day', { ascending: true })
+      .order('start', { ascending: true })
   }
-
-  // order by id for stable data ordering
-  query.order('id', { ascending: true })
 
   const { data, error, count } = await query
 

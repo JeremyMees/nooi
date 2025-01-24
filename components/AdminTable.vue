@@ -89,10 +89,16 @@ async function onTableEvent(data?: TableEvent): Promise<void> {
     ...(filters.value.date ? { eq: [{ field: 'day', value: filters.value.date }] } : {}),
     fields: values[props.type].filter,
     sort: filters.value.sortField
-      ? {
-          field: filters.value.sortField,
-          order: filters.value.sortOrder === 1 ? 'asc' : 'desc',
-        }
+      ? [
+          {
+            field: filters.value.sortField,
+            order: filters.value.sortOrder === 1 ? 'asc' : 'desc',
+          },
+          ...(filters.value.sortField === 'day'
+            ? [{ field: 'start', order: 'asc' }]
+            : []
+          ),
+        ]
       : undefined,
   }
 

@@ -43,7 +43,7 @@ export interface SbQueryOptions {
   search?: string
   eq?: SbEq[]
   fuzzy?: boolean
-  sort?: SbSort
+  sort?: SbSort[]
 }
 
 export interface SbSort {
