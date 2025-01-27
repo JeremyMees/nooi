@@ -44,39 +44,41 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
       </div>
     </ClientOnly>
 
-    <div
-      v-if="!isFull && store.informationEvent && !store.informationEvent?.external"
-      class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8"
-    >
+    <template v-if="store.informationEvent">
+      <div
+        v-if="!isFull"
+        class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8"
+      >
+        <p
+          v-if="store.informationEvent.bookingDeadline"
+          class="mr-4 body-small text-pretty text-left"
+        >
+          Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
+        </p>
+        <Button @click="addQuery({ status: 'reservation' })">
+          Inschrijven
+        </Button>
+      </div>
       <p
-        v-if="store.informationEvent.bookingDeadline"
-        class="mr-4 body-small text-pretty text-left"
+        v-else-if="store.informationEvent.external"
+        class="pt-8"
       >
-        Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
+        Dit event is volzet.
       </p>
-      <Button @click="addQuery({ status: 'reservation' })">
-        Inschrijven
-      </Button>
-    </div>
-    <p
-      v-else-if="!store.informationEvent?.external"
-      class="pt-8"
-    >
-      Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
-      <a
-        href="mailto:zin@nooi.be"
-        class="text-primary underline"
+      <p
+        v-else
+        class="pt-8"
       >
-        zin@nooi.be
-      </a>.
-      Vermeld ook je telefoonnummer.
-    </p>
-    <p
-      v-else
-      class="pt-8"
-    >
-      Dit event is volzet.
-    </p>
+        Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
+        <a
+          href="mailto:zin@nooi.be"
+          class="text-primary underline"
+        >
+          zin@nooi.be
+        </a>.
+        Vermeld ook je telefoonnummer.
+      </p>
+    </template>
   </Sidebar>
 </template>
 
