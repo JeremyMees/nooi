@@ -45,8 +45,29 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
     </ClientOnly>
 
     <template v-if="store.informationEvent">
+      <template v-if="isFull">
+        <p
+          v-if="store.informationEvent.external"
+          class="pt-8"
+        >
+          Dit event is volzet.
+        </p>
+        <p
+          v-else
+          class="pt-8"
+        >
+          Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
+          <a
+            href="mailto:zin@nooi.be"
+            class="text-primary underline"
+          >
+            zin@nooi.be
+          </a>.
+          Vermeld ook je telefoonnummer.
+        </p>
+      </template>
       <div
-        v-if="!isFull"
+        v-else-if="!store.informationEvent.external"
         class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8"
       >
         <p
@@ -59,25 +80,6 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
           Inschrijven
         </Button>
       </div>
-      <p
-        v-else-if="store.informationEvent.external"
-        class="pt-8"
-      >
-        Dit event is volzet.
-      </p>
-      <p
-        v-else
-        class="pt-8"
-      >
-        Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
-        <a
-          href="mailto:zin@nooi.be"
-          class="text-primary underline"
-        >
-          zin@nooi.be
-        </a>.
-        Vermeld ook je telefoonnummer.
-      </p>
     </template>
   </Sidebar>
 </template>
