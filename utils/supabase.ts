@@ -1,4 +1,4 @@
-import { addMonth, monthDays } from '@formkit/tempo'
+import { addMonth, monthDays, diffDays } from '@formkit/tempo'
 
 export async function sbFetch<T>(supabase: any, options: SbFetchOptions): Promise<T> {
   const { table, select, date, eq } = options
@@ -61,12 +61,25 @@ export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promis
     })
   }
   else {
-    query = query
-      .order('day', { ascending: true })
-      .order('start', { ascending: true })
+    query = query.order('day', { ascending: true })
   }
 
-  const { data, error, count } = await query
+  const { data: reservations, error, count } = await query
+
+  let data = reservations
+
+  if (!sort || sort.some(s => s.field === 'day')) {
+    data = data?.sort((a: ReservationRow, b: ReservationRow) => {
+      const dayDiff = diffDays(a.day, b.day)
+
+      if (dayDiff !== 0) return dayDiff
+
+      // If same day, compare start times
+      const aTime = new Date(`1970-01-01T${a.start}`).getTime()
+      const bTime = new Date(`1970-01-01T${b.start}`).getTime()
+      return aTime - bTime
+    })
+  }
 
   if (error) {
     throw error

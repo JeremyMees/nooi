@@ -28,7 +28,7 @@
     "@formkit/i18n": "^1.6.5",
     "@formkit/icons": "^1.6.5",
     "@formkit/nuxt": "^1.6.5",
-    "@formkit/tempo": "^0.0.13",
+    "@formkit/tempo": "^0.1.2",
     "@formkit/vue": "^1.6.5",
     "@kangc/v-md-editor": "^2.3.18",
     "@pinia/nuxt": "^0.5.1",
