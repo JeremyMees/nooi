@@ -39,12 +39,6 @@ export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promis
     .select(select || '*', { count: 'exact' })
     .gte('day', formatDay(new Date()))
 
-  if (typeof page === 'number' && typeof perPage === 'number') {
-    const { from, to } = generateRange(page, perPage)
-
-    query = query.range(from, to)
-  }
-
   if (eq && eq.length) {
     eq.forEach((eq) => {
       query = query.eq(eq.field, eq.value)
@@ -55,31 +49,22 @@ export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promis
     query = query.or(sbOrQuery(fields || ['title'], search))
   }
 
-  if (sort) {
-    sort.forEach((sort) => {
-      query = query.order(sort.field, { ascending: sort.order === 'asc' })
-    })
+  if (!sort || (sort && sort.field === 'day')) {
+    query = query
+      .order('day', { ascending: sort ? sort.order === 'asc' : true }, { nullsFirst: false })
+      .order('start', { ascending: true })
+      .order('id', { ascending: true })
   }
-  else {
-    query = query.order('day', { ascending: true })
+  else if (sort) {
+    query = query.order(sort.field, { ascending: sort.order === 'asc' }, { nullsFirst: false })
   }
 
-  const { data: reservations, error, count } = await query
-
-  let data = reservations
-
-  if (!sort || sort.some(s => s.field === 'day')) {
-    data = data?.sort((a: ReservationRow, b: ReservationRow) => {
-      const dayDiff = diffDays(a.day, b.day)
-
-      if (dayDiff !== 0) return dayDiff
-
-      // If same day, compare start times
-      const aTime = new Date(`1970-01-01T${a.start}`).getTime()
-      const bTime = new Date(`1970-01-01T${b.start}`).getTime()
-      return aTime - bTime
-    })
+  if (typeof page === 'number' && typeof perPage === 'number') {
+    const { from, to } = generateRange(page, perPage)
+    query = query.range(from, to)
   }
+
+  const { data, error, count } = await query
 
   if (error) {
     throw error
