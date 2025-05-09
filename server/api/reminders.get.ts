@@ -19,15 +19,25 @@ export default defineEventHandler(async (event) => {
     return 'Error while fetching reminders'
   }
 
-  if (data?.length) {
-    for (const reservation of data) {
-      await $fetch('/api/mail', {
+  if (data.length === 0) {
+    return 'No reminders needed'
+  }
+
+  const mailNotProvided: string[] = []
+  const mailErrors: string[] = []
+  const adminMailErrors: string[] = []
+
+  const mailPromises = data.map(async (reservation) => {
+    if (!reservation.email) {
+      mailNotProvided.push(reservation.name)
+      return
+    }
+
+    try {
+      await $fetch('/api/mail/reminder', {
         method: 'POST',
         body: {
-          from: 'Nooi <zin@nooi.be>',
           to: reservation.email,
-          subject: 'We zien je snel in Nooi!',
-          template: 'Reminder.vue',
           props: {
             name: reservation.name,
             date: formatDateMail(reservation.day),
@@ -36,10 +46,38 @@ export default defineEventHandler(async (event) => {
         },
       })
     }
+    catch (error) {
+      mailErrors.push(`Failed to send email to ${reservation.name} (${reservation.email})`)
+    }
+  })
 
-    return `Reminders sent for ${day}`
+  await Promise.all(mailPromises)
+
+  const errorAmount = mailNotProvided.length + mailErrors.length
+  const sentAmount = data.length - errorAmount
+
+  try {
+    await $fetch('/api/mail/reminder-stats', {
+      method: 'POST',
+      body: {
+        to: 'jeremymees123@gmail.com',
+        props: {
+          date: formatDateMail(day),
+          success: sentAmount,
+          errors: mailErrors.length,
+          noMailAddress: mailNotProvided,
+        },
+      },
+    })
   }
-  else {
-    return `No reminders for ${day}`
+  catch (error) {
+    adminMailErrors.push((error as Error).message)
+  }
+
+  return {
+    message: `${sentAmount} reminders sent for ${day} with ${errorAmount} errors`,
+    mailNotProvided,
+    mailErrors,
+    adminMailErrors,
   }
 })
