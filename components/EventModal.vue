@@ -10,6 +10,12 @@ const isFull = computed<boolean>(() => {
     && store.informationEvent.spots <= getReservedSpots(store.informationEvent.reservations)
 })
 
+const afterDeadline = computed<boolean>(() => {
+  return store.informationEvent?.bookingDeadline
+    ? isAfterDeadline(new Date(), new Date(store.informationEvent.bookingDeadline))
+    : false
+})
+
 watch(visible, (value) => {
   if (!value && route.query.status === 'info') {
     removeQuery(['event', 'status'])
@@ -70,15 +76,22 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
         v-else-if="!store.informationEvent.external"
         class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8"
       >
-        <p
-          v-if="store.informationEvent.bookingDeadline"
-          class="mr-4 body-small text-pretty text-left"
-        >
-          Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
-        </p>
-        <Button @click="addQuery({ status: 'reservation' })">
-          Inschrijven
-        </Button>
+        <template v-if="store.informationEvent.bookingDeadline">
+          <p
+            v-if="afterDeadline"
+            class="body-small text-pretty text-left"
+          >
+            Inschrijvingen zijn gesloten.
+          </p>
+          <template v-else>
+            <p class="mr-4 body-small text-pretty text-left">
+              Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
+            </p>
+            <Button @click="addQuery({ status: 'reservation' })">
+              Inschrijven
+            </Button>
+          </template>
+        </template>
       </div>
     </template>
   </Sidebar>

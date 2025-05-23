@@ -23,6 +23,10 @@ export function isBeforeDeadline(date: Date, deadline: Date): boolean {
   return isBefore(date, deadline) || sameDay(date, deadline)
 }
 
+export function isAfterDeadline(date: Date, deadline: Date): boolean {
+  return isBefore(deadline, date) && !sameDay(date, deadline)
+}
+
 export function dateInPast(date: Date): boolean {
   return isBefore(date, addDay(new Date(), -1))
 }
