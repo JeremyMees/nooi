@@ -96,7 +96,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       }
 
       form.value.day = undefined
-      removeQuery(['date', 'type', 'event', 'status'])
+      removeQuery(['date', 'type', 'event', 'status', 'rosterIndex'])
     }
     else {
       paymentPending.value = undefined

@@ -34,9 +34,11 @@ function handleClick(event: MouseEvent): void {
     || !cell.value
   ) { return }
 
-  const row = rosterItems === 1
-    ? currentRoster.value[0]
-    : currentRoster.value[calculateCellClick(event, cell.value, rosterItems)]
+  const rosterIndex = rosterItems === 1
+    ? 0
+    : calculateCellClick(event, cell.value, rosterItems)
+
+  const row = currentRoster.value[rosterIndex]
 
   if (row.status === 'occupied') {
     toast.add({
@@ -45,7 +47,7 @@ function handleClick(event: MouseEvent): void {
       detail: 'Voor deze dag kan je niet meer reserveren. Wees welkom op een ander moment!',
       life: 5000,
     })
-    removeQuery(['date', 'type'])
+    removeQuery(['date', 'type', 'rosterIndex'])
   }
   else if (sameDay(row.day, new Date())) {
     toast.add({
@@ -54,13 +56,21 @@ function handleClick(event: MouseEvent): void {
       detail: 'Je kan niet reserveren op dezelfde dag. Wil je toch langs komen? Bel ons even op!',
       life: 5000,
     })
-    removeQuery(['date', 'type'])
+    removeQuery(['date', 'type', 'rosterIndex'])
   }
   else if (row.status === 'reservation') {
-    addQuery({ date: formatDay(props.day.dateFull), type: 'reservation' })
+    addQuery({
+      date: formatDay(props.day.dateFull),
+      type: 'reservation',
+      rosterIndex: rosterIndex,
+    })
   }
   else {
-    addQuery({ date: formatDay(props.day.dateFull), type: 'game' })
+    addQuery({
+      date: formatDay(props.day.dateFull),
+      type: 'game',
+      rosterIndex: rosterIndex,
+    })
   }
 }
 </script>

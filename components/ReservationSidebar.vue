@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import type { ToastMessageOptions } from 'primevue/toast'
-
 const store = useReservationStore()
+const roster = useRosterStore()
 const toast = useToast()
 const route = useRoute()
 
 const loading = ref<boolean>(false)
+
+const clickedRosterItem = computed(() => {
+  const rosterIndex = route.query.rosterIndex
+
+  if (rosterIndex !== undefined && roster.current.length > 0) {
+    const index = parseInt(rosterIndex as string)
+    return roster.current[index] || roster.current[0]
+  }
+
+  return roster.current[0]
+})
 
 const payment = computed<boolean>(() => {
   return !!(store.selectedEvent?.onlinePayment && store.selectedEvent?.price)
@@ -134,18 +144,31 @@ async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>
         </span>
       </div>
     </template>
-    <Loader
-      v-if="loading"
-      class="w-[120px] mx-auto text-primary"
-    />
-    <FormKit
-      v-else
-      type="form"
-      :submit-label="submitLabel"
-      :config="{ validationVisibility: 'blur' }"
-      @submit="submit"
+    <div
+      v-if="clickedRosterItem && !clickedRosterItem.allowReservation"
+      class="flex flex-col gap-4 bg-teal/10 p-4 rounded-lg"
     >
-      <FormReservation :payment="payment" />
-    </FormKit>
+      <p class="text-sm text-gray-500">
+        Voor dit tijdslot kan je niet meer reserveren.
+        Er gaat wellicht een evenement door met vrije toegang.
+        Al kunnen we geen zitplekje garanderen, je bent uiteraard welkom!
+        We zijn open van {{ formatHour(clickedRosterItem.start) }} tot {{ formatHour(clickedRosterItem.end) }}.
+      </p>
+    </div>
+    <template v-else>
+      <Loader
+        v-if="loading"
+        class="w-[120px] mx-auto text-primary"
+      />
+      <FormKit
+        v-else
+        type="form"
+        :submit-label="submitLabel"
+        :config="{ validationVisibility: 'blur' }"
+        @submit="submit"
+      >
+        <FormReservation :payment="payment" />
+      </FormKit>
+    </template>
   </Sidebar>
 </template>

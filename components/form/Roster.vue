@@ -11,7 +11,9 @@ const statusOptions: Option<string>[] = [
 watch([start, end], (v) => {
   v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1])) {
-      i === 0 ? start.value = roundTime(value) : end.value = roundTime(value)
+      i === 0
+        ? (start.value = roundTime(value))
+        : (end.value = roundTime(value))
     }
   })
 })
@@ -51,6 +53,7 @@ watch([start, end], (v) => {
     />
     <FormKit
       type="number"
+      number
       name="minSpots"
       label="Minimum personen"
       validation="required|number|min:1|max:100"
@@ -59,4 +62,10 @@ watch([start, end], (v) => {
       :max="100"
     />
   </div>
+  <FormKit
+    type="checkbox"
+    name="allowReservation"
+    label="Toestaan om te reserveren"
+    :value="true"
+  />
 </template>

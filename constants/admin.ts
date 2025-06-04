@@ -35,6 +35,7 @@ export const values: AdminConstants = {
       { header: 'Start', field: 'start' },
       { header: 'Einde', field: 'end' },
       { header: 'Min Plaatsen', field: 'minSpots' },
+      { header: 'Reservering', field: 'allowReservation' },
     ],
     filter: [],
   },

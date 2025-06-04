@@ -51,10 +51,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
 
     form = {
       ...form,
-      ...(event
-        ? { day: event.day, start: event.start, end: event.end }
-        : {}
-      ),
+      ...(event ? { day: event.day, start: event.start, end: event.end } : {}),
     } as ReservationInsert
   }
 
@@ -80,7 +77,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
 
 async function onTableEvent(data?: TableEvent): Promise<void> {
   filters.value = { ...filters.value, ...(data || {}) }
-  const page = data ? filters.value.first ? filters.value.first / 10 : 0 : 0
+  const page = data ? (filters.value.first ? filters.value.first / 10 : 0) : 0
 
   const options: Partial<SbQueryOptions> = {
     fuzzy: true,
@@ -229,9 +226,9 @@ function clearFilters(): void {
       >
         <template #body="{ data }">
           <Icon
-            v-if="column.field === 'exclusive'"
-            :name="data.exclusive ? 'radix-icons:check' : 'radix-icons:cross-2'"
-            :class="[data.exclusive ? 'text-teal' : 'text-secondary']"
+            v-if="['exclusive', 'allowReservation'].includes(column.field)"
+            :name="data[column.field] ? 'radix-icons:check' : 'radix-icons:cross-2'"
+            :class="[data[column.field] ? 'text-teal' : 'text-secondary']"
             class="h-6 w-6"
           />
           <Button
