@@ -1,10 +1,13 @@
 import { addDay } from '@formkit/tempo'
+import { Resend } from 'resend'
 import { formatDateMail, formatHour, padDate } from '~/utils/date-helpers'
 import { serverSupabaseServiceRole } from '#supabase/server'
 import type { Database } from '~/types/database'
+import { useCompiler } from '#vue-email'
 
 export default defineEventHandler(async (event) => {
   const supabase = serverSupabaseServiceRole<Database>(event)
+  const { resendApiKey } = useRuntimeConfig()
 
   const date = addDay(new Date(), 2)
   const day = `${date.getFullYear()}-${padDate(date.getMonth() + 1)}-${padDate(date.getDate())}`
@@ -23,59 +26,78 @@ export default defineEventHandler(async (event) => {
     return 'No reminders needed'
   }
 
+  const resend = new Resend(resendApiKey)
+
   const mailNotProvided: string[] = []
   const mailErrors: string[] = []
   const adminMailErrors: string[] = []
+  const emailsToSend = []
 
-  const mailPromises = data.map(async (reservation) => {
+  for (const reservation of data) {
     if (!reservation.email) {
       mailNotProvided.push(reservation.name)
-      return
+      continue
     }
 
     try {
-      await $fetch('/api/mail/reminder', {
-        method: 'POST',
-        body: {
-          to: reservation.email,
-          props: {
-            name: reservation.name,
-            date: formatDateMail(reservation.day),
-            time: formatHour(reservation.start),
-          },
+      const compiled = await useCompiler('Reminder.vue', {
+        props: {
+          name: reservation.name,
+          date: formatDateMail(reservation.day),
+          time: formatHour(reservation.start),
         },
       })
-    }
-    catch (error) {
-      mailErrors.push(`Failed to send email to ${reservation.name} (${reservation.email})`)
-    }
-  })
 
-  await Promise.all(mailPromises)
+      emailsToSend.push({
+        from: 'Nooi <zin@nooi.be>',
+        to: reservation.email,
+        subject: 'We zien je snel in Nooi!',
+        html: compiled.html,
+      })
+    }
+    catch (compileError) {
+      mailErrors.push(`Failed to compile email template for ${reservation.name} (${reservation.email})`)
+    }
+  }
 
-  const errorAmount = mailNotProvided.length + mailErrors.length
-  const sentAmount = data.length - errorAmount
+  let reminderSendSuccess = 0
+
+  if (emailsToSend.length > 0) {
+    try {
+      const { data: batchData } = await resend.batch.send(emailsToSend)
+      reminderSendSuccess = batchData?.data?.length ?? 0
+    }
+    catch (batchError) {
+      mailErrors.push(`Batch send failed: ${(batchError as Error).message}`)
+    }
+  }
 
   try {
-    await $fetch('/api/mail/reminder-stats', {
-      method: 'POST',
-      body: {
-        to: 'jeremymees123@gmail.com',
-        props: {
-          date: formatDateMail(day),
-          success: sentAmount,
-          errors: mailErrors.length,
-          noMailAddress: mailNotProvided,
-        },
+    const statsCompiled = await useCompiler('ReminderStats.vue', {
+      props: {
+        date: formatDateMail(day),
+        success: reminderSendSuccess,
+        errors: mailErrors.length,
+        noMailAddress: mailNotProvided,
       },
     })
+
+    const statsRecipients = ['jeremymees123@gmail.com', 'mail@thomasgoyvaerts.be']
+
+    await resend.batch.send(
+      statsRecipients.map(recipient => ({
+        from: 'Nooi <zin@nooi.be>',
+        to: recipient,
+        subject: `Herinnering statistieken voor ${formatDateMail(day)}`,
+        html: statsCompiled.html,
+      })),
+    )
   }
-  catch (error) {
-    adminMailErrors.push((error as Error).message)
+  catch (statsError) {
+    adminMailErrors.push(`Failed to send stats email: ${(statsError as Error).message}`)
   }
 
   return {
-    message: `${sentAmount} reminders sent for ${day} with ${errorAmount} errors`,
     mailNotProvided,
     mailErrors,
     adminMailErrors,
