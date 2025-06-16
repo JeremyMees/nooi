@@ -29,7 +29,7 @@
     @apply text-[0.875rem] leading-[1.5rem] sm:text-[1.125rem] sm:leading-[1.5rem] md:text-[1.25rem] md:leading-[1.75rem];
   }
 
- .body-small {
+  .body-small {
     @apply text-[0.75rem] leading-[1.25rem] sm:text-[0.875rem] sm:leading-[1.25rem];
   }
 
@@ -37,32 +37,36 @@
     @apply text-[0.5rem] leading-[0.75rem];
   }
 
+  .nav-link {
+    @apply font-bold text-[1.25rem] leading-[1.75rem] sm:text-[1.125rem] sm:leading-[1.5rem] md:text-[1.25rem] md:leading-[1.75rem];
+  }
+
   .github-markdown-body h1 {
     @apply !head-1 !border-none !pb-0;
   }
-  
+
   .github-markdown-body h2 {
     @apply !head-2 !border-none !pb-0;
   }
-  
+
   .github-markdown-body h3 {
     @apply !head-3 !pb-0;
   }
-  
+
   .github-markdown-body h4,
   .github-markdown-body h5,
   .github-markdown-body h6 {
     @apply !pb-0;
   }
-  
+
   .github-markdown-body hr {
     @apply !h-px !bg-surface;
   }
-  
+
   .github-markdown-body a {
     @apply !mb-4;
   }
-  
+
   .github-markdown-body img {
     @apply !rounded-lg !my-4 !w-full !max-w-[350px] !max-h-[350px] mx-auto;
   }
