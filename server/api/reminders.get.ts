@@ -45,6 +45,7 @@ export default defineEventHandler(async (event) => {
           name: reservation.name,
           date: formatDateMail(reservation.day),
           time: formatHour(reservation.start),
+          event: reservation?.event?.name ?? undefined,
         },
       })
 

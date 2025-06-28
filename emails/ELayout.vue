@@ -61,7 +61,7 @@ defineProps<{
             NOOI
           </EText>
           <EText v-if="name">
-            Hallo {{ name }}
+            Hallo {{ name }},
           </EText>
           <slot />
           <EHr />

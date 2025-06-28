@@ -3,6 +3,7 @@ defineProps<{
   name: string
   date: string
   time?: string
+  event?: string
 }>()
 </script>
 
@@ -13,7 +14,17 @@ defineProps<{
     :name="name"
   >
     <EText>
-      Graag herinneren wij je aan je boeking bij ons op
+      Graag herinneren wij je aan je
+      <template v-if="event">
+        inschrijving voor
+        <span class="font-bold text-primary">
+          {{ event }}
+        </span>
+      </template>
+      <template v-else>
+        boeking bij ons
+      </template>
+      op
       <span class="font-bold text-primary">
         {{ date }}
       </span>
