@@ -6,7 +6,7 @@ import message from './message'
 import inlinemessage from './inlinemessage'
 import skeleton from './skeleton'
 import button from './button'
-import sidebar from './sidebar'
+import drawer from './sidebar'
 import dialog from './dialog'
 import dataTable from './data-table'
 import paginator from './paginator'
@@ -20,7 +20,7 @@ export default {
   inlinemessage,
   skeleton,
   button,
-  sidebar,
+  drawer,
   dialog,
   dataTable,
   paginator,

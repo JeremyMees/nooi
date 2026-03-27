@@ -53,11 +53,6 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-    build: {
-      rollupOptions: {
-        external: ['quill'],
-      },
-    },
     optimizeDeps: {
       include: [
         '@vue/devtools-kit',
@@ -86,7 +81,7 @@ export default defineNuxtConfig({
 
   primevue: {
     options: { unstyled: true },
-    importPT: { as: 'Lara', from: path.resolve(__dirname, './presets/lara/') },
+    importPT: { as: 'Lara', from: '~~/presets/lara/' },
   },
 
   robots: {

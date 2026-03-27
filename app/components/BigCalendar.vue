@@ -5,7 +5,9 @@ const months = getMonths()
 const currentDate = new Date()
 const { shownDate } = storeToRefs(store)
 
-const grid = computed<CalendarTile[]>(() => getCalenderDays(shownDate.value))
+const grid = computed<CalendarTile[]>(() => {
+  return getCalenderDays(shownDate.value)
+})
 const isCurrentMonth = computed<boolean>(() => sameMonth(shownDate.value, currentDate))
 
 function navigateCalendar(modifier: number): void {
@@ -21,7 +23,7 @@ function navigateCalendar(modifier: number): void {
 <template>
   <Card class="w-full">
     <template #title>
-      <div class="flex items-center justify-between border-b py-3 text-xl px-5">
+      <div class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5">
         <div class="flex flex-wrap gap-x-4">
           <Button
             icon="pi pi-angle-left"

@@ -53,6 +53,7 @@
     "resend": "^6.9.4",
     "satori": "^0.26.0",
     "tailwindcss": "^4.2.2",
+    "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.31",
     "vue-router": "^4.6.4"
   }

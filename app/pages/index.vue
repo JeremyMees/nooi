@@ -21,7 +21,7 @@ onBeforeUnmount(() => store.unsubscribe())
       </div>
     </div>
     <OpeningsHours />
-    <DatePicker class="max-w-5xl mx-auto" />
+    <BigCalendar class="max-w-5xl mx-auto" />
     <EventModal />
     <ReservationDrawer />
   </NuxtLayout>

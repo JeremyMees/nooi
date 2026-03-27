@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tailwindcss-primeui";
+
+@source "../../../presets/lara/";
+@source "../../../formkit/";
 
 @theme inline {
   --font-mukta: 'Mukta', sans-serif;

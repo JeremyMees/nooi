@@ -6,12 +6,15 @@ export default {
       'shadow-md',
 
       // Color
-      'bg-surface-0 dark:bg-surface-900',
-      'text-surface-700 dark:text-surface-0',
+      'bg-surface-0',
+      'text-surface-700',
     ],
   },
   body: {
-    class: 'pb-5',
+    class: 'flex flex-col gap-2 pb-5',
+  },
+  caption: {
+    class: 'flex flex-col gap-2',
   },
   title: {
     class: 'text-2xl font-bold mb-2',
@@ -25,7 +28,7 @@ export default {
       'mb-2 px-5',
 
       // Color
-      'text-surface-600 dark:text-surface-0/60',
+      'text-surface-600',
     ],
   },
   content: {

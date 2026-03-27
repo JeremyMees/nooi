@@ -81,7 +81,7 @@ function handleClick(event: MouseEvent): void {
   <button
     ref="cell"
     :aria-label="`Reservatie voor ${day.key}`"
-    class="transition-all duration-200 border border-b-0 p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-[85px]"
+    class="transition-all duration-200 border border-b-0 border-white p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-[85px]"
     :class="{ 'cursor-not-allowed': isPast || !isOpen }"
     :style="{ backgroundImage: generateCellBg(currentRoster, !day.currentMonth) }"
     @click="handleClick"
@@ -90,8 +90,8 @@ function handleClick(event: MouseEvent): void {
       :datetime="day.key"
       class="flex h-6 w-6 items-center justify-center rounded-lg text-white"
       :class="{
-        'bg-surface-50 shadow font-bold !text-surface-700': day.today,
-        '!text-surface-200': isPast || !isOpen,
+        'bg-surface-50 shadow font-bold text-surface-700!': day.today,
+        'text-surface-200!': isPast || !isOpen,
       }"
     >
       {{ day.date }}

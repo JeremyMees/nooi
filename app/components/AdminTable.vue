@@ -199,12 +199,12 @@ function clearFilters(): void {
                 <FormAdminReservation v-else-if="type === 'reservations'" />
                 <div
                   v-if="type === 'events'"
-                  class="h-[400px] mb-10"
+                  class="h-100 mb-10"
                 >
                   <span class="text-sm text-black">
                     Omscrijving
                   </span>
-                  <Editor v-model:content="content" />
+                  <MarkdownEditor v-model:content="content" />
                 </div>
               </FormKit>
             </AnimationExpand>
@@ -259,12 +259,12 @@ function clearFilters(): void {
               <FormAdminReservation v-else-if="type === 'reservations'" />
               <div
                 v-if="type === 'events'"
-                class="h-[400px] mb-10"
+                class="h-100 mb-10"
               >
                 <span class="text-sm text-black">
                   Omscrijving
                 </span>
-                <Editor v-model:content="content" />
+                <MarkdownEditor v-model:content="content" />
               </div>
             </FormKit>
           </ClientOnly>
