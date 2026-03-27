@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { maxSpots } from '~/constants/info'
+import { maxSpots } from '~~/constants/info'
 
 const store = useAdminStore()
 
@@ -17,7 +17,7 @@ const typeOptions: Option<string>[] = [
 const eventOptions = computed<Option<string>[]>(() => {
   return store.events.map(event => ({
     label: `${event.name} (${formatDateUI(event.day)})`,
-    value: event.id,
+    value: event.id.toString(),
   }))
 })
 

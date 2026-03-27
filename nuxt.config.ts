@@ -53,6 +53,25 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    build: {
+      rollupOptions: {
+        external: ['quill'],
+      },
+    },
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-kit',
+        '@formkit/core',
+        '@formkit/icons',
+        '@formkit/i18n',
+        '@kangc/v-md-editor', // CJS
+        '@kangc/v-md-editor/lib/theme/github.js', // CJS
+        '@kangc/v-md-editor/lib/lang/en-US', // CJS
+        'highlight.js', // CJS
+        '@unhead/schema-org/vue',
+        '@formkit/tempo',
+      ],
+    },
   },
 
   eslint: {

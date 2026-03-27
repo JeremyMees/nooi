@@ -76,6 +76,10 @@ export function getNextYear(): Date {
 export function roundTime(time: string): string {
   const [hour, minutes] = time.split(':')
 
+  if (!hour || !minutes) {
+    return '_'
+  }
+
   if (+minutes <= 15) {
     return `${hour}:00`
   }
@@ -95,7 +99,10 @@ export function getMonths(): string[] {
 export function getDaysOfWeek(): string[] {
   const [sunday, ...remainingDays] = range('ddd', locale)
 
-  return [...remainingDays, sunday]
+  return [
+    ...remainingDays,
+    ...(sunday ? [sunday] : []),
+  ]
 }
 
 export function addMonth(date: DisplayDate, increment: number): DisplayDate {
@@ -103,7 +110,7 @@ export function addMonth(date: DisplayDate, increment: number): DisplayDate {
   let year = date.year
 
   if (month > 12) {
-    year = +1
+    year += 1
     month -= 12
   }
   else if (month < 1) {
@@ -161,7 +168,10 @@ export function getCalenderDays({ year, month }: DisplayDate): CalendarTile[] {
 export function splitTime(time: string): Time {
   const [hour, minutes] = time.split(':')
 
-  return { hour: +hour, minutes: +minutes }
+  return {
+    hour: hour ? +hour : 0,
+    minutes: minutes ? +minutes : 0,
+  }
 }
 
 export function beforeTime(time: string, compare: string): boolean {

@@ -79,7 +79,7 @@ async function submit(form: ReservationInsert): Promise<void> {
   finally {
     if (!payment.value) {
       loading.value = false
-      store.sidebarOpen = false
+      store.drawerOpen = false
     }
   }
 }
@@ -98,8 +98,9 @@ async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>
   ]
 
   const index = type === 'event' ? 0 : type === 'game' ? 1 : 2
+  const endpoint = endpoints[index] as string
 
-  await useFetch(endpoints[index], {
+  await useFetch(endpoint, {
     method: 'POST',
     body: payload,
   })
@@ -114,8 +115,8 @@ async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>
 </script>
 
 <template>
-  <Sidebar
-    v-model:visible="store.sidebarOpen"
+  <Drawer
+    v-model:visible="store.drawerOpen"
     position="right"
   >
     <template #header>
@@ -170,5 +171,5 @@ async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>
         <FormReservation :payment="payment" />
       </FormKit>
     </template>
-  </Sidebar>
+  </Drawer>
 </template>

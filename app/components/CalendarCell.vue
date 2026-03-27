@@ -40,6 +40,8 @@ function handleClick(event: MouseEvent): void {
 
   const row = currentRoster.value[rosterIndex]
 
+  if (!row) return
+
   if (row.status === 'occupied') {
     toast.add({
       severity: 'info',

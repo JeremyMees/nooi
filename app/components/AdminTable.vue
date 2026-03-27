@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reset } from '@formkit/core'
 import DataTable from 'primevue/datatable'
-import { values } from '@/constants/admin'
+import { values } from '~~/constants/admin'
 
 const props = defineProps<{ type: DatabaseTable }>()
 

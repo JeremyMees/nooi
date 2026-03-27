@@ -20,7 +20,7 @@ defineProps<{
       Graag herinneren wij je aan je
       <template v-if="event">
         inschrijving voor
-        <span class="font-bold text-primary">
+        <span class="font-bold text-[#305445]">
           {{ event }}
         </span>
       </template>
@@ -28,12 +28,12 @@ defineProps<{
         boeking bij ons
       </template>
       op
-      <span class="font-bold text-primary">
+      <span class="font-bold text-[#305445]">
         {{ date }}
       </span>
       <template v-if="time">
         om
-        <span class="font-bold text-primary">
+        <span class="font-bold text-[#305445]">
           {{ time }}
         </span>
       </template>.

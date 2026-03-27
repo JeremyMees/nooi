@@ -26,7 +26,7 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
 </script>
 
 <template>
-  <Sidebar
+  <Drawer
     v-model:visible="visible"
     position="bottom"
   >
@@ -94,7 +94,7 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
         </template>
       </div>
     </template>
-  </Sidebar>
+  </Drawer>
 </template>
 
 <style>

@@ -1,4 +1,4 @@
-interface Mail {
+export interface Mail {
   props: Record<string, any>
   from: string
   to: string

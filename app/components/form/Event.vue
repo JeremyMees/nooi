@@ -4,7 +4,7 @@ const end = ref<string>()
 
 watch([start, end], (v) => {
   v.forEach((value: string | undefined, i: number) => {
-    if (value && !['00', '30'].includes(value.split(':')[1])) {
+    if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
       if (i === 0) {
         start.value = roundTime(value)
       }
@@ -61,7 +61,7 @@ watch([start, end], (v) => {
       name="minSpots"
       label="Minimum personen"
       validation="required|number|min:1|max:100"
-      :value="1"
+      :value="'1'"
       :min="1"
       :max="100"
     />

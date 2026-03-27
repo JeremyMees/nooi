@@ -11,7 +11,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(false)
   const paymentPending = ref<number>()
-  const sidebarOpen = ref<boolean>(false)
+  const drawerOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
 
   const shownDate = ref<DisplayDate>({
@@ -82,14 +82,14 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         form.value.mail = reservationInfo.value.email
       }
 
-      sidebarOpen.value = true
+      drawerOpen.value = true
     }
     else {
-      sidebarOpen.value = false
+      drawerOpen.value = false
     }
   }, { immediate: true })
 
-  watch(sidebarOpen, (value) => {
+  watch(drawerOpen, (value) => {
     if (!value) {
       if (paymentPending.value) {
         cancelUnpaidReservation(paymentPending.value)
@@ -115,11 +115,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       .select('*')
       .eq('id', id)
 
-    if (error) {
-      throw error
+    if (error || !data?.[0]) {
+      throw error || createError('Er is iets misgegaan bij het ophalen van de reservering')
     }
 
-    return data?.[0]
+    return data[0]
   }
 
   async function createReservation(insert: ReservationInsert): Promise<ReservationRow> {
@@ -136,11 +136,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       .insert([insert])
       .select('*')
 
-    if (error) {
-      throw error
+    if (error || !data?.[0]) {
+      throw error || createError('Er is iets misgegaan bij het aanmaken van de reservering')
     }
 
-    return data?.[0]
+    return data[0]
   }
 
   async function removeReservation(id: number): Promise<void> {
@@ -179,7 +179,10 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           life: 5000,
         })
       }
-      else if (currentSession.payment_status === 'unpaid' && currentSession.metadata) {
+      else if (
+        currentSession.payment_status === 'unpaid'
+        && currentSession.metadata?.reservation
+      ) {
         cancelUnpaidReservation(+currentSession.metadata.reservation)
       }
     }
@@ -256,7 +259,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           .eq('id', +event)
           .eq('reservations.paymentNeeded', false)
 
-        if (fetchedEvent.data?.length) {
+        if (fetchedEvent.data?.length && fetchedEvent.data[0]) {
           events.value.push(fetchedEvent.data[0])
         }
       }
@@ -318,7 +321,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     informationEvent,
     reservations,
     loading,
-    sidebarOpen,
+    drawerOpen,
     paymentPending,
     activeStep,
     form,

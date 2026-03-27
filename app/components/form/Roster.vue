@@ -10,7 +10,7 @@ const statusOptions: Option<string>[] = [
 
 watch([start, end], (v) => {
   v.forEach((value: string | undefined, i: number) => {
-    if (value && !['00', '30'].includes(value.split(':')[1])) {
+    if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
       if (i === 0) {
         start.value = roundTime(value)
       }
@@ -51,7 +51,7 @@ watch([start, end], (v) => {
       name="status"
       label="Status"
       validation="required"
-      :value="statusOptions[0].value"
+      :value="statusOptions[0]!.value"
       :options="statusOptions"
     />
     <FormKit

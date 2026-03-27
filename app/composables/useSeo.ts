@@ -1,4 +1,4 @@
-import config from '@/constants/seo'
+import config from '~~/constants/seo'
 
 export function useSeo() {
   const {

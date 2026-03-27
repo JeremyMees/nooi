@@ -1,20 +1,20 @@
-interface AdminDataChild<T> {
+export interface AdminDataChild<T> {
   data: T[]
   loading: boolean
   count?: number
   error?: string
 }
 
-interface AdminData {
+export interface AdminData {
   events: AdminDataChild<EventReservation>
   reservations: AdminDataChild<ReservationRow>
   rosters: AdminDataChild<RosterRow>
 }
 
-interface AdminConstantChild {
+export interface AdminConstantChild {
   title: string
   table: TableColumn[]
   filter: string[]
 }
 
-type AdminConstants = Record<DatabaseTable, AdminConstantChild>
+export type AdminConstants = Record<DatabaseTable, AdminConstantChild>

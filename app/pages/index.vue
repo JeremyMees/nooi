@@ -23,6 +23,6 @@ onBeforeUnmount(() => store.unsubscribe())
     <OpeningsHours />
     <DatePicker class="max-w-5xl mx-auto" />
     <EventModal />
-    <ReservationSidebar />
+    <ReservationDrawer />
   </NuxtLayout>
 </template>

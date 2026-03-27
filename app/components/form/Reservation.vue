@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormKitNode } from '@formkit/core'
-import { checkTimeValid } from '~/formkit/rules'
-import { maxSpots, minTimeSlot, minTimeSlotRental } from '~/constants/info'
+import { checkTimeValid } from '~~/formkit/rules'
+import { maxSpots, minTimeSlot, minTimeSlotRental } from '~~/constants/info'
 
 const store = useReservationStore()
 const roster = useRosterStore()
@@ -31,7 +31,7 @@ const spots = computed<{ min: number, max: number }>(() => {
 
 watch([start, end], (v) => {
   v.forEach((value: string | undefined, i: number) => {
-    if (value && !['00', '30'].includes(value.split(':')[1])) {
+    if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
       if (i === 0) {
         start.value = roundTime(value)
       }
@@ -87,8 +87,8 @@ watch([start, end], (v) => {
         name="start"
         :label="route.query.type === 'game' ? 'Tijdstip' : 'Startuur'"
         :disabled="!store.form.day"
-        :min="formatHour(filteredRoster[0].start)"
-        :max="formatHour(filteredRoster[filteredRoster.length - 1].end)"
+        :min="formatHour(filteredRoster[0]!.start)"
+        :max="formatHour(filteredRoster[filteredRoster.length - 1]!.end)"
         step="1800"
         :validation-rules="{
           time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster),
@@ -104,8 +104,8 @@ watch([start, end], (v) => {
       name="end"
       label="Einduur"
       :disabled="!store.form.day"
-      :min="formatHour(filteredRoster[0].start)"
-      :max="formatHour(filteredRoster[filteredRoster.length - 1].end)"
+      :min="formatHour(filteredRoster[0]!.start)"
+      :max="formatHour(filteredRoster[filteredRoster.length - 1]!.end)"
       step="1800"
       :validation-rules="{
         time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster),

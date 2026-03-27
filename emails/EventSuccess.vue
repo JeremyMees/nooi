@@ -18,12 +18,12 @@ defineProps<{
   >
     <Text>
       We hebben je inschrijving voor {{ event }} goed ontvangen en kijken uit naar je komst. Fijn dat we je mogen verwelkomen op
-      <span class="font-bold text-primary">
+      <span class="font-bold text-[#305445]">
         {{ date }}
       </span>
       <template v-if="time">
         om
-        <span class="font-bold text-primary">
+        <span class="font-bold text-[#305445]">
           {{ time }}
         </span>
       </template>.
