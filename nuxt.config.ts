@@ -4,7 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 import seo from './constants/seo'
 
 export default defineNuxtConfig({
-  compatibilityDate: '2026-03-27',
 
   modules: [
     '@pinia/nuxt',
@@ -41,6 +40,8 @@ export default defineNuxtConfig({
       adminPassword: process.env.ADMIN_PASSWORD || 'admin',
     },
   },
+
+  compatibilityDate: '2026-03-27',
 
   nitro: {
     rollupConfig: {
