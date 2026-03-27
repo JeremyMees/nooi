@@ -18,31 +18,33 @@
 </template>
 
 <style scoped>
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+@reference '~/assets/css/main.css';
 
-    @keyframes spin2 {
-      0% {
-        stroke-dasharray: 1, 800;
-        stroke-dashoffset: 0;
-      }
-      50% {
-        stroke-dasharray: 400, 400;
-        stroke-dashoffset: -200px;
-      }
-      100% {
-        stroke-dasharray: 800, 1;
-        stroke-dashoffset: -800px;
-      }
-    }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-    .spin2 {
-      transform-origin: center;
-      animation: spin2 2s ease-in-out infinite,
-        spin 2s linear infinite;
-      animation-direction: alternate;
-    }
-  </style>
+@keyframes spin2 {
+  0% {
+    stroke-dasharray: 1, 800;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 400, 400;
+    stroke-dashoffset: -200px;
+  }
+  100% {
+    stroke-dasharray: 800, 1;
+    stroke-dashoffset: -800px;
+  }
+}
+
+.spin2 {
+  transform-origin: center;
+  animation: spin2 2s ease-in-out infinite,
+    spin 2s linear infinite;
+  animation-direction: alternate;
+}
+</style>

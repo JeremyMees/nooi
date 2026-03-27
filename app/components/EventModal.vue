@@ -98,6 +98,8 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
 </template>
 
 <style>
+@reference '~/assets/css/main.css';
+
 .v-md-editor--preview {
   max-height: clamp(150px, calc(100vh - 400px), 400px);
   @apply overflow-y-hidden;

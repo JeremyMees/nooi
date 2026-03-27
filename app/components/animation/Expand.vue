@@ -48,6 +48,8 @@ function leave(element: any): void {
 </template>
 
 <style scoped>
+@reference '~/assets/css/main.css';
+
 * {
   @apply will-change-[height] transform-gpu;
 }

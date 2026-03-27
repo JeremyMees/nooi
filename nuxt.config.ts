@@ -1,11 +1,13 @@
 import path from 'path'
 import vue from '@vitejs/plugin-vue'
+import tailwindcss from '@tailwindcss/vite'
 import seo from './constants/seo'
 
 export default defineNuxtConfig({
+  compatibilityDate: '2026-03-27',
+
   modules: [
     '@pinia/nuxt',
-    '@nuxtjs/tailwindcss',
     '@vueuse/nuxt',
     '@nuxtjs/supabase',
     '@formkit/nuxt',
@@ -20,7 +22,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   css: [
-    './assets/css/base.css',
+    './assets/css/main.css',
     '~/node_modules/primeicons/primeicons.css',
   ],
 
@@ -44,6 +46,12 @@ export default defineNuxtConfig({
     rollupConfig: {
       plugins: [vue()],
     },
+  },
+
+  vite: {
+    plugins: [
+      tailwindcss(),
+    ],
   },
 
   eslint: {
@@ -71,9 +79,4 @@ export default defineNuxtConfig({
   },
 
   supabase: { redirect: false },
-
-  tailwindcss: {
-    cssPath: './assets/css/tailwind.css',
-    viewer: false,
-  },
 })

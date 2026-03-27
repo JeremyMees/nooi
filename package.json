@@ -21,7 +21,6 @@
     "@nuxt/image": "^2.0.0",
     "@nuxtjs/seo": "5.0.2",
     "@nuxtjs/supabase": "^2.0.4",
-    "@nuxtjs/tailwindcss": "^6.14.0",
     "@primevue/nuxt-module": "^4.5.4",
     "eslint": "^9.39.0",
     "nuxt": "^4.4.2",
@@ -38,6 +37,7 @@
     "@pinia/nuxt": "^0.11.3",
     "@resvg/resvg-js": "^2.6.2",
     "@stripe/stripe-js": "^9.0.0",
+    "@tailwindcss/vite": "^4.2.2",
     "@unlok-co/nuxt-stripe": "^6.0.2",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue-email/components": "^0.0.21",
@@ -49,6 +49,7 @@
     "primevue": "^4.5.4",
     "resend": "^6.9.4",
     "satori": "^0.26.0",
+    "tailwindcss": "^4.2.2",
     "vue": "^3.5.31",
     "vue-router": "^4.6.4"
   }
