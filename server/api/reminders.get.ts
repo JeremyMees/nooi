@@ -1,9 +1,9 @@
 import { addDay } from '@formkit/tempo'
 import { Resend } from 'resend'
-// import { formatDateMail, formatHour, padDate } from '~/utils/date-helpers'
+import { render } from '@vue-email/render'
 import { serverSupabaseServiceRole } from '#supabase/server'
-import type { Database } from '~/shared/types/database'
-import { useCompiler } from '#vue-email'
+import ReminderTemplate from '~~/emails/Reminder.vue'
+import ReminderStatsTemplate from '~~/emails/ReminderStats.vue'
 
 export default defineEventHandler(async (event) => {
   const supabase = serverSupabaseServiceRole<Database>(event)
@@ -40,20 +40,18 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-      const compiled = await useCompiler('Reminder.vue', {
-        props: {
-          name: reservation.name,
-          date: formatDateMail(reservation.day),
-          time: formatHour(reservation.start),
-          event: reservation?.event?.name ?? undefined,
-        },
+      const html = await render(ReminderTemplate, {
+        name: reservation.name,
+        date: formatDateMail(reservation.day),
+        time: formatHour(reservation.start),
+        event: reservation?.event?.name ?? undefined,
       })
 
       emailsToSend.push({
         from: 'Nooi <zin@nooi.be>',
         to: reservation.email,
         subject: 'We zien je snel in Nooi!',
-        html: compiled.html,
+        html,
       })
     }
     catch (compileError) {
@@ -74,13 +72,11 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const statsCompiled = await useCompiler('ReminderStats.vue', {
-      props: {
-        date: formatDateMail(day),
-        success: reminderSendSuccess,
-        errors: mailErrors.length,
-        noMailAddress: mailNotProvided,
-      },
+    const html = await render(ReminderStatsTemplate, {
+      date: formatDateMail(day),
+      success: reminderSendSuccess,
+      errors: mailErrors.length,
+      noMailAddress: mailNotProvided,
     })
 
     const statsRecipients = ['jeremymees123@gmail.com', 'mail@thomasgoyvaerts.be']
@@ -90,7 +86,7 @@ export default defineEventHandler(async (event) => {
         from: 'Nooi <zin@nooi.be>',
         to: recipient,
         subject: `Herinnering statistieken voor ${formatDateMail(day)}`,
-        html: statsCompiled.html,
+        html,
       })),
     )
   }

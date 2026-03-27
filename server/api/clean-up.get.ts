@@ -1,7 +1,5 @@
 import { addDay } from '@formkit/tempo'
-import { padDate } from '~/utils/date-helpers'
 import { serverSupabaseServiceRole } from '#supabase/server'
-import type { Database } from '~/shared/types/database'
 
 export default defineEventHandler(async (event) => {
   const supabase = serverSupabaseServiceRole<Database>(event)
