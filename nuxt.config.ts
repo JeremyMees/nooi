@@ -78,5 +78,8 @@ export default defineNuxtConfig({
     client: { key: process.env.STRIPE_PK },
   },
 
-  supabase: { redirect: false },
+  supabase: {
+    redirect: false,
+    types: '../shared/types/database.ts',
+  },
 })
