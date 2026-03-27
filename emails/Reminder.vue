@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { Text } from '@vue-email/components'
+import Layout from './Layout.vue'
+
 defineProps<{
   name: string
   date: string
@@ -8,12 +11,12 @@ defineProps<{
 </script>
 
 <template>
-  <ELayout
+  <Layout
     title="We zien je snel in Nooi!"
     preview="We zien je snel in Nooi!"
     :name="name"
   >
-    <EText>
+    <Text>
       Graag herinneren wij je aan je
       <template v-if="event">
         inschrijving voor
@@ -34,14 +37,14 @@ defineProps<{
           {{ time }}
         </span>
       </template>.
-    </EText>
-    <EText>
+    </Text>
+    <Text>
       Heb je nog vragen? Laat het ons weten.
-    </EText>
-    <EText>
+    </Text>
+    <Text>
       Tot snel!
       <br>
       Thomas & An
-    </EText>
-  </ELayout>
+    </Text>
+  </Layout>
 </template>

@@ -552,7 +552,7 @@ export default {
       { 'focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-400/50 ring-inset dark:focus:ring-primary-300/50': context.selectable },
       { 'hover:bg-surface-300/20 hover:text-surface-600': props.selectionMode && !context.selected },
       // Transition
-      { 'transition duration-200': props.selectionMode && !context.selected || props.rowHover },
+      { 'transition duration-200': (props.selectionMode && !context.selected) || props.rowHover },
       // Misc
       { 'cursor-pointer': props.selectionMode },
     ],

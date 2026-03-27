@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { Text } from '@vue-email/components'
+import Layout from './Layout.vue'
+
 defineProps<{
   name: string
   date: string
@@ -7,12 +10,12 @@ defineProps<{
 </script>
 
 <template>
-  <ELayout
+  <Layout
     title="Jouw reservatie voor Nooi"
     preview="Jouw reservatie voor Nooi"
     :name="name"
   >
-    <EText>
+    <Text>
       We hebben je reservatie goed ontvangen en kijken uit naar je komst. Fijn dat we je mogen verwelkomen op
       <span class="font-bold text-primary">
         {{ date }}
@@ -24,9 +27,9 @@ defineProps<{
         </span>
       </template>.
       Mocht je nog vragen hebben, aarzel dan niet om contact met ons op te nemen. Tot binnenkort!
-    </EText>
-    <EText>
+    </Text>
+    <Text>
       Thomas & An
-    </EText>
-  </ELayout>
+    </Text>
+  </Layout>
 </template>

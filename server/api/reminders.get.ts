@@ -1,8 +1,8 @@
 import { addDay } from '@formkit/tempo'
 import { Resend } from 'resend'
-import { formatDateMail, formatHour, padDate } from '~/utils/date-helpers'
+// import { formatDateMail, formatHour, padDate } from '~/utils/date-helpers'
 import { serverSupabaseServiceRole } from '#supabase/server'
-import type { Database } from '~/types/database'
+import type { Database } from '~/shared/types/database'
 import { useCompiler } from '#vue-email'
 
 export default defineEventHandler(async (event) => {

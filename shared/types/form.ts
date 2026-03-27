@@ -1,4 +1,4 @@
-interface ReservationForm {
+export interface ReservationForm {
   day?: string
   name?: string
   number?: string
@@ -7,11 +7,11 @@ interface ReservationForm {
   exclusive?: boolean
 }
 
-interface AdminForm {
+export interface AdminForm {
   password: string
 }
 
-interface Option<T> {
+export interface Option<T> {
   value: T
   label: string
 }

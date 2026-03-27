@@ -1,26 +1,35 @@
 import path from 'path'
+import vue from '@vitejs/plugin-vue'
 import seo from './constants/seo'
 
 export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@nuxtjs/tailwindcss',
-    'nuxt-primevue',
     '@vueuse/nuxt',
     '@nuxtjs/supabase',
     '@formkit/nuxt',
     '@nuxt/image',
     '@unlok-co/nuxt-stripe',
     '@nuxt/eslint',
-    'nuxt-icon',
+    '@nuxt/icon',
+    '@primevue/nuxt-module',
     '@nuxtjs/seo',
-    '@vue-email/nuxt',
   ],
+
+  devtools: { enabled: true },
 
   css: [
     './assets/css/base.css',
     '~/node_modules/primeicons/primeicons.css',
   ],
+
+  site: {
+    url: seo.meta.url,
+    name: seo.meta.name,
+    description: seo.meta.description,
+    defaultLocale: 'nl',
+  },
 
   runtimeConfig: {
     url: process.env.NUXT_PUBLIC_URL,
@@ -31,50 +40,40 @@ export default defineNuxtConfig({
     },
   },
 
-  supabase: { redirect: false },
-
-  primevue: {
-    options: { unstyled: true },
-    importPT: { as: 'Lara', from: path.resolve(__dirname, './presets/lara/') },
+  nitro: {
+    rollupConfig: {
+      plugins: [vue()],
+    },
   },
 
-  tailwindcss: {
-    cssPath: './assets/css/tailwind.css',
-    viewer: false,
-  },
-
-  imports: { dirs: ['types/*.ts'] },
-
-  pinia: { storesDirs: ['./stores/**'] },
-
-  stripe: {
-    server: { key: process.env.STRIPE_SK },
-    client: { key: process.env.STRIPE_PK },
+  eslint: {
+    config: { stylistic: true },
   },
 
   formkit: { configFile: './formkit/config' },
 
   image: { quality: 80 },
 
-  eslint: {
-    config: { stylistic: true },
-  },
+  pinia: { storesDirs: ['./stores/**'] },
 
-  site: {
-    url: seo.meta.url,
-    name: seo.meta.name,
-    description: seo.meta.description,
-    defaultLocale: 'nl',
+  primevue: {
+    options: { unstyled: true },
+    importPT: { as: 'Lara', from: path.resolve(__dirname, './presets/lara/') },
   },
 
   robots: {
-    disallow: ['/_nuxt', '/admin'],
+    disallow: ['/admin'],
   },
 
-  vueEmail: {
-    baseUrl: seo.meta.url,
-    autoImport: true,
+  stripe: {
+    server: { key: process.env.STRIPE_SK },
+    client: { key: process.env.STRIPE_PK },
   },
 
-  devtools: { enabled: true },
+  supabase: { redirect: false },
+
+  tailwindcss: {
+    cssPath: './assets/css/tailwind.css',
+    viewer: false,
+  },
 })

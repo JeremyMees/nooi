@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { Text } from '@vue-email/components'
+import Layout from './Layout.vue'
+
 defineProps<{
   date: string
   success: number
@@ -8,22 +11,22 @@ defineProps<{
 </script>
 
 <template>
-  <ELayout
+  <Layout
     :title="`Herinnering statistieken ${date}`"
     :preview="`Herinnering statistieken ${date}`"
   >
-    <EText>
+    <Text>
       Herinnering statistieken voor {{ date }}
-    </EText>
-    <EText>
+    </Text>
+    <Text>
       Succesvol verstuurd: {{ success }}
-    </EText>
-    <EText>
+    </Text>
+    <Text>
       Errors bij versturen: {{ errors }}
-    </EText>
-    <EText v-if="noMailAddress.length">
+    </Text>
+    <Text v-if="noMailAddress.length">
       Geen emailadres gevonden voor de volgende reservaties: <br>
       {{ noMailAddress.join(', ') }}
-    </EText>
-  </ELayout>
+    </Text>
+  </Layout>
 </template>

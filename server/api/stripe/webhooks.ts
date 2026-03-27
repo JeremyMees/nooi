@@ -1,6 +1,6 @@
 import { serverSupabaseClient } from '#supabase/server'
 // import { useServerStripe } from '#stripe/server'
-import type { Database } from '~/types/database'
+import type { Database } from '~/shared/types/database'
 import { formatDateMail, formatHour } from '~/utils/date-helpers'
 
 export default defineEventHandler(async (event): Promise<any> => {

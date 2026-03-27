@@ -1,7 +1,7 @@
+// @ts-check
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt({
-  files: ['**/*.js', '**/*.ts', '**/*.vue'],
   rules: {
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-dynamic-delete': 'off',

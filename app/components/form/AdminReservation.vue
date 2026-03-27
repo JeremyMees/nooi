@@ -42,8 +42,13 @@ onMounted(async () => await store.getEvents())
 
 watch([start, end], (v) => {
   v.forEach((value: string | undefined, i: number) => {
-    if (value && !['00', '30'].includes(value.split(':')[1])) {
-      i === 0 ? start.value = roundTime(value) : end.value = roundTime(value)
+    if (value && !['00', '30'].includes(value.split(':')[1]!)) {
+      if (i === 0) {
+        start.value = roundTime(value)
+      }
+      else {
+        end.value = roundTime(value)
+      }
     }
   })
 })

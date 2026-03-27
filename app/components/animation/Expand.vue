@@ -16,7 +16,7 @@ function enter(element: any): void {
   element.style.visibility = null
   element.style.height = 0
 
-  getComputedStyle(element).height
+  const _ = getComputedStyle(element).height
 
   requestAnimationFrame(() => element.style.height = height)
 }
@@ -30,7 +30,7 @@ function leave(element: any): void {
 
   element.style.height = height
 
-  getComputedStyle(element).height
+  const _ = getComputedStyle(element).height
 
   requestAnimationFrame(() => element.style.height = 0)
 }

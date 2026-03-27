@@ -210,9 +210,12 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       if (day) {
         const date = formatDay(new Date(day as string))
 
-        isValidDateString(day as string) && rosterStore.getDayRoster(date)
-          ? form.value.day = date
-          : removeQuery(['day'])
+        if (isValidDateString(day as string) && rosterStore.getDayRoster(date)) {
+          form.value.day = date
+        }
+        else {
+          removeQuery(['day'])
+        }
       }
       else if (session_id) {
         await checkPaymentStatus(session_id as string)

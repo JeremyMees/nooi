@@ -126,7 +126,7 @@ function clearFilters(): void {
     </p>
     <DataTable
       v-model:selection="selected"
-      v-model:expandedRows="expandedRows"
+      v-model:expanded-rows="expandedRows"
       data-key="id"
       size="small"
       :value="store.data[type].data"

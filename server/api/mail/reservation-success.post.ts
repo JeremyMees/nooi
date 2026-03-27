@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
-import { useCompiler } from '#vue-email'
+import { render } from '@vue-email/render'
+import Template from '~~/emails/EventSuccess.vue'
 
 export default defineEventHandler(async (event) => {
   const { resendApiKey } = useRuntimeConfig()
@@ -13,14 +14,13 @@ export default defineEventHandler(async (event) => {
 
   try {
     const resend = new Resend(resendApiKey)
-
-    const compiled = await useCompiler('ReservationSuccess.vue', { props })
+    const html = await render(Template, props)
 
     await resend.emails.send({
       from: 'Nooi <zin@nooi.be>',
       subject: 'Jouw reservatie voor Nooi',
       to,
-      html: compiled.html,
+      html,
     })
 
     return { message: 'Email sent' }
