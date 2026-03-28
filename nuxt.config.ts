@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@formkit/nuxt',
     '@nuxt/image',
-    '@unlok-co/nuxt-stripe',
     '@nuxt/eslint',
     '@nuxt/icon',
     '@primevue/nuxt-module',
@@ -36,6 +35,7 @@ export default defineNuxtConfig({
     url: process.env.NUXT_PUBLIC_URL,
     resendApiKey: process.env.RESEND_API_KEY,
     stripeWebhook: process.env.STRIPE_WEBHOOK,
+    stripeSk: process.env.STRIPE_SK,
     qStashUrl: process.env.QSTASH_URL,
     qStashToken: process.env.QSTASH_TOKEN,
     public: {
@@ -88,11 +88,6 @@ export default defineNuxtConfig({
 
   robots: {
     disallow: ['/admin'],
-  },
-
-  stripe: {
-    server: { key: process.env.STRIPE_SK },
-    client: { key: process.env.STRIPE_PK },
   },
 
   supabase: {
