@@ -47,10 +47,13 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
     }
   }
   else if (props.type === 'reservations') {
-    const event = store.events.find(({ id }) => id === (form as ReservationInsert).event)
+    const rawEvent = (form as ReservationInsert).event as any
+    const eventId = rawEvent && typeof rawEvent === 'object' ? rawEvent.id : (rawEvent ? +rawEvent : undefined)
+    const event = store.events.find(({ id }) => id === eventId)
 
     form = {
       ...form,
+      event: eventId ?? null,
       ...(event ? { day: event.day, start: event.start, end: event.end } : {}),
     } as ReservationInsert
   }

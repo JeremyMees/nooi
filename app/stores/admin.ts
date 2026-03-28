@@ -32,7 +32,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
           : [{ field: 'reservations.paymentNeeded', value: false }]
       }
       else if (type === 'reservations') {
-        options.select = '*, event(name)'
+        options.select = '*, event(id, name)'
 
         options.eq = options.eq?.length
           ? [...options.eq, { field: 'paymentNeeded', value: false }]
