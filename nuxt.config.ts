@@ -36,6 +36,8 @@ export default defineNuxtConfig({
     url: process.env.NUXT_PUBLIC_URL,
     resendApiKey: process.env.RESEND_API_KEY,
     stripeWebhook: process.env.STRIPE_WEBHOOK,
+    qStashUrl: process.env.QSTASH_URL,
+    qStashToken: process.env.QSTASH_TOKEN,
     public: {
       adminPassword: process.env.ADMIN_PASSWORD || 'admin',
     },

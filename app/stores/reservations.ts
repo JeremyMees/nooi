@@ -122,7 +122,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     return data[0]
   }
 
-  async function createReservation(insert: ReservationInsert): Promise<ReservationRow> {
+  async function createReservation(insert: ReservationInsert): Promise<ReservationWithEvent> {
     const { name, number, email } = insert
 
     reservationInfo.value = {
@@ -134,7 +134,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     const { error, data } = await supabase
       .from('reservations')
       .insert([insert])
-      .select('*')
+      .select('*, event(name)')
 
     if (error || !data?.[0]) {
       throw error || createError('Er is iets misgegaan bij het aanmaken van de reservering')

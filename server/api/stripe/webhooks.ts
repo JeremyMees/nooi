@@ -71,7 +71,7 @@ export default defineEventHandler(async (event): Promise<any> => {
 async function getReservation(client: any, id: number): Promise<any> {
   const { error, data } = await client
     .from('reservations')
-    .select('*')
+    .select('*, event(name)')
     .eq('id', id)
 
   if (error) {
@@ -103,6 +103,11 @@ async function updateReservation(client: any, id: number, payment: string): Prom
           time: formatHour(reservation.start),
         },
       },
+    })
+
+    await $fetch('/api/set-reminder', {
+      method: 'POST',
+      body: reservation,
     })
   }
   catch (error) {

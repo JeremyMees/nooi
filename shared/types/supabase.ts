@@ -27,6 +27,10 @@ export interface EventReservation extends EventRow {
   }[]
 }
 
+export interface ReservationWithEvent extends Omit<ReservationRow, 'event'> {
+  event?: { name: string } | null
+}
+
 export interface SbFetchOptions {
   table: DatabaseTable
   select?: string

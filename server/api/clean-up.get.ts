@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     .eq('paymentNeeded', true)
 
   if (error) {
-    return 'Error while fetching reminders'
+    return 'Error while fetching reservations'
   }
 
   if (data?.length) {

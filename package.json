@@ -13,7 +13,8 @@
     "postinstall": "nuxt prepare",
     "sb:types": "npx supabase gen types typescript --project-id aikknsewvgsoxiorzdzo > shared/types/database.ts ",
     "typecheck": "nuxt typecheck",
-    "deps": "npx taze -w"
+    "deps": "npx taze -w",
+    "stash": "npx @upstash/qstash-cli dev"
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.2.20",
@@ -42,6 +43,7 @@
     "@stripe/stripe-js": "^9.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "@unlok-co/nuxt-stripe": "^6.0.2",
+    "@upstash/workflow": "^1.1.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue-email/components": "^0.0.21",
     "@vue-email/render": "^0.0.9",

@@ -51,10 +51,13 @@ async function submit(form: ReservationInsert): Promise<void> {
       }
     }
 
-    const { id } = await store.createReservation({ ...form, paymentNeeded: payment.value })
+    const reservation = await store.createReservation({
+      ...form,
+      paymentNeeded: payment.value,
+    })
 
     if (payment.value) {
-      await store.createSession(id)
+      await store.createSession(reservation.id)
     }
     else {
       await notifyUser(form.type, {
@@ -65,7 +68,9 @@ async function submit(form: ReservationInsert): Promise<void> {
           ...(form.type === 'event' ? { event: eventName } : {}),
         },
         to: form.email as string,
-      })
+      },
+      reservation,
+      )
     }
   }
   catch (error) {
@@ -84,7 +89,11 @@ async function submit(form: ReservationInsert): Promise<void> {
   }
 }
 
-async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>): Promise<void> {
+async function notifyUser(
+  type: BookingType,
+  payload: Pick<Mail, 'to' | 'props'>,
+  reservation: ReservationWithEvent,
+): Promise<void> {
   const endpoints = [
     '/api/mail/event-success',
     '/api/mail/reservation-success',
@@ -103,6 +112,11 @@ async function notifyUser(type: BookingType, payload: Pick<Mail, 'to' | 'props'>
   await useFetch(endpoint, {
     method: 'POST',
     body: payload,
+  })
+
+  await useFetch('/api/set-reminder', {
+    method: 'POST',
+    body: reservation,
   })
 
   toast.add({
