@@ -30,6 +30,12 @@ export default defineEventHandler(async (event): Promise<any> => {
     }
 
     if (body.type === 'payment_intent.succeeded') {
+      const existing = await getReservation(client, reservationId)
+
+      if (existing.paymentIdentifier) {
+        return 'Webhook already processed for this reservation'
+      }
+
       await updateReservation(
         client,
         reservationId,

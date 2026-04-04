@@ -43,5 +43,6 @@ export default defineEventHandler(async (event) => {
       html,
     },
     notBefore: Math.floor(reminderDate.getTime() / 1000),
+    deduplicationId: `reminder-${reservation.id}`,
   })
 })
