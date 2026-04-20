@@ -25,7 +25,7 @@ const submitLabel = computed<string>(() => {
   if (payment.value) return 'Verder naar betalen'
   else if (store.selectedEvent) return 'Inschrijven'
   else if (route.query.type === 'game') return 'Boeken'
-  else return 'Reserven'
+  else return 'Reserveren'
 })
 
 async function submit(form: ReservationInsert): Promise<void> {
