@@ -28,7 +28,7 @@ defineProps<{
 
           <Text>
             <Link
-              href="https://www.google.be/maps/place/Nooi/@50.9845556,5.0496567,17z/data=!3m1!4b1!4m5!3m4!1s0x47c13f6fa13d98f1:0x204404adae3e0327!8m2!3d50.9845311!4d5.0519057"
+              href="https://nooi.be/locatie/"
               class="text-[#305445]"
             >
               Schotelstraat 3, 3290 Diest
@@ -37,7 +37,7 @@ defineProps<{
               |
             </span>
             <Link
-              href="tel:0496 67 23 61"
+              href="tel:+32496672361"
               class="text-[#305445]"
             >
               0496 67 23 61
