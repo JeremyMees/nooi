@@ -1,4 +1,4 @@
-import { addDay } from '@formkit/tempo'
+import { isBefore, tzDate } from '@formkit/tempo'
 import { Client, resend } from '@upstash/qstash'
 import { render } from '@vue-email/render'
 import ReminderTemplate from '~~/emails/Reminder.vue'
@@ -17,10 +17,10 @@ export default defineEventHandler(async (event) => {
     baseUrl: qStashUrl,
   })
 
-  const reminderDate = addDay(new Date(reservation.day), -2)
-  reminderDate.setUTCHours(8, 0, 0, 0)
+  const today = new Date()
+  const reminderDate = tzDate(`${reservation.day}T08:00:00`, 'Europe/Brussels')
 
-  if (reminderDate.getTime() <= Date.now()) {
+  if (isBefore(reminderDate, today)) {
     return
   }
 
