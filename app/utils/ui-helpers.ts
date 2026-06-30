@@ -63,9 +63,9 @@ export function getReservedSpots(arr: EventReservation['reservations']): number 
 }
 
 export function calculateCellClick(event: MouseEvent, cell: HTMLButtonElement, max: number): number {
-  const { y: yEvent, target } = event
+  const { y: yEvent } = event
   const { y: yCell } = cell.getBoundingClientRect()
-  const height = (target as HTMLElement)?.offsetHeight
+  const height = cell.offsetHeight
   const start = Math.round(yEvent) - Math.round(yCell)
   const part = height / max
 

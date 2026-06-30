@@ -24,6 +24,12 @@ const currentRoster = computed<RosterRow[]>(() => {
   return roster.getDayRoster(formatDay(props.day.dateFull))
 })
 
+const openingHours = computed<RosterRow[]>(() => {
+  if (isPast.value) return []
+
+  return currentRoster.value.filter(({ status }) => status === 'game')
+})
+
 function handleClick(event: MouseEvent): void {
   const rosterItems = currentRoster.value.length
 
@@ -81,21 +87,35 @@ function handleClick(event: MouseEvent): void {
   <button
     ref="cell"
     :aria-label="`Reservatie voor ${day.key}`"
-    class="transition-all duration-200 border border-b-0 border-white p-1 flex flex-col gap-y-1 overflow-x-hidden h-full w-full min-h-[85px]"
+    class="transition-all duration-200 border border-b-0 border-white p-1 flex flex-col items-start gap-y-1 overflow-x-hidden h-full w-full min-h-21.25"
     :class="{ 'cursor-not-allowed': isPast || !isOpen }"
     :style="{ backgroundImage: generateCellBg(currentRoster, !day.currentMonth) }"
     @click="handleClick"
   >
-    <time
-      :datetime="day.key"
-      class="flex h-6 w-6 items-center justify-center rounded-lg text-white"
-      :class="{
-        'bg-surface-50 shadow font-bold text-surface-700!': day.today,
-        'text-surface-200!': isPast || !isOpen,
-      }"
-    >
-      {{ day.date }}
-    </time>
+    <div class="flex flex-col md:flex-row justify-between items-start w-full">
+      <time
+        :datetime="day.key"
+        class="flex h-6 w-6 items-center justify-center rounded-lg text-white"
+        :class="{
+          'bg-surface-50 shadow font-bold text-surface-700!': day.today,
+          'text-surface-200!': isPast || !isOpen,
+        }"
+      >
+        {{ day.date }}
+      </time>
+      <div
+        v-if="openingHours.length"
+        class="flex flex-col"
+      >
+        <p
+          v-for="item in openingHours"
+          :key="item.id"
+          class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight"
+        >
+          {{ formatHour(item.start) }} - {{ formatHour(item.end) }}
+        </p>
+      </div>
+    </div>
     <EventTag
       v-for="event in sortedEvents"
       :key="event.id"
