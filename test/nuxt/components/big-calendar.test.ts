@@ -27,7 +27,18 @@ describe('BigCalendar', () => {
   })
 
   it('matches snapshot', async () => {
-    const wrapper = await mount()
+    const wrapper = await mountSuspended(BigCalendar, {
+      global: {
+        stubs: {
+          CalendarCell: true,
+          Button: true,
+          Card: {
+            template:
+              '<div><slot name="title" /><slot name="content" /><slot name="footer" /></div>',
+          },
+        },
+      },
+    })
 
     expect(wrapper.html()).toMatchSnapshot()
   })

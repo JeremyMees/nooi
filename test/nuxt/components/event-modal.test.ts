@@ -44,7 +44,9 @@ describe('EventModal', () => {
   })
 
   it('matches snapshot', async () => {
-    const wrapper = await mount()
+    const wrapper = await mountSuspended(EventModal, {
+      global: { stubs: { ...stubs, Button: true } },
+    })
 
     expect(wrapper.html()).toMatchSnapshot()
   })
