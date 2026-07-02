@@ -42,8 +42,7 @@ async function submit(form: ReservationInsert): Promise<void> {
         end: store.selectedEvent.end,
         type: 'event',
       }
-    }
-    else {
+    } else {
       form = {
         ...form,
         type: route.query.type === 'game' ? 'game' : 'reservation',
@@ -58,30 +57,30 @@ async function submit(form: ReservationInsert): Promise<void> {
 
     if (payment.value) {
       await store.createSession(reservation.id)
-    }
-    else {
-      await notifyUser(form.type, {
-        props: {
-          name: form.name,
-          date: formatDateMail(form.day),
-          time: formatHour(form.start),
-          ...(form.type === 'event' ? { event: eventName } : {}),
+    } else {
+      await notifyUser(
+        form.type,
+        {
+          props: {
+            name: form.name,
+            date: formatDateMail(form.day),
+            time: formatHour(form.start),
+            ...(form.type === 'event' ? { event: eventName } : {}),
+          },
+          to: form.email as string,
         },
-        to: form.email as string,
-      },
-      reservation,
+        reservation,
       )
     }
-  }
-  catch (error) {
+  } catch (error) {
     toast.add({
       severity: 'error',
       summary: 'Oeps!',
-      detail: 'Het lijkt erop dat er een probleem was met het maken van een reservatie',
+      detail:
+        'Het lijkt erop dat er een probleem was met het maken van een reservatie',
       life: 5000,
     })
-  }
-  finally {
+  } finally {
     if (!payment.value) {
       loading.value = false
       store.drawerOpen = false
@@ -129,29 +128,22 @@ async function notifyUser(
 </script>
 
 <template>
-  <Drawer
-    v-model:visible="store.drawerOpen"
-    position="right"
-  >
+  <Drawer v-model:visible="store.drawerOpen" position="right">
     <template #header>
       <div>
         <p class="head-3">
           {{
             store.selectedEvent
               ? 'Inschrijven voor '
-              : $route.query.type === 'game' ? 'Boek een tafel' : 'Reservatie / Verhuur'
+              : $route.query.type === 'game'
+                ? 'Boek een tafel'
+                : 'Reservatie / Verhuur'
           }}
-          <span
-            v-if="store.selectedEvent"
-            class="text-secondary"
-          >
+          <span v-if="store.selectedEvent" class="text-secondary">
             {{ store.selectedEvent?.name }}
           </span>
         </p>
-        <span
-          v-if="store.selectedEvent"
-          class="font-medium"
-        >
+        <span v-if="store.selectedEvent" class="font-medium">
           {{ formatHour(store.selectedEvent.start) }}
           <span v-if="store.selectedEvent.end">
             - {{ formatHour(store.selectedEvent.end) }}
@@ -164,17 +156,15 @@ async function notifyUser(
       class="flex flex-col gap-4 bg-teal/10 p-4 rounded-lg"
     >
       <p class="text-sm text-gray-500">
-        Voor dit tijdslot kan je niet reserveren.
-        Er gaat wellicht een evenement door met vrije toegang.
-        Al kunnen we geen zitplekje garanderen, je bent uiteraard welkom!
-        We zijn open van {{ formatHour(clickedRosterItem.start) }} tot {{ formatHour(clickedRosterItem.end) }}.
+        Voor dit tijdslot kan je niet reserveren. Er gaat wellicht een evenement
+        door met vrije toegang. Al kunnen we geen zitplekje garanderen, je bent
+        uiteraard welkom! We zijn open van
+        {{ formatHour(clickedRosterItem.start) }} tot
+        {{ formatHour(clickedRosterItem.end) }}.
       </p>
     </div>
     <template v-else>
-      <Loader
-        v-if="loading"
-        class="w-[120px] mx-auto text-primary"
-      />
+      <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
       <FormKit
         v-else
         type="form"

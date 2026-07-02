@@ -8,13 +8,12 @@ const statusOptions: Option<string>[] = [
   { label: 'Bezet', value: 'occupied' },
 ]
 
-watch([start, end], (v) => {
+watch([start, end], v => {
   v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
       if (i === 0) {
         start.value = roundTime(value)
-      }
-      else {
+      } else {
         end.value = roundTime(value)
       }
     }
@@ -24,12 +23,7 @@ watch([start, end], (v) => {
 
 <template>
   <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-4">
-    <FormKit
-      type="date"
-      name="day"
-      label="Datum"
-      validation="required"
-    />
+    <FormKit type="date" name="day" label="Datum" validation="required" />
     <FormKit
       v-model="start"
       type="time"

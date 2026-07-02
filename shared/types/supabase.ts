@@ -6,9 +6,11 @@ export type EventUpdate = Database['public']['Tables']['events']['Update']
 
 export type ReservationRow = Database['public']['Tables']['reservations']['Row']
 
-export type ReservationInsert = Database['public']['Tables']['reservations']['Insert']
+export type ReservationInsert =
+  Database['public']['Tables']['reservations']['Insert']
 
-export type ReservationUpdate = Database['public']['Tables']['reservations']['Update']
+export type ReservationUpdate =
+  Database['public']['Tables']['reservations']['Update']
 
 export type BookingType = Database['public']['Enums']['bookingType']
 

@@ -35,7 +35,11 @@ const time_before = function (node: FormKitNode, end: string): boolean {
   return beforeTime(value, end)
 }
 
-const time_slot = function (node: FormKitNode, minTime: number, start: string): boolean {
+const time_slot = function (
+  node: FormKitNode,
+  minTime: number,
+  start: string,
+): boolean {
   const { value } = node as FormKitNode<string>
 
   if (!start || !value) {
@@ -43,10 +47,10 @@ const time_slot = function (node: FormKitNode, minTime: number, start: string): 
   }
 
   const { hour: nodeHour, minutes: nodeMinutes } = splitTime(value)
-  const nodeTime = nodeHour + (nodeMinutes / 100)
+  const nodeTime = nodeHour + nodeMinutes / 100
 
   const { hour: startHour, minutes: startMinutes } = splitTime(start)
-  const startTime = startHour + (startMinutes / 100)
+  const startTime = startHour + startMinutes / 100
 
   const timeDifference = nodeTime - startTime
 
@@ -61,7 +65,10 @@ export const rules = {
   time_slot,
 }
 
-export function checkTimeValid(node: FormKitNode, rosters: RosterRow[]): boolean {
+export function checkTimeValid(
+  node: FormKitNode,
+  rosters: RosterRow[],
+): boolean {
   const { value } = node as FormKitNode<string>
 
   if (!value || !rosters.length) {

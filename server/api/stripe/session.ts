@@ -15,14 +15,16 @@ export default defineEventHandler(async (event): Promise<string> => {
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     locale: 'nl',
-    line_items: [{
-      price_data: {
-        currency: 'eur',
-        product_data: { name },
-        unit_amount: amount * 100,
+    line_items: [
+      {
+        price_data: {
+          currency: 'eur',
+          product_data: { name },
+          unit_amount: amount * 100,
+        },
+        quantity,
       },
-      quantity,
-    }],
+    ],
     success_url: `${publicUrl}${params}session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${publicUrl}${params}session_id={CHECKOUT_SESSION_ID}`,
     allow_promotion_codes: true,

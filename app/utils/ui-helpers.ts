@@ -1,5 +1,8 @@
 export function countSpots(data: Record<string, any>): number {
-  return data.reservations.reduce((acc: number, curr: Record<string, number>) => acc + (curr.spots || 0), 0)
+  return data.reservations.reduce(
+    (acc: number, curr: Record<string, number>) => acc + (curr.spots || 0),
+    0,
+  )
 }
 
 export function translateStatus(status: CalendarStatus): string {
@@ -58,11 +61,17 @@ export function addQuery(values: Record<string, any>): void {
   })
 }
 
-export function getReservedSpots(arr: EventReservation['reservations']): number {
+export function getReservedSpots(
+  arr: EventReservation['reservations'],
+): number {
   return arr.reduce((acc, { spots }) => acc + spots, 0)
 }
 
-export function calculateCellClick(event: MouseEvent, cell: HTMLButtonElement, max: number): number {
+export function calculateCellClick(
+  event: MouseEvent,
+  cell: HTMLButtonElement,
+  max: number,
+): number {
   const { y: yEvent } = event
   const { y: yCell } = cell.getBoundingClientRect()
   const height = cell.offsetHeight
@@ -73,7 +82,8 @@ export function calculateCellClick(event: MouseEvent, cell: HTMLButtonElement, m
 }
 
 export function generateCellBg(rosters: RosterRow[], lines = false): string {
-  const striped = 'repeating-linear-gradient(-50deg,#e6e4e120,#e6e4e120 10px,#e6e4e110 10px,#e6e4e110 20px)'
+  const striped =
+    'repeating-linear-gradient(-50deg,#e6e4e120,#e6e4e120 10px,#e6e4e110 10px,#e6e4e110 20px)'
   const rosterItems = rosters.length
 
   if (!rosterItems) {
@@ -90,8 +100,7 @@ export function generateCellBg(rosters: RosterRow[], lines = false): string {
 
     if (row.status === 'occupied') {
       color = '#C35200'
-    }
-    else if (row.status === 'reservation') {
+    } else if (row.status === 'reservation') {
       color = '#315546'
     }
 

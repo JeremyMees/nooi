@@ -12,7 +12,10 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     rosters: { ...defaultOptions },
   })
 
-  async function fetchData(type: DatabaseTable, query: Partial<SbQueryOptions> = {}): Promise<void> {
+  async function fetchData(
+    type: DatabaseTable,
+    query: Partial<SbQueryOptions> = {},
+  ): Promise<void> {
     try {
       data.value[type].loading = true
       data.value[type].error = undefined
@@ -28,10 +31,12 @@ export const useAdminStore = defineStore('useAdminStore', () => {
         options.select = '*, reservations:reservations(id, spots)'
 
         options.eq = options.eq?.length
-          ? [...options.eq, { field: 'reservations.paymentNeeded', value: false }]
+          ? [
+              ...options.eq,
+              { field: 'reservations.paymentNeeded', value: false },
+            ]
           : [{ field: 'reservations.paymentNeeded', value: false }]
-      }
-      else if (type === 'reservations') {
+      } else if (type === 'reservations') {
         options.select = '*, event(id, name)'
 
         options.eq = options.eq?.length
@@ -39,47 +44,55 @@ export const useAdminStore = defineStore('useAdminStore', () => {
           : [{ field: 'paymentNeeded', value: false }]
       }
 
-      const { data: fetchedData, count } = await sbQuery<RosterRow[]>(supabase, options)
+      const { data: fetchedData, count } = await sbQuery<RosterRow[]>(
+        supabase,
+        options,
+      )
 
       data.value[type] = {
         ...data.value[type],
         data: fetchedData as any[],
         count,
       }
-    }
-    catch (error) {
+    } catch (error) {
       data.value[type].error = (error as Error).message
-    }
-    finally {
+    } finally {
       data.value[type].loading = false
     }
   }
 
-  async function removeData(type: DatabaseTable, arr: (RosterRow | EventRow | ReservationRow)[]): Promise<void> {
+  async function removeData(
+    type: DatabaseTable,
+    arr: (RosterRow | EventRow | ReservationRow)[],
+  ): Promise<void> {
     try {
       data.value[type].loading = true
       data.value[type].error = undefined
 
-      const { error } = await supabase.from(type)
+      const { error } = await supabase
+        .from(type)
         .delete()
-        .in('id', arr.map((item: any) => item.id))
+        .in(
+          'id',
+          arr.map((item: any) => item.id),
+        )
 
       if (error) {
         data.value[type].error = 'Error tijdens items verwijderen in database'
-      }
-      else {
+      } else {
         fetchData(type)
       }
-    }
-    catch (error) {
+    } catch (error) {
       data.value[type].error = (error as Error).message
-    }
-    finally {
+    } finally {
       data.value[type].loading = false
     }
   }
 
-  async function createData(type: DatabaseTable, insert: RosterInsert | EventInsert | ReservationInsert): Promise<void> {
+  async function createData(
+    type: DatabaseTable,
+    insert: RosterInsert | EventInsert | ReservationInsert,
+  ): Promise<void> {
     try {
       data.value[type].loading = true
       data.value[type].error = undefined
@@ -88,15 +101,12 @@ export const useAdminStore = defineStore('useAdminStore', () => {
 
       if (error) {
         data.value[type].error = 'Error tijdens toevoegen in database'
-      }
-      else {
+      } else {
         fetchData(type)
       }
-    }
-    catch (error) {
+    } catch (error) {
       data.value[type].error = (error as Error).message
-    }
-    finally {
+    } finally {
       data.value[type].loading = false
     }
   }
@@ -114,15 +124,12 @@ export const useAdminStore = defineStore('useAdminStore', () => {
 
       if (error) {
         data.value[type].error = 'Error tijdens bijwerken in database'
-      }
-      else {
+      } else {
         fetchData(type)
       }
-    }
-    catch (error) {
+    } catch (error) {
       data.value[type].error = (error as Error).message
-    }
-    finally {
+    } finally {
       data.value[type].loading = false
     }
   }
@@ -140,8 +147,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
       if (data) {
         events.value = data
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error)
     }
   }

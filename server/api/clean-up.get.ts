@@ -1,7 +1,7 @@
 import { addDay } from '@formkit/tempo'
 import { serverSupabaseServiceRole } from '#supabase/server'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const supabase = serverSupabaseServiceRole<Database>(event)
 
   const date = addDay(new Date(), -30)
@@ -19,15 +19,11 @@ export default defineEventHandler(async (event) => {
 
   if (data?.length) {
     for (const reservation of data) {
-      await supabase
-        .from('reservations')
-        .delete()
-        .eq('id', reservation.id)
+      await supabase.from('reservations').delete().eq('id', reservation.id)
     }
 
     return `Removed ${data?.length} items from the database`
-  }
-  else {
+  } else {
     return 'No clean up needed'
   }
 })

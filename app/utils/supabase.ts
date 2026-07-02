@@ -1,6 +1,9 @@
 import { addMonth, monthDays, diffDays } from '@formkit/tempo'
 
-export async function sbFetch<T>(supabase: any, options: SbFetchOptions): Promise<T> {
+export async function sbFetch<T>(
+  supabase: any,
+  options: SbFetchOptions,
+): Promise<T> {
   const { table, select, date, eq } = options
 
   let query = supabase.from(table).select(select || '*')
@@ -20,7 +23,7 @@ export async function sbFetch<T>(supabase: any, options: SbFetchOptions): Promis
   return (data || []) as T
 }
 
-export function sbDateFilters(date?: Date): { gte: string, lte: string } {
+export function sbDateFilters(date?: Date): { gte: string; lte: string } {
   const today = date ?? new Date()
   const prev = addMonth(today, -1)
   const next = addMonth(today, 1)
@@ -31,8 +34,12 @@ export function sbDateFilters(date?: Date): { gte: string, lte: string } {
   }
 }
 
-export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promise<SbQuery<T>> {
-  const { table, select, page, perPage, search, eq, fuzzy, fields, sort } = options
+export async function sbQuery<T>(
+  supabase: any,
+  options: SbQueryOptions,
+): Promise<SbQuery<T>> {
+  const { table, select, page, perPage, search, eq, fuzzy, fields, sort } =
+    options
 
   let query = supabase
     .from(table)
@@ -40,7 +47,7 @@ export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promis
     .gte('day', formatDay(new Date()))
 
   if (eq && eq.length) {
-    eq.forEach((eq) => {
+    eq.forEach(eq => {
       query = query.eq(eq.field, eq.value)
     })
   }
@@ -51,12 +58,19 @@ export async function sbQuery<T>(supabase: any, options: SbQueryOptions): Promis
 
   if (!sort || (sort && sort.field === 'day')) {
     query = query
-      .order('day', { ascending: sort ? sort.order === 'asc' : true }, { nullsFirst: false })
+      .order(
+        'day',
+        { ascending: sort ? sort.order === 'asc' : true },
+        { nullsFirst: false },
+      )
       .order('start', { ascending: true })
       .order('id', { ascending: true })
-  }
-  else if (sort) {
-    query = query.order(sort.field, { ascending: sort.order === 'asc' }, { nullsFirst: false })
+  } else if (sort) {
+    query = query.order(
+      sort.field,
+      { ascending: sort.order === 'asc' },
+      { nullsFirst: false },
+    )
   }
 
   if (typeof page === 'number' && typeof perPage === 'number') {

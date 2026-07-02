@@ -3,7 +3,7 @@ import { Client, resend } from '@upstash/qstash'
 import { render } from '@vue-email/render'
 import ReminderTemplate from '~~/emails/Reminder.vue'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const { resendApiKey, qStashToken, qStashUrl } = useRuntimeConfig()
 
   const reservation = await readBody<ReservationWithEvent>(event)

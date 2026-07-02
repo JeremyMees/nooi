@@ -22,10 +22,12 @@ export default defineEventHandler(async (event): Promise<any> => {
 
     let reservationId
 
-    if ('metadata' in body.data.object && body.data.object.metadata?.reservation) {
+    if (
+      'metadata' in body.data.object &&
+      body.data.object.metadata?.reservation
+    ) {
       reservationId = +body.data.object.metadata.reservation
-    }
-    else {
+    } else {
       throw createError({ status: 400, message: 'No reservation id found' })
     }
 
@@ -36,35 +38,21 @@ export default defineEventHandler(async (event): Promise<any> => {
         return 'Webhook already processed for this reservation'
       }
 
-      await updateReservation(
-        client,
-        reservationId,
-        body.data.object.id,
-      )
-    }
-    else if (body.type === 'payment_intent.canceled') {
-      await removeReservation(
-        client,
-        reservationId,
-      )
-    }
-    else {
+      await updateReservation(client, reservationId, body.data.object.id)
+    } else if (body.type === 'payment_intent.canceled') {
+      await removeReservation(client, reservationId)
+    } else {
       try {
         const reservation = await getReservation(client, reservationId)
 
         if (reservation.paymentNeeded) {
-          await removeReservation(
-            client,
-            reservationId,
-          )
+          await removeReservation(client, reservationId)
         }
-      }
-      catch (error) {
+      } catch (error) {
         return 'Session expired but reservation not found. Ignoring.'
       }
     }
-  }
-  catch (err) {
+  } catch (err) {
     const { message } = err as Error
 
     throw createError({ status: 400, message: `Webhook Error: ${message}` })
@@ -84,7 +72,11 @@ async function getReservation(client: any, id: number): Promise<any> {
   return data?.[0]
 }
 
-async function updateReservation(client: any, id: number, payment: string): Promise<void> {
+async function updateReservation(
+  client: any,
+  id: number,
+  payment: string,
+): Promise<void> {
   try {
     await client
       .from('reservations')
@@ -112,8 +104,7 @@ async function updateReservation(client: any, id: number, payment: string): Prom
       method: 'POST',
       body: reservation,
     })
-  }
-  catch (error) {
+  } catch (error) {
     const { message } = error as Error
 
     throw createError({
@@ -125,12 +116,8 @@ async function updateReservation(client: any, id: number, payment: string): Prom
 
 async function removeReservation(client: any, id: number): Promise<void> {
   try {
-    await client
-      .from('reservations')
-      .delete()
-      .eq('id', id)
-  }
-  catch (error) {
+    await client.from('reservations').delete().eq('id', id)
+  } catch (error) {
     const { message } = error as Error
 
     throw createError({

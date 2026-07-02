@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 import { render } from '@vue-email/render'
 import Template from '~~/emails/EventSuccess.vue'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const { resendApiKey } = useRuntimeConfig()
   const body = await readBody(event)
 
@@ -24,8 +24,7 @@ export default defineEventHandler(async (event) => {
     })
 
     return { message: 'Email sent' }
-  }
-  catch (error) {
+  } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
 
     throw new Error(message, { cause: error })

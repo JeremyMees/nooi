@@ -20,22 +20,25 @@ const timeSlot = computed<number>(() => {
   return route.query.type === 'reservation' ? minTimeSlot : minTimeSlotRental
 })
 
-const spots = computed<{ min: number, max: number }>(() => {
+const spots = computed<{ min: number; max: number }>(() => {
   return {
-    min: store.selectedEvent?.minSpots ?? filteredRoster.value?.[0]?.minSpots ?? 1,
+    min:
+      store.selectedEvent?.minSpots ?? filteredRoster.value?.[0]?.minSpots ?? 1,
     max: store.selectedEvent?.spots
-      ? store.selectedEvent.spots - getReservedSpots(store.selectedEvent.reservations)
-      : route.query?.type === 'game' ? 8 : maxSpots,
+      ? store.selectedEvent.spots -
+        getReservedSpots(store.selectedEvent.reservations)
+      : route.query?.type === 'game'
+        ? 8
+        : maxSpots,
   }
 })
 
-watch([start, end], (v) => {
+watch([start, end], v => {
   v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
       if (i === 0) {
         start.value = roundTime(value)
-      }
-      else {
+      } else {
         end.value = roundTime(value)
       }
     }
@@ -73,12 +76,9 @@ watch([start, end], (v) => {
             ? 'Reserveren of huren is vandaag mogelijk tussen deze uren:'
             : 'Onze openingsuren zijn vandaag:'
         }}
-        <template
-          v-for="(item, i) in filteredRoster"
-          :key="item.id"
-        >
-          {{ formatHour(item.start) }} -
-          {{ formatHour(item.end) }}{{ i !== filteredRoster.length - 1 ? ', ' : '' }}
+        <template v-for="(item, i) in filteredRoster" :key="item.id">
+          {{ formatHour(item.start) }} - {{ formatHour(item.end)
+          }}{{ i !== filteredRoster.length - 1 ? ', ' : '' }}
         </template>
       </p>
       <FormKit
@@ -91,7 +91,8 @@ watch([start, end], (v) => {
         :max="formatHour(filteredRoster[filteredRoster.length - 1]!.end)"
         step="1800"
         :validation-rules="{
-          time_valid: (node: FormKitNode) => checkTimeValid(node, filteredRoster),
+          time_valid: (node: FormKitNode) =>
+            checkTimeValid(node, filteredRoster),
         }"
         validation="required|time_valid"
         validation-visibility="live"
@@ -133,10 +134,10 @@ watch([start, end], (v) => {
   <AnimationReveal>
     <div
       v-if="
-        route.query.type === 'game'
-          && store.form.spots
-          && !isNaN(+store.form.spots)
-          && +store.form.spots >= 8
+        route.query.type === 'game' &&
+        store.form.spots &&
+        !isNaN(+store.form.spots) &&
+        +store.form.spots >= 8
       "
       class="pb-3"
     >

@@ -24,9 +24,7 @@ defineProps<{
           {{ event }}
         </span>
       </template>
-      <template v-else>
-        boeking bij ons
-      </template>
+      <template v-else> boeking bij ons </template>
       op
       <span class="font-bold text-[#305445]">
         {{ date }}
@@ -35,15 +33,13 @@ defineProps<{
         om
         <span class="font-bold text-[#305445]">
           {{ time }}
-        </span>
-      </template>.
+        </span> </template
+      >.
     </Text>
-    <Text>
-      Heb je nog vragen? Laat het ons weten.
-    </Text>
+    <Text> Heb je nog vragen? Laat het ons weten. </Text>
     <Text>
       Tot snel!
-      <br>
+      <br />
       Thomas & An
     </Text>
   </Layout>

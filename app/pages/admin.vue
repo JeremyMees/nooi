@@ -10,11 +10,7 @@ const types: DatabaseTable[] = ['reservations', 'events', 'rosters']
       v-if="store.authCookie === 'authenticated'"
       class="container flex flex-col gap-20"
     >
-      <AdminTable
-        v-for="type in types"
-        :key="type"
-        :type="type"
-      />
+      <AdminTable v-for="type in types" :key="type" :type="type" />
     </div>
     <LoginDialog />
   </NuxtLayout>

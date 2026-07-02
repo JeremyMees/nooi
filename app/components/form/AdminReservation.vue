@@ -21,7 +21,7 @@ const eventOptions = computed<Option<string>[]>(() => {
   }))
 })
 
-const spots = computed<{ min: number, max: number }>(() => {
+const spots = computed<{ min: number; max: number }>(() => {
   if (selectedEvent.value) {
     const id = +selectedEvent.value
     const event = store.events.find(event => event.id === id)
@@ -32,21 +32,19 @@ const spots = computed<{ min: number, max: number }>(() => {
         ? event?.spots - getReservedSpots(event?.reservations)
         : maxSpots,
     }
-  }
-  else {
+  } else {
     return { min: 1, max: maxSpots }
   }
 })
 
 onMounted(async () => await store.getEvents())
 
-watch([start, end], (v) => {
+watch([start, end], v => {
   v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1]!)) {
       if (i === 0) {
         start.value = roundTime(value)
-      }
-      else {
+      } else {
         end.value = roundTime(value)
       }
     }
@@ -93,12 +91,7 @@ watch([start, end], (v) => {
       />
     </template>
     <template v-else>
-      <FormKit
-        type="date"
-        name="day"
-        label="Datum"
-        validation="required"
-      />
+      <FormKit type="date" name="day" label="Datum" validation="required" />
       <FormKit
         v-model="start"
         type="time"

@@ -2,13 +2,12 @@
 const start = ref<string>()
 const end = ref<string>()
 
-watch([start, end], (v) => {
+watch([start, end], v => {
   v.forEach((value: string | undefined, i: number) => {
     if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
       if (i === 0) {
         start.value = roundTime(value)
-      }
-      else {
+      } else {
         end.value = roundTime(value)
       }
     }
@@ -18,23 +17,14 @@ watch([start, end], (v) => {
 
 <template>
   <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-4">
-    <FormKit
-      name="name"
-      label="Naam"
-      validation="required"
-    />
+    <FormKit name="name" label="Naam" validation="required" />
     <FormKit
       name="theme"
       label="Thema"
       help="Thema's komma gescheiden"
       validation="required"
     />
-    <FormKit
-      type="date"
-      name="day"
-      label="Datum"
-      validation="required"
-    />
+    <FormKit type="date" name="day" label="Datum" validation="required" />
     <FormKit
       v-model="start"
       type="time"
@@ -43,13 +33,7 @@ watch([start, end], (v) => {
       step="1800"
       validation="required"
     />
-    <FormKit
-      v-model="end"
-      type="time"
-      name="end"
-      label="Einduur"
-      step="1800"
-    />
+    <FormKit v-model="end" type="time" name="end" label="Einduur" step="1800" />
     <FormKit
       type="date"
       name="bookingDeadline"

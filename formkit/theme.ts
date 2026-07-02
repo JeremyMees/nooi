@@ -25,18 +25,22 @@ import type { FormKitNode } from '@formkit/core'
  * })
  * ```
  **/
-export function rootClasses(sectionName: string, node: FormKitNode): Record<string, boolean> {
+export function rootClasses(
+  sectionName: string,
+  node: FormKitNode,
+): Record<string, boolean> {
   const key = `${node.props.type}__${sectionName}`
   const semanticKey = `formkit-${sectionName}`
-  const familyKey = node.props.family ? `family:${node.props.family}__${sectionName}` : ''
+  const familyKey = node.props.family
+    ? `family:${node.props.family}__${sectionName}`
+    : ''
   const memoKey = `${key}__${familyKey}`
   if (!(memoKey in classes)) {
     const sectionClasses = classes[key] ?? globals[sectionName] ?? {}
     sectionClasses[semanticKey] = true
     if (familyKey in classes) {
       classes[memoKey] = { ...classes[familyKey], ...sectionClasses }
-    }
-    else {
+    } else {
       classes[memoKey] = sectionClasses
     }
   }
@@ -55,9 +59,9 @@ const classes: Record<string, Record<string, boolean>> = {
     'appearance-none': true,
     '[color-scheme:light]': true,
     'font-bold': true,
-    'rounded': true,
+    rounded: true,
     'outline-none': true,
-    'flex': true,
+    flex: true,
     '!text-sm': true,
     'px-4': true,
     'py-3': true,
@@ -68,7 +72,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[disabled]:!cursor-not-allowed': true,
     'group-data-[prefix-icon]:pl-5': true,
     'group-data-[suffix-icon]:pr-5': true,
-    'border': true,
+    border: true,
     'border-primary-600': true,
     'text-primary-600': true,
   },
@@ -79,7 +83,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[multiple]:mb-0': true,
   },
   'family:box__legend': {
-    'block': true,
+    block: true,
     'text-black': true,
     'text-sm': true,
     'font-bold': true,
@@ -88,9 +92,9 @@ const classes: Record<string, Record<string, boolean>> = {
   'family:box__input': {
     'appearance-none': true,
     '[color-scheme:light]': true,
-    'peer': true,
+    peer: true,
     'pointer-events-none': true,
-    'absolute': true,
+    absolute: true,
     'h-0': true,
     'w-0': true,
     'overflow-hidden': true,
@@ -101,12 +105,12 @@ const classes: Record<string, Record<string, boolean>> = {
     'bg-white': true,
     'ring-primary-400/50': true,
     'peer-checked:border-primary-600': true,
-    'relative': true,
-    'block': true,
+    relative: true,
+    block: true,
     'text-lg': true,
     'w-[1em]': true,
     'aspect-[1/1]': true,
-    'border': true,
+    border: true,
     'border-surface-400': true,
     'text-transparent': true,
     'peer-checked:bg-primary-50': true,
@@ -120,10 +124,10 @@ const classes: Record<string, Record<string, boolean>> = {
     'peer-disabled:cursor-not-allowed': true,
   },
   'family:box__decoratorIcon': {
-    'absolute': true,
+    absolute: true,
     'left-1/2': true,
     'top-1/2': true,
-    'flex': true,
+    flex: true,
     'h-full': true,
     'w-full': true,
     '-translate-x-1/2': true,
@@ -137,7 +141,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[disabled]:data-[disabled]:opacity-100': true,
   },
   'family:box__label': {
-    'block': true,
+    block: true,
     'text-black': true,
     'text-sm': true,
     'font-bold': true,
@@ -152,7 +156,7 @@ const classes: Record<string, Record<string, boolean>> = {
     '-mt-1': true,
     'mb-1.5': true,
     'ml-[min(2em,1.7rem)]': true,
-    'relative': true,
+    relative: true,
     'left-px': true,
   },
   'family:box__help': {
@@ -163,7 +167,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[multiple]:-mt-1.5': true,
   },
   'family:text__wrapper': {
-    'flex': true,
+    flex: true,
     'flex-col': true,
     'items-start': true,
     'justify-start': true,
@@ -171,7 +175,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'last:mb-0': true,
   },
   'family:text__label': {
-    'block': true,
+    block: true,
     'text-black': true,
     'text-sm': true,
     'font-bold': true,
@@ -180,14 +184,14 @@ const classes: Record<string, Record<string, boolean>> = {
   },
   'family:text__inner': {
     'text-base': true,
-    'flex': true,
+    flex: true,
     'items-center': true,
     'w-full': true,
     'py-2': true,
     'px-3': true,
     'min-h-[44px]': true,
-    'rounded': true,
-    'border': true,
+    rounded: true,
+    border: true,
     'border-surface-400': true,
     'bg-white': true,
     'focus-within:ring': true,
@@ -206,7 +210,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'text-black': true,
     'min-w-0': true,
     'min-h-[1.5em]': true,
-    'grow': true,
+    grow: true,
     'outline-none': true,
     'bg-transparent': true,
     'placeholder:text-surface-400': true,
@@ -216,7 +220,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'focus:ring-0': true,
   },
   'family:text__prefixIcon': {
-    'flex': true,
+    flex: true,
     'items-center': true,
     '-ml-1': true,
     'mr-2': true,
@@ -228,7 +232,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'text-surface-600': true,
   },
   'family:text__suffixIcon': {
-    'flex': true,
+    flex: true,
     'items-center': true,
     '-mr-1': true,
     'ml-2': true,
@@ -243,13 +247,13 @@ const classes: Record<string, Record<string, boolean>> = {
     'mb-1.5': true,
   },
   'family:dropdown__inner': {
-    'relative': true,
-    'flex': true,
+    relative: true,
+    flex: true,
     'items-center': true,
     'bg-white': true,
-    'border': true,
+    border: true,
     'border-surface-400': true,
-    'rounded': true,
+    rounded: true,
     'group-data-[is-multiline]:!rounded': true,
     'focus-within:ring': true,
     'focus-within:!ring-primary-400/50': true,
@@ -263,7 +267,7 @@ const classes: Record<string, Record<string, boolean>> = {
   'family:dropdown__input': {
     'appearance-none': true,
     '[color-scheme:light]': true,
-    'grow': true,
+    grow: true,
     'p-2': true,
     'pr-0': true,
     'pl-3': true,
@@ -285,7 +289,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'w-[2.5em]': true,
     'self-stretch': true,
     'text-base': true,
-    'flex': true,
+    flex: true,
     'items-center': true,
     'text-black': true,
     'z-10': true,
@@ -295,14 +299,14 @@ const classes: Record<string, Record<string, boolean>> = {
     'w-[2.5em]': true,
     'self-stretch': true,
     'text-base': true,
-    'flex': true,
+    flex: true,
     'items-center': true,
     'text-black': true,
     'hover:text-red-400': true,
     'z-10': true,
   },
   'family:dropdown__controlLabel': {
-    'absolute': true,
+    absolute: true,
     'opacity-0': true,
     'pointer-events-none': true,
     'text-[0px]': true,
@@ -312,7 +316,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'inline-flex': true,
     'justify-center': true,
     'w-[2.5em]': true,
-    'relative': true,
+    relative: true,
     'my-auto': true,
     '[&>svg]:w-[1em]': true,
     '[&>svg]:mx-auto': true,
@@ -320,11 +324,11 @@ const classes: Record<string, Record<string, boolean>> = {
   'family:dropdown__closeIcon': {
     'text-base': true,
     'w-[0.75em]': true,
-    'relative': true,
+    relative: true,
     'm-auto': true,
   },
   'family:dropdown__prefixIcon': {
-    'flex': true,
+    flex: true,
     'items-center': true,
     '-ml-1': true,
     'mr-2': true,
@@ -338,7 +342,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'text-surface-600': true,
   },
   'family:dropdown__suffixIcon': {
-    'flex': true,
+    flex: true,
     'items-center': true,
     '-mr-1': true,
     'ml-2': true,
@@ -352,12 +356,12 @@ const classes: Record<string, Record<string, boolean>> = {
     'text-surface-600': true,
   },
   'family:dropdown__dropdownWrapper': {
-    'rounded': true,
+    rounded: true,
     'shadow-lg': true,
     'mt-1': true,
     'overflow-clip': true,
     'empty:hidden': true,
-    'border': true,
+    border: true,
     'border-surface-300': true,
     'group-data-[expanded]:opacity-100': true,
     'group-data-[overscroll]:m-0': true,
@@ -366,15 +370,15 @@ const classes: Record<string, Record<string, boolean>> = {
   },
   'family:dropdown__listbox': {
     'bg-white': true,
-    'rounded': true,
+    rounded: true,
     'empty:hidden': true,
     'group-data-[overscroll]:shadow-lg': true,
     'group-data-[overscroll]:border': true,
     'group-data-[overscroll]:border-surface-300': true,
   },
   'family:dropdown__listitem': {
-    'relative': true,
-    'flex': true,
+    relative: true,
+    flex: true,
     'items-center': true,
     'px-2': true,
     'py-1.5': true,
@@ -383,7 +387,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'text-black': true,
     'text-base': true,
     'data-[is-active]:bg-primary-100': true,
-    'before:content-[\'\']': true,
+    "before:content-['']": true,
     'before:absolute': true,
     'before:inset-0': true,
     'data-[is-active]:first:before:rounded': true,
@@ -397,8 +401,8 @@ const classes: Record<string, Record<string, boolean>> = {
     'data-[is-active]:before:ring-offset-primary-100': true,
   },
   'family:dropdown__selectedIcon': {
-    'flex': true,
-    'absolute': true,
+    flex: true,
+    absolute: true,
     'items-center': true,
     'text-primary-600': true,
     'left-2': true,
@@ -412,7 +416,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'ml-[1.5em]': true,
   },
   'family:dropdown__loadMoreInner': {
-    'flex': true,
+    flex: true,
     'text-sm': true,
     'text-surface-500': true,
     'p-2': true,
@@ -423,13 +427,13 @@ const classes: Record<string, Record<string, boolean>> = {
     'cursor-pointer': true,
   },
   'family:dropdown__selectionWrapper': {
-    'grow': true,
-    'flex': true,
+    grow: true,
+    flex: true,
     'items-center': true,
     'text-black': true,
   },
   'family:dropdown__selection': {
-    'grow': true,
+    grow: true,
     'text-black': true,
     'group-data-[multiple]:p-2': true,
   },
@@ -438,7 +442,7 @@ const classes: Record<string, Record<string, boolean>> = {
   },
   'family:dropdown__tagWrapper': {
     'group/tag': true,
-    'rounded': true,
+    rounded: true,
     'mr-1': true,
     'mb-1': true,
     'outline-none': true,
@@ -452,10 +456,10 @@ const classes: Record<string, Record<string, boolean>> = {
     'empty:mb-0': true,
   },
   'family:dropdown__tag': {
-    'flex': true,
+    flex: true,
     'items-center': true,
     'cursor-default': true,
-    'rounded': true,
+    rounded: true,
     'text-sm': true,
     'px-1.5': true,
     'py-0.5': true,
@@ -470,7 +474,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'mr-1': true,
   },
   'family:dropdown__emptyMessage': {
-    'flex': true,
+    flex: true,
     'items-center': true,
     'px-2': true,
     'py-1.5': true,
@@ -481,77 +485,77 @@ const classes: Record<string, Record<string, boolean>> = {
     'aria-selected:text-white': true,
     'aria-selected:bg-primary-500': true,
   },
-  'button__input': {
+  button__input: {
     'appearance-none': true,
     '[color-scheme:light]': true,
     'bg-primary-50': true,
     'hover:bg-primary-100': true,
   },
-  'checkbox__decorator': {
+  checkbox__decorator: {
     rounded: true,
   },
-  'checkbox__decoratorIcon': {
+  checkbox__decoratorIcon: {
     'max-w-[66.66%]': true,
   },
-  'date__input': {
+  date__input: {
     'appearance-none': true,
     '[color-scheme:light]': true,
     'focus:[&::-webkit-datetime-edit-day-field]:bg-primary-300': true,
     'focus:[&::-webkit-datetime-edit-month-field]:bg-primary-300': true,
     'focus:[&::-webkit-datetime-edit-year-field]:bg-primary-300': true,
   },
-  'form__form': {
+  form__form: {
     'group/form': true,
   },
-  'form__actions': {
+  form__actions: {
     '': true,
   },
-  'form__summaryInner': {
+  form__summaryInner: {
     'group/summary': true,
-    'border': true,
+    border: true,
     'border-surface-400': true,
     'bg-white': true,
-    'rounded': true,
+    rounded: true,
     'py-2': true,
     'px-3': true,
   },
-  'form__summaryHeader': {
+  form__summaryHeader: {
     'text-lg': true,
     'text-black': true,
     'font-bold': true,
     'mb-2': true,
   },
-  'form__messages': {
+  form__messages: {
     '': true,
   },
-  'form__message': {
+  form__message: {
     'text-red-600': true,
     'mb-1.5': true,
     'text-xs': true,
     'group-[]/summary:text-sm': true,
   },
-  'form__messageLink': {
+  form__messageLink: {
     'group-[]/summary:outline-none': true,
     'group-[]/summary:focus-visible:ring': true,
     'group-[]/summary:ring-primary-600': true,
   },
-  'radio__decorator': {
+  radio__decorator: {
     'rounded-full': true,
   },
-  'radio__decoratorIcon': {
+  radio__decoratorIcon: {
     'max-w-[50%]': true,
   },
-  'select__wrapper': {
+  select__wrapper: {
     'mb-1.5': true,
   },
-  'select__inner': {
-    'relative': true,
-    'flex': true,
+  select__inner: {
+    relative: true,
+    flex: true,
     'items-center': true,
     'bg-white': true,
-    'border': true,
+    border: true,
     'border-surface-400': true,
-    'rounded': true,
+    rounded: true,
     'focus-within:ring': true,
     'focus-within:!ring-primary-400/50': true,
     'focus-within:!border-primary-500': true,
@@ -562,10 +566,10 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[disabled]:!cursor-not-allowed': true,
     'group-data-[multiple]:rounded': true,
   },
-  'select__input': {
+  select__input: {
     'appearance-none': true,
     '[color-scheme:light]': true,
-    'grow': true,
+    grow: true,
     'p-2': true,
     'py-2': true,
     'px-3': true,
@@ -585,15 +589,15 @@ const classes: Record<string, Record<string, boolean>> = {
     'focus:ring-0': true,
     'bg-none': true,
   },
-  'select__selectIcon': {
-    'absolute': true,
+  select__selectIcon: {
+    absolute: true,
     'w-[1em]': true,
     'text-black': true,
     'pointer-events-none': true,
     'right-2': true,
     'group-data-[suffix-icon]:mr-[1.5em]': true,
   },
-  'select__optGroup': {
+  select__optGroup: {
     'bg-white': true,
     'text-black': true,
     'group/optgroup': true,
@@ -602,7 +606,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'font-bold': true,
     'text-sm': true,
   },
-  'select__option': {
+  select__option: {
     'bg-white': true,
     'text-black': true,
     'group-data-[disabled]:opacity-50': true,
@@ -615,8 +619,8 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[multiple]:py-1.5': true,
     'group-data-[multiple]:px-2': true,
   },
-  'select__prefixIcon': {
-    'flex': true,
+  select__prefixIcon: {
+    flex: true,
     'items-center': true,
     'mr-2': true,
     'text-base': true,
@@ -627,8 +631,8 @@ const classes: Record<string, Record<string, boolean>> = {
     'ml-2': true,
     'text-surface-600': true,
   },
-  'select__suffixIcon': {
-    'flex': true,
+  select__suffixIcon: {
+    flex: true,
     'items-center': true,
     'ml-2': true,
     'text-base': true,
@@ -639,19 +643,19 @@ const classes: Record<string, Record<string, boolean>> = {
     'mr-2': true,
     'text-surface-600': true,
   },
-  'submit__outer': {
-    'group': true,
+  submit__outer: {
+    group: true,
     'max-w-none': true,
     'min-w-0': true,
-    'grow': true,
+    grow: true,
     'mb-4': true,
     'data-[disabled]:select-none': true,
     'text-base': true,
     'data-[disabled]:opacity-100': true,
-    'flex': true,
+    flex: true,
     'justify-end': true,
   },
-  'submit__input': {
+  submit__input: {
     'appearance-none': true,
     '[color-scheme:light]': true,
     'bg-primary-500': true,
@@ -664,7 +668,7 @@ const classes: Record<string, Record<string, boolean>> = {
     'disabled:text-surface-100': true,
     'group-data-[disabled]:!cursor-not-allowed': true,
     'before:transition-all': true,
-    'group-data-[loading=true]/form:before:content[\'\']': true,
+    "group-data-[loading=true]/form:before:content['']": true,
     'group-data-[loading=true]/form:before:block': true,
     'group-data-[loading=true]/form:before:animate-spin': true,
     'group-data-[loading=true]/form:before:w-5': true,
@@ -677,8 +681,8 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[loading=true]/form:before:border-white': true,
     'group-data-[loading=true]/form:before:border-r-transparent': true,
   },
-  'submit__prefixIcon': {
-    'flex': true,
+  submit__prefixIcon: {
+    flex: true,
     'items-center': true,
     '-ml-1': true,
     'mr-2': true,
@@ -689,8 +693,8 @@ const classes: Record<string, Record<string, boolean>> = {
     '[&>svg]:w-full': true,
     'text-surface-100': true,
   },
-  'submit__suffixIcon': {
-    'flex': true,
+  submit__suffixIcon: {
+    flex: true,
     'items-center': true,
     '-mr-1': true,
     'ml-2': true,
@@ -701,14 +705,14 @@ const classes: Record<string, Record<string, boolean>> = {
     '[&>svg]:w-full': true,
     'text-surface-100': true,
   },
-  'textarea__inner': {
-    'flex': true,
+  textarea__inner: {
+    flex: true,
     'items-center': true,
     'mb-1.5': true,
     'bg-white': true,
-    'border': true,
+    border: true,
     'border-surface-400': true,
-    'rounded': true,
+    rounded: true,
     'focus-within:ring': true,
     'focus-within:!ring-primary-400/50': true,
     'focus-within:!border-primary-500': true,
@@ -717,15 +721,15 @@ const classes: Record<string, Record<string, boolean>> = {
     'group-data-[invalid]:ring-red-400': true,
     'group-data-[disabled]:bg-surface-100': true,
   },
-  'textarea__input': {
+  textarea__input: {
     'appearance-none': true,
     '[color-scheme:light]': true,
     'text-base': true,
     'h-24': true,
     'text-black': true,
     'min-w-0': true,
-    'grow': true,
-    'shrink': true,
+    grow: true,
+    shrink: true,
     '!py-2': true,
     '!px-3': true,
     'outline-none': true,
@@ -736,8 +740,8 @@ const classes: Record<string, Record<string, boolean>> = {
     'border-none': true,
     'focus:ring-0': true,
   },
-  'textarea__prefixIcon': {
-    'flex': true,
+  textarea__prefixIcon: {
+    flex: true,
     'items-center': true,
     '-ml-1': true,
     'mr-2': true,
@@ -750,8 +754,8 @@ const classes: Record<string, Record<string, boolean>> = {
     '!mr-0': true,
     'text-surface-600': true,
   },
-  'textarea__suffixIcon': {
-    'flex': true,
+  textarea__suffixIcon: {
+    flex: true,
     'items-center': true,
     '-mr-1': true,
     'ml-2': true,
@@ -764,7 +768,7 @@ const classes: Record<string, Record<string, boolean>> = {
     '!ml-0': true,
     'text-surface-600': true,
   },
-  'time__input': {
+  time__input: {
     'appearance-none': true,
     '[color-scheme:light]': true,
     'focus:[&::-webkit-datetime-edit-hour-field]:bg-primary-300': true,
@@ -775,24 +779,24 @@ const classes: Record<string, Record<string, boolean>> = {
 
 const globals: Record<string, Record<string, boolean>> = {
   outer: {
-    'group': true,
+    group: true,
     'max-w-none': true,
     'min-w-0': true,
-    'grow': true,
+    grow: true,
     'mb-4': true,
     'data-[disabled]:select-none': true,
     'data-[disabled]:opacity-50': true,
     'text-base': true,
   },
   label: {
-    'block': true,
+    block: true,
     'text-black': true,
     'text-sm': true,
     'font-bold': true,
     'mb-1': true,
   },
   legend: {
-    'block': true,
+    block: true,
     'text-black': true,
     'text-sm': true,
     'font-bold': true,
@@ -802,7 +806,7 @@ const globals: Record<string, Record<string, boolean>> = {
     '[color-scheme:light]': true,
   },
   prefixIcon: {
-    'flex': true,
+    flex: true,
     'items-center': true,
     '-ml-1': true,
     'mr-2': true,
@@ -813,7 +817,7 @@ const globals: Record<string, Record<string, boolean>> = {
     '[&>svg]:w-full': true,
   },
   suffixIcon: {
-    'flex': true,
+    flex: true,
     'items-center': true,
     '-mr-1': true,
     'ml-2': true,
@@ -825,7 +829,7 @@ const globals: Record<string, Record<string, boolean>> = {
   },
   loaderIcon: {
     'animate-spin': true,
-    'flex': true,
+    flex: true,
     'items-center': true,
     'my-auto': true,
     'ml-2': true,
@@ -837,7 +841,7 @@ const globals: Record<string, Record<string, boolean>> = {
     '[&>svg]:w-full': true,
   },
   loadMoreInner: {
-    'flex': true,
+    flex: true,
     'text-sm': true,
     'text-surface-500': true,
     'p-2': true,

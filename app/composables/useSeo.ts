@@ -1,12 +1,7 @@
 import config from '~~/constants/seo'
 
 export function useSeo() {
-  const {
-    url,
-    name,
-    logo,
-    description,
-  } = config.meta
+  const { url, name, logo, description } = config.meta
 
   const head = computed(() => ({
     titleTemplate: () => name,

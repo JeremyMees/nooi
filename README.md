@@ -1,6 +1,7 @@
 # Nooi — Kalender & Reservatiesysteem
 
-Calendar and booking app for Nooi, a community meeting space in Diest. Lives at `kalender.nooi.be`.
+Calendar and booking app for Nooi, a community meeting space in Diest. Lives at
+`kalender.nooi.be`.
 
 ## Stack
 

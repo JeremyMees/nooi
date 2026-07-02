@@ -20,9 +20,13 @@ const filters = ref<Record<string, any>>({
   sortOrder: null,
 })
 
-watchDebounced([() => filters.value.search, () => filters.value.date], async () => {
-  await onTableEvent()
-}, { debounce: 500, maxWait: 1000 })
+watchDebounced(
+  [() => filters.value.search, () => filters.value.date],
+  async () => {
+    await onTableEvent()
+  },
+  { debounce: 500, maxWait: 1000 },
+)
 
 onMounted(async () => {
   await store.fetchData(props.type)
@@ -39,16 +43,22 @@ function generateString(data: Record<string, any>, field: string): string {
   else return data[field]
 }
 
-async function submit(form: RosterInsert | EventInsert | ReservationInsert): Promise<void> {
+async function submit(
+  form: RosterInsert | EventInsert | ReservationInsert,
+): Promise<void> {
   if (props.type === 'events') {
     form = {
       ...form,
       description: content.value,
     }
-  }
-  else if (props.type === 'reservations') {
+  } else if (props.type === 'reservations') {
     const rawEvent = (form as ReservationInsert).event as any
-    const eventId = rawEvent && typeof rawEvent === 'object' ? rawEvent.id : (rawEvent ? +rawEvent : undefined)
+    const eventId =
+      rawEvent && typeof rawEvent === 'object'
+        ? rawEvent.id
+        : rawEvent
+          ? +rawEvent
+          : undefined
     const event = store.events.find(({ id }) => id === eventId)
 
     form = {
@@ -67,8 +77,7 @@ async function submit(form: RosterInsert | EventInsert | ReservationInsert): Pro
 
     await store.updateData(id, props.type, payload)
     expandedRows.value = {}
-  }
-  else {
+  } else {
     await store.createData(props.type, form)
   }
 
@@ -86,7 +95,9 @@ async function onTableEvent(data?: TableEvent): Promise<void> {
     fuzzy: true,
     page,
     search: filters.value.search,
-    ...(filters.value.date ? { eq: [{ field: 'day', value: filters.value.date }] } : {}),
+    ...(filters.value.date
+      ? { eq: [{ field: 'day', value: filters.value.date }] }
+      : {}),
     fields: values[props.type].filter,
     sort: filters.value.sortField
       ? {
@@ -170,7 +181,9 @@ function clearFilters(): void {
               <AnimationReveal>
                 <Button
                   v-if="filters.search || filters.date"
-                  :disabled="creating || !!Object.keys(expandedRows || {}).length"
+                  :disabled="
+                    creating || !!Object.keys(expandedRows || {}).length
+                  "
                   icon="pi pi-trash"
                   label="Filters verwijderen"
                   severity="danger"
@@ -200,13 +213,8 @@ function clearFilters(): void {
                 <FormRoster v-if="type === 'rosters'" />
                 <FormEvent v-else-if="type === 'events'" />
                 <FormAdminReservation v-else-if="type === 'reservations'" />
-                <div
-                  v-if="type === 'events'"
-                  class="h-100 mb-10"
-                >
-                  <span class="text-sm text-black">
-                    Omscrijving
-                  </span>
+                <div v-if="type === 'events'" class="h-100 mb-10">
+                  <span class="text-sm text-black"> Omscrijving </span>
                   <MarkdownEditor v-model:content="content" />
                 </div>
               </FormKit>
@@ -215,10 +223,7 @@ function clearFilters(): void {
         </div>
       </template>
 
-      <Column
-        selection-mode="multiple"
-        header-style="width: 2rem"
-      />
+      <Column selection-mode="multiple" header-style="width: 2rem" />
       <Column expander />
       <Column
         v-for="column in values[type].table"
@@ -230,7 +235,9 @@ function clearFilters(): void {
         <template #body="{ data }">
           <Icon
             v-if="['exclusive', 'allowReservation'].includes(column.field)"
-            :name="data[column.field] ? 'radix-icons:check' : 'radix-icons:cross-2'"
+            :name="
+              data[column.field] ? 'radix-icons:check' : 'radix-icons:cross-2'
+            "
             :class="[data[column.field] ? 'text-teal' : 'text-secondary']"
             class="h-6 w-6"
           />
@@ -260,13 +267,8 @@ function clearFilters(): void {
               <FormRoster v-if="type === 'rosters'" />
               <FormEvent v-else-if="type === 'events'" />
               <FormAdminReservation v-else-if="type === 'reservations'" />
-              <div
-                v-if="type === 'events'"
-                class="h-100 mb-10"
-              >
-                <span class="text-sm text-black">
-                  Omscrijving
-                </span>
+              <div v-if="type === 'events'" class="h-100 mb-10">
+                <span class="text-sm text-black"> Omscrijving </span>
                 <MarkdownEditor v-model:content="content" />
               </div>
             </FormKit>
@@ -286,11 +288,13 @@ function clearFilters(): void {
         severity="danger"
         icon="pi pi-trash"
         label="Verwijder geselecteerde"
-        @click="() => {
-          store.removeData(type, selected)
-          selected = []
-          clearFilters()
-        }"
+        @click="
+          () => {
+            store.removeData(type, selected)
+            selected = []
+            clearFilters()
+          }
+        "
       />
     </AnimationReveal>
   </div>

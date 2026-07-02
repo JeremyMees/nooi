@@ -1,8 +1,5 @@
 <template>
-  <svg
-    viewBox="0 0 800 800"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
     <circle
       class="spin2"
       cx="400"
@@ -43,7 +40,8 @@
 
 .spin2 {
   transform-origin: center;
-  animation: spin2 2s ease-in-out infinite,
+  animation:
+    spin2 2s ease-in-out infinite,
     spin 2s linear infinite;
   animation-direction: alternate;
 }

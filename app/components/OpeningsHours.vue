@@ -21,12 +21,9 @@ onMounted(async () => {
     >
       <p class="body-small">
         Onze openingsuren zijn vandaag:
-        <template
-          v-for="(item, i) in filteredRoster"
-          :key="item.id"
-        >
-          {{ formatHour(item.start) }} -
-          {{ formatHour(item.end) }}{{ i !== filteredRoster.length - 1 ? ', ' : '' }}
+        <template v-for="(item, i) in filteredRoster" :key="item.id">
+          {{ formatHour(item.start) }} - {{ formatHour(item.end)
+          }}{{ i !== filteredRoster.length - 1 ? ', ' : '' }}
         </template>
       </p>
     </div>

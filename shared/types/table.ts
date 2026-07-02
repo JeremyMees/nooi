@@ -1,4 +1,8 @@
-import type { DataTablePageEvent, DataTableFilterEvent, DataTableSortEvent } from 'primevue/datatable'
+import type {
+  DataTablePageEvent,
+  DataTableFilterEvent,
+  DataTableSortEvent,
+} from 'primevue/datatable'
 
 export interface TableColumn {
   header: string
@@ -10,4 +14,5 @@ export interface TableFilter {
   matchMode: string
 }
 
-export type TableEvent = DataTablePageEvent | DataTableSortEvent | DataTableFilterEvent
+export type TableEvent =
+  DataTablePageEvent | DataTableSortEvent | DataTableFilterEvent

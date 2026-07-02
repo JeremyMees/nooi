@@ -16,7 +16,8 @@ defineProps<{
     :name="name"
   >
     <Text>
-      We hebben je reservatie goed ontvangen en kijken uit naar je komst. Fijn dat we je mogen verwelkomen op
+      We hebben je reservatie goed ontvangen en kijken uit naar je komst. Fijn
+      dat we je mogen verwelkomen op
       <span class="font-bold text-[#305445]">
         {{ date }}
       </span>
@@ -24,12 +25,10 @@ defineProps<{
         om
         <span class="font-bold text-[#305445]">
           {{ time }}
-        </span>
-      </template>.
-      Mocht je nog vragen hebben, aarzel dan niet om contact met ons op te nemen. Tot binnenkort!
+        </span> </template
+      >. Mocht je nog vragen hebben, aarzel dan niet om contact met ons op te
+      nemen. Tot binnenkort!
     </Text>
-    <Text>
-      Thomas & An
-    </Text>
+    <Text> Thomas & An </Text>
   </Layout>
 </template>

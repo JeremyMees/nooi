@@ -6,40 +6,43 @@ const route = useRoute()
 const visible = ref<boolean>(false)
 
 const isFull = computed<boolean>(() => {
-  return !!store.informationEvent?.spots
-    && store.informationEvent.spots <= getReservedSpots(store.informationEvent.reservations)
+  return (
+    !!store.informationEvent?.spots &&
+    store.informationEvent.spots <=
+      getReservedSpots(store.informationEvent.reservations)
+  )
 })
 
 const afterDeadline = computed<boolean>(() => {
   return store.informationEvent?.bookingDeadline
-    ? isAfterDeadline(new Date(), new Date(store.informationEvent.bookingDeadline))
+    ? isAfterDeadline(
+        new Date(),
+        new Date(store.informationEvent.bookingDeadline),
+      )
     : false
 })
 
-watch(visible, (value) => {
+watch(visible, value => {
   if (!value && route.query.status === 'info') {
     removeQuery(['event', 'status'])
   }
 })
 
-watch(() => store.informationEvent, () => visible.value = !!store.informationEvent)
+watch(
+  () => store.informationEvent,
+  () => (visible.value = !!store.informationEvent),
+)
 </script>
 
 <template>
-  <Drawer
-    v-model:visible="visible"
-    position="bottom"
-  >
+  <Drawer v-model:visible="visible" position="bottom">
     <template #header>
       <p class="head-3 sm:head-1">
         {{ store.informationEvent?.name }}
       </p>
     </template>
 
-    <EventTags
-      v-if="store.informationEvent"
-      :event="store.informationEvent"
-    />
+    <EventTags v-if="store.informationEvent" :event="store.informationEvent" />
     <ClientOnly>
       <div class="pt-6">
         <v-md-editor
@@ -52,24 +55,15 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
 
     <template v-if="store.informationEvent">
       <template v-if="isFull">
-        <p
-          v-if="store.informationEvent.external"
-          class="pt-8"
-        >
+        <p v-if="store.informationEvent.external" class="pt-8">
           Dit event is volzet.
         </p>
-        <p
-          v-else
-          class="pt-8"
-        >
-          Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te mailen naar
-          <a
-            href="mailto:zin@nooi.be"
-            class="text-primary underline"
-          >
-            zin@nooi.be
-          </a>.
-          Vermeld ook je telefoonnummer.
+        <p v-else class="pt-8">
+          Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te
+          mailen naar
+          <a href="mailto:zin@nooi.be" class="text-primary underline">
+            zin@nooi.be </a
+          >. Vermeld ook je telefoonnummer.
         </p>
       </template>
       <div
@@ -77,15 +71,13 @@ watch(() => store.informationEvent, () => visible.value = !!store.informationEve
         class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8"
       >
         <template v-if="store.informationEvent.bookingDeadline">
-          <p
-            v-if="afterDeadline"
-            class="body-small text-pretty text-left"
-          >
+          <p v-if="afterDeadline" class="body-small text-pretty text-left">
             Inschrijvingen zijn gesloten.
           </p>
           <template v-else>
             <p class="mr-4 body-small text-pretty text-left">
-              Inschrijvingen sluiten op {{ formatDateUI(store.informationEvent.bookingDeadline) }}
+              Inschrijvingen sluiten op
+              {{ formatDateUI(store.informationEvent.bookingDeadline) }}
             </p>
             <Button @click="addQuery({ status: 'reservation' })">
               Inschrijven

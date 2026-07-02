@@ -54,42 +54,48 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   })
 
-  watch(() => route.query, (query) => {
-    const { date } = query
+  watch(
+    () => route.query,
+    query => {
+      const { date } = query
 
-    if (date) {
-      form.value.day = date as string
-    }
-  }, { immediate: true })
-
-  watch([selectedEvent, () => form.value.day], (value) => {
-    const [event, day] = value
-
-    if (event && event.spots && event.reservations.length >= event.spots) {
-      toast.add({
-        severity: 'info',
-        summary: 'Volzet!',
-        detail: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
-        life: 5000,
-      })
-
-      removeQuery(['event', 'status'])
-    }
-    else if (event || day) {
-      if (reservationInfo.value) {
-        form.value.name = reservationInfo.value.name
-        form.value.number = reservationInfo.value.number
-        form.value.mail = reservationInfo.value.email
+      if (date) {
+        form.value.day = date as string
       }
+    },
+    { immediate: true },
+  )
 
-      drawerOpen.value = true
-    }
-    else {
-      drawerOpen.value = false
-    }
-  }, { immediate: true })
+  watch(
+    [selectedEvent, () => form.value.day],
+    value => {
+      const [event, day] = value
 
-  watch(drawerOpen, (value) => {
+      if (event && event.spots && event.reservations.length >= event.spots) {
+        toast.add({
+          severity: 'info',
+          summary: 'Volzet!',
+          detail: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
+          life: 5000,
+        })
+
+        removeQuery(['event', 'status'])
+      } else if (event || day) {
+        if (reservationInfo.value) {
+          form.value.name = reservationInfo.value.name
+          form.value.number = reservationInfo.value.number
+          form.value.mail = reservationInfo.value.email
+        }
+
+        drawerOpen.value = true
+      } else {
+        drawerOpen.value = false
+      }
+    },
+    { immediate: true },
+  )
+
+  watch(drawerOpen, value => {
     if (!value) {
       if (paymentPending.value) {
         cancelUnpaidReservation(paymentPending.value)
@@ -97,17 +103,20 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
       form.value.day = undefined
       removeQuery(['date', 'type', 'event', 'status', 'rosterIndex'])
-    }
-    else {
+    } else {
       paymentPending.value = undefined
     }
   })
 
-  watch(shownDate, async () => {
-    if (!loading.value) {
-      await getData()
-    }
-  }, { immediate: true })
+  watch(
+    shownDate,
+    async () => {
+      if (!loading.value) {
+        await getData()
+      }
+    },
+    { immediate: true },
+  )
 
   async function getReservation(id: number): Promise<ReservationRow> {
     const { error, data } = await supabase
@@ -116,13 +125,18 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       .eq('id', id)
 
     if (error || !data?.[0]) {
-      throw error || createError('Er is iets misgegaan bij het ophalen van de reservering')
+      throw (
+        error ||
+        createError('Er is iets misgegaan bij het ophalen van de reservering')
+      )
     }
 
     return data[0]
   }
 
-  async function createReservation(insert: ReservationInsert): Promise<ReservationWithEvent> {
+  async function createReservation(
+    insert: ReservationInsert,
+  ): Promise<ReservationWithEvent> {
     const { name, number, email } = insert
 
     reservationInfo.value = {
@@ -137,24 +151,27 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       .select('*, event(name)')
 
     if (error || !data?.[0]) {
-      throw error || createError('Er is iets misgegaan bij het aanmaken van de reservering')
+      throw (
+        error ||
+        createError('Er is iets misgegaan bij het aanmaken van de reservering')
+      )
     }
 
     return data[0]
   }
 
   async function removeReservation(id: number): Promise<void> {
-    const { error } = await supabase
-      .from('reservations')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('reservations').delete().eq('id', id)
 
     if (error) {
       throw error
     }
   }
 
-  async function updateReservation(id: number, payload: ReservationUpdate): Promise<void> {
+  async function updateReservation(
+    id: number,
+    payload: ReservationUpdate,
+  ): Promise<void> {
     const { error } = await supabase
       .from('reservations')
       .update(payload)
@@ -167,26 +184,28 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
   async function checkPaymentStatus(session: string): Promise<void> {
     try {
-      const currentSession = await $fetch<Stripe.Checkout.Session>('/api/stripe/status', {
-        query: { id: session },
-      })
+      const currentSession = await $fetch<Stripe.Checkout.Session>(
+        '/api/stripe/status',
+        {
+          query: { id: session },
+        },
+      )
 
       if (currentSession.payment_status === 'paid') {
         toast.add({
           severity: 'success',
           summary: 'Betaling gelukt!',
-          detail: 'De betaling is succesvol verwerkt en de reservering is bevestigd',
+          detail:
+            'De betaling is succesvol verwerkt en de reservering is bevestigd',
           life: 5000,
         })
-      }
-      else if (
-        currentSession.payment_status === 'unpaid'
-        && currentSession.metadata?.reservation
+      } else if (
+        currentSession.payment_status === 'unpaid' &&
+        currentSession.metadata?.reservation
       ) {
         cancelUnpaidReservation(+currentSession.metadata.reservation)
       }
-    }
-    finally {
+    } finally {
       removeQuery(['session_id'])
     }
   }
@@ -213,26 +232,26 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       if (day) {
         const date = formatDay(new Date(day as string))
 
-        if (isValidDateString(day as string) && rosterStore.getDayRoster(date)) {
+        if (
+          isValidDateString(day as string) &&
+          rosterStore.getDayRoster(date)
+        ) {
           form.value.day = date
-        }
-        else {
+        } else {
           removeQuery(['day'])
         }
-      }
-      else if (session_id) {
+      } else if (session_id) {
         await checkPaymentStatus(session_id as string)
       }
-    }
-    catch (error) {
+    } catch (error) {
       toast.add({
         severity: 'error',
         summary: 'Oeps!',
-        detail: 'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
+        detail:
+          'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
         life: 5000,
       })
-    }
-    finally {
+    } finally {
       loading.value = false
     }
   }
@@ -252,7 +271,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       })
 
       // Fetch single event if query param is present and its not in the current fetched month
-      if (event && !isNaN(+event) && !events.value.find(({ id }) => id === +event)) {
+      if (
+        event &&
+        !isNaN(+event) &&
+        !events.value.find(({ id }) => id === +event)
+      ) {
         const fetchedEvent = await supabase
           .from('events')
           .select('*, reservations:reservations(id, spots, paymentNeeded)')
@@ -269,8 +292,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         date,
         eq: { field: 'paymentNeeded', value: false },
       })
-    }
-    finally {
+    } finally {
       loading.value = false
     }
   }
@@ -286,7 +308,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           table: 'reservations',
         },
         async () => await getData(),
-      ).subscribe()
+      )
+      .subscribe()
   }
 
   function unsubscribe() {
@@ -294,9 +317,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   async function createSession(id: number): Promise<void> {
-    const spotsNumber = form.value?.spots && !isNaN(+form.value.spots)
-      ? +form.value.spots
-      : 1
+    const spotsNumber =
+      form.value?.spots && !isNaN(+form.value.spots) ? +form.value.spots : 1
 
     const url = await $fetch('/api/stripe/session', {
       method: 'POST',

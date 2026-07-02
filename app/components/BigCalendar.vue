@@ -8,7 +8,9 @@ const { shownDate } = storeToRefs(store)
 const grid = computed<CalendarTile[]>(() => {
   return getCalenderDays(shownDate.value)
 })
-const isCurrentMonth = computed<boolean>(() => sameMonth(shownDate.value, currentDate))
+const isCurrentMonth = computed<boolean>(() =>
+  sameMonth(shownDate.value, currentDate),
+)
 
 function navigateCalendar(modifier: number): void {
   const date = new Date(shownDate.value.year, shownDate.value.month + modifier)
@@ -23,7 +25,9 @@ function navigateCalendar(modifier: number): void {
 <template>
   <Card class="w-full">
     <template #title>
-      <div class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5">
+      <div
+        class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5"
+      >
         <div class="flex flex-wrap gap-x-4">
           <Button
             icon="pi pi-angle-left"
@@ -49,11 +53,10 @@ function navigateCalendar(modifier: number): void {
     </template>
     <template #content>
       <div class="space-y-2 w-full">
-        <div class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center">
-          <div
-            v-for="(day, index) in daysOfWeek"
-            :key="index"
-          >
+        <div
+          class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center"
+        >
+          <div v-for="(day, index) in daysOfWeek" :key="index">
             {{ day }}
           </div>
         </div>
@@ -62,7 +65,9 @@ function navigateCalendar(modifier: number): void {
             v-for="(day, index) in grid"
             :key="`${index}-${day.key}`"
             :day="day"
-            :events="store.events.filter(e => e.day === formatDay(day.dateFull))"
+            :events="
+              store.events.filter(e => e.day === formatDay(day.dateFull))
+            "
           />
         </div>
       </div>
@@ -92,12 +97,14 @@ function navigateCalendar(modifier: number): void {
           text
           icon="pi pi-directions"
           label="Huidige maand tonen"
-          @click="() => {
-            shownDate = {
-              month: currentDate.getMonth(),
-              year: currentDate.getFullYear(),
+          @click="
+            () => {
+              shownDate = {
+                month: currentDate.getMonth(),
+                year: currentDate.getFullYear(),
+              }
             }
-          }"
+          "
         />
       </AnimationReveal>
     </template>
