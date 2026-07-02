@@ -1,9 +1,58 @@
+import { vi } from 'vitest'
 import type {
   EventRow,
   EventReservation,
   ReservationRow,
   RosterRow,
 } from '~~/shared/types/supabase'
+
+export interface SupabaseResult {
+  data?: unknown
+  error?: unknown
+  count?: number | null
+}
+
+export function createSupabaseMock(result: SupabaseResult = { data: [] }) {
+  const builder = {
+    result,
+    from: vi.fn(() => builder),
+    select: vi.fn(() => builder),
+    insert: vi.fn(() => builder),
+    update: vi.fn(() => builder),
+    delete: vi.fn(() => builder),
+    in: vi.fn(() => builder),
+    eq: vi.fn(() => builder),
+    gte: vi.fn(() => builder),
+    lte: vi.fn(() => builder),
+    or: vi.fn(() => builder),
+    order: vi.fn(() => builder),
+    range: vi.fn(() => builder),
+    channel: vi.fn(() => builder),
+    on: vi.fn(() => builder),
+    subscribe: vi.fn(() => builder),
+    removeAllChannels: vi.fn(),
+    then: (resolve: (value: SupabaseResult) => unknown) =>
+      resolve(builder.result),
+  }
+
+  return builder
+}
+
+export type SupabaseMock = ReturnType<typeof createSupabaseMock>
+
+export function mockRoute(query: Record<string, unknown> = {}) {
+  return {
+    path: '/',
+    fullPath: '/',
+    hash: '',
+    name: undefined,
+    params: {},
+    meta: {},
+    matched: [],
+    redirectedFrom: undefined,
+    query,
+  }
+}
 
 export const mockEvent: EventRow = {
   id: 1,

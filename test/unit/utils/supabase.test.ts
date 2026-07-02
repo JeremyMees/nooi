@@ -7,40 +7,7 @@ import {
   sbQuery,
 } from '~/utils/supabase'
 import { formatDay, padDate } from '~~/shared/utils/date-helpers'
-
-interface QueryResult {
-  data?: unknown
-  error?: unknown
-  count?: number | null
-}
-
-interface SupabaseMock {
-  from: ReturnType<typeof vi.fn>
-  select: ReturnType<typeof vi.fn>
-  gte: ReturnType<typeof vi.fn>
-  lte: ReturnType<typeof vi.fn>
-  eq: ReturnType<typeof vi.fn>
-  or: ReturnType<typeof vi.fn>
-  order: ReturnType<typeof vi.fn>
-  range: ReturnType<typeof vi.fn>
-  then: (resolve: (value: QueryResult) => unknown) => unknown
-}
-
-function createSupabaseMock(result: QueryResult = { data: [] }): SupabaseMock {
-  const builder: SupabaseMock = {
-    from: vi.fn(() => builder),
-    select: vi.fn(() => builder),
-    gte: vi.fn(() => builder),
-    lte: vi.fn(() => builder),
-    eq: vi.fn(() => builder),
-    or: vi.fn(() => builder),
-    order: vi.fn(() => builder),
-    range: vi.fn(() => builder),
-    then: resolve => resolve(result),
-  }
-
-  return builder
-}
+import { createSupabaseMock } from '~~/test/mock'
 
 beforeAll(() => {
   vi.stubGlobal('padDate', padDate)
