@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import EventModal from '~/components/EventModal.vue'
-import { mockEventReservation } from '~~/test/mock'
+import { mockEventReservation, mockRoute } from '~~/test/mock'
 
 let informationEvent: EventReservation | null
 let query: Record<string, unknown>
@@ -12,7 +12,7 @@ mockNuxtImport('useReservationStore', () => () => ({
   },
 }))
 mockNuxtImport('useToast', () => () => ({ add: vi.fn() }))
-mockNuxtImport('useRoute', () => () => ({ query }))
+mockNuxtImport('useRoute', () => () => mockRoute(query))
 
 const stubs = {
   Drawer: {

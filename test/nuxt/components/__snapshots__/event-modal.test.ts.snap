@@ -16,7 +16,7 @@ exports[`EventModal > matches snapshot 1`] = `
     <v-md-editor-stub modelvalue="Een gezellige avond vol bordspellen." mode="preview"></v-md-editor-stub>
   </div>
   <div class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8">
-    <p class="mr-4 body-small text-pretty text-left"> Inschrijvingen sluiten op 9 jul 2026</p><button class="p-button p-component" data-p="" type="button" data-pc-name="button" data-p-disabled="false" test-id="event-modal-submit" pc0_0_0="" data-pc-section="root"> Inschrijven </button>
+    <p class="mr-4 body-small text-pretty text-left"> Inschrijvingen sluiten op 9 jul 2026</p><button data-p="" type="button" data-pc-name="button" data-p-disabled="false" test-id="event-modal-submit" class="relative items-center inline-flex text-center align-bottom justify-center leading-[normal] px-4 py-3 text-sm rounded-md text-white bg-primary-500 border border-primary-500 focus:outline-none focus:outline-offset-0 focus:ring hover:bg-primary-600 hover:border-primary-600 focus:ring-primary-400/50 transition duration-200 ease-in-out cursor-pointer overflow-hidden select-none" pc0_0_0="" data-pc-section="root"> Inschrijven </button>
   </div>
 </div>"
 `;

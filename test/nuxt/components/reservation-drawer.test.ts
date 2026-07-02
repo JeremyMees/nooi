@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import ReservationDrawer from '~/components/ReservationDrawer.vue'
-import { mockEvent, mockRoster } from '~~/test/mock'
+import { mockEvent, mockRoster, mockRoute } from '~~/test/mock'
 
 let selectedEvent: EventRow | null
 let current: RosterRow[]
@@ -18,7 +18,7 @@ mockNuxtImport('useRosterStore', () => () => ({
   },
 }))
 mockNuxtImport('useToast', () => () => ({ add: vi.fn() }))
-mockNuxtImport('useRoute', () => () => ({ query }))
+mockNuxtImport('useRoute', () => () => mockRoute(query))
 
 const stubs = {
   Drawer: {
