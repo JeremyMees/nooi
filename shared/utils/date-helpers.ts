@@ -1,4 +1,11 @@
-import { format, range, sameDay, addDay, addYear, isBefore } from '@formkit/tempo'
+import {
+  format,
+  range,
+  sameDay,
+  addDay,
+  addYear,
+  isBefore,
+} from '@formkit/tempo'
 import type { Format } from '@formkit/tempo'
 
 const formatDefault: Format = { date: 'medium', time: 'short' }
@@ -12,11 +19,7 @@ export function padDate(date: number): string {
 export function isValidDateString(dateString: string): boolean {
   const date = new Date(dateString)
 
-  return (
-    dateString.length === 10
-    && !isNaN(date.getTime())
-    && !dateInPast(date)
-  )
+  return dateString.length === 10 && !isNaN(date.getTime()) && !dateInPast(date)
 }
 
 export function isBeforeDeadline(date: Date, deadline: Date): boolean {
@@ -65,6 +68,12 @@ export function formatHour(time: string): string {
   return `${padDate(hour)}:${padDate(minutes)}`
 }
 
+export function formatHourText(time: string): string {
+  const { hour, minutes } = splitTime(time)
+
+  return minutes ? `${hour}u${padDate(minutes)}` : `${hour}u`
+}
+
 export function getYesterday(): Date {
   return addDay(new Date(), -1)
 }
@@ -82,12 +91,10 @@ export function roundTime(time: string): string {
 
   if (+minutes <= 15) {
     return `${hour}:00`
-  }
-  else if (+minutes >= 45) {
+  } else if (+minutes >= 45) {
     const newHour = +hour + 1
     return `${newHour === 24 ? '00' : padDate(newHour)}:00`
-  }
-  else {
+  } else {
     return `${hour}:30`
   }
 }
@@ -99,10 +106,7 @@ export function getMonths(): string[] {
 export function getDaysOfWeek(): string[] {
   const [sunday, ...remainingDays] = range('ddd', locale)
 
-  return [
-    ...remainingDays,
-    ...(sunday ? [sunday] : []),
-  ]
+  return [...remainingDays, ...(sunday ? [sunday] : [])]
 }
 
 export function addMonth(date: DisplayDate, increment: number): DisplayDate {
@@ -112,8 +116,7 @@ export function addMonth(date: DisplayDate, increment: number): DisplayDate {
   if (month > 12) {
     year += 1
     month -= 12
-  }
-  else if (month < 1) {
+  } else if (month < 1) {
     year -= 1
     month = 12
   }
@@ -130,7 +133,7 @@ export function getCalenderDays({ year, month }: DisplayDate): CalendarTile[] {
   const firstDayOfMonth = new Date(year, month, 1)
   const firstDayOfWeek = firstDayOfMonth.getDay()
   const daysInCurrentMonth = daysInMonth(year, month)
-  const addDaysToStart = (firstDayOfWeek === 0) ? 6 : firstDayOfWeek - 1
+  const addDaysToStart = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1
   const addDaysToEnd = gridSize - (daysInCurrentMonth + addDaysToStart)
   const dates: CalendarTile[] = []
 
@@ -148,7 +151,13 @@ export function getCalenderDays({ year, month }: DisplayDate): CalendarTile[] {
   const previousMonth = new Date(year, month, 1)
   previousMonth.setDate(1 - addDaysToStart)
   for (let i = 0; i < addDaysToStart; i++) {
-    addTile(new Date(previousMonth.getFullYear(), previousMonth.getMonth(), previousMonth.getDate() + i))
+    addTile(
+      new Date(
+        previousMonth.getFullYear(),
+        previousMonth.getMonth(),
+        previousMonth.getDate() + i,
+      ),
+    )
   }
 
   // Add dates for the current month
@@ -159,7 +168,13 @@ export function getCalenderDays({ year, month }: DisplayDate): CalendarTile[] {
   // Add dates from the next month
   const nextMonth = new Date(year, month + 1, 1)
   for (let i = 1; i <= addDaysToEnd; i++) {
-    addTile(new Date(nextMonth.getFullYear(), nextMonth.getMonth(), nextMonth.getDate() + i - 1))
+    addTile(
+      new Date(
+        nextMonth.getFullYear(),
+        nextMonth.getMonth(),
+        nextMonth.getDate() + i - 1,
+      ),
+    )
   }
 
   return dates
@@ -188,14 +203,19 @@ export function beforeTime(time: string, compare: string): boolean {
     adjustedHour += 24
   }
 
-  return adjustedHour < adjustedCompareHour || (adjustedHour === adjustedCompareHour && minutes < compareMinutes)
+  return (
+    adjustedHour < adjustedCompareHour ||
+    (adjustedHour === adjustedCompareHour && minutes < compareMinutes)
+  )
 }
 
 export function afterTime(time: string, compare: string): boolean {
   const { hour, minutes } = splitTime(time)
   const { hour: compareHour, minutes: compareMinutes } = splitTime(compare)
 
-  return hour > compareHour || (hour === compareHour && minutes > compareMinutes)
+  return (
+    hour > compareHour || (hour === compareHour && minutes > compareMinutes)
+  )
 }
 
 export function sameTime(time: string, compare: string): boolean {

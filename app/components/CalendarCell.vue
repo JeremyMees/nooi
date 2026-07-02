@@ -34,15 +34,16 @@ function handleClick(event: MouseEvent): void {
   const rosterItems = currentRoster.value.length
 
   if (
-    dateInPast(props.day.dateFull)
-    || !roster.checkIfOpen(props.day.dateFull)
-    || !rosterItems
-    || !cell.value
-  ) { return }
+    dateInPast(props.day.dateFull) ||
+    !roster.checkIfOpen(props.day.dateFull) ||
+    !rosterItems ||
+    !cell.value
+  ) {
+    return
+  }
 
-  const rosterIndex = rosterItems === 1
-    ? 0
-    : calculateCellClick(event, cell.value, rosterItems)
+  const rosterIndex =
+    rosterItems === 1 ? 0 : calculateCellClick(event, cell.value, rosterItems)
 
   const row = currentRoster.value[rosterIndex]
 
@@ -52,28 +53,27 @@ function handleClick(event: MouseEvent): void {
     toast.add({
       severity: 'info',
       summary: 'Bezet!',
-      detail: 'Voor deze dag kan je niet meer reserveren. Wees welkom op een ander moment!',
+      detail:
+        'Voor deze dag kan je niet meer reserveren. Wees welkom op een ander moment!',
       life: 5000,
     })
     removeQuery(['date', 'type', 'rosterIndex'])
-  }
-  else if (sameDay(row.day, new Date())) {
+  } else if (sameDay(row.day, new Date())) {
     toast.add({
       severity: 'info',
       summary: 'Vandaag reserveren gaat niet',
-      detail: 'Je kan niet reserveren op dezelfde dag. Wil je toch langs komen? Bel ons even op!',
+      detail:
+        'Je kan niet reserveren op dezelfde dag. Wil je toch langs komen? Bel ons even op!',
       life: 5000,
     })
     removeQuery(['date', 'type', 'rosterIndex'])
-  }
-  else if (row.status === 'reservation') {
+  } else if (row.status === 'reservation') {
     addQuery({
       date: formatDay(props.day.dateFull),
       type: 'reservation',
       rosterIndex: rosterIndex,
     })
-  }
-  else {
+  } else {
     addQuery({
       date: formatDay(props.day.dateFull),
       type: 'game',
@@ -89,7 +89,9 @@ function handleClick(event: MouseEvent): void {
     :aria-label="`Reservatie voor ${day.key}`"
     class="transition-all duration-200 border border-b-0 border-white p-1 flex flex-col items-start gap-y-1 overflow-x-hidden h-full w-full min-h-21.25"
     :class="{ 'cursor-not-allowed': isPast || !isOpen }"
-    :style="{ backgroundImage: generateCellBg(currentRoster, !day.currentMonth) }"
+    :style="{
+      backgroundImage: generateCellBg(currentRoster, !day.currentMonth),
+    }"
     @click="handleClick"
   >
     <div class="flex flex-col md:flex-row justify-between items-start w-full">
@@ -103,16 +105,13 @@ function handleClick(event: MouseEvent): void {
       >
         {{ day.date }}
       </time>
-      <div
-        v-if="openingHours.length"
-        class="flex flex-col"
-      >
+      <div v-if="openingHours.length" class="flex flex-col">
         <p
           v-for="item in openingHours"
           :key="item.id"
           class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight"
         >
-          {{ formatHour(item.start) }} - {{ formatHour(item.end) }}
+          {{ formatHourText(item.start) }} - {{ formatHourText(item.end) }}
         </p>
       </div>
     </div>
