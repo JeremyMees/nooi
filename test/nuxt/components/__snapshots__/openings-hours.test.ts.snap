@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`OpeningsHours > matches snapshot 1`] = `
+"<div class="overflow-hidden">
+  <transition-stub enteractiveclass="transition-all duration-300 ease-out" enterfromclass="opacity-0 -translate-y-full" entertoclass="opacity-100 translate-y-0" leaveactiveclass="transition-all duration-300 ease-in" leavefromclass="opacity-100 translate-y-0" leavetoclass="opacity-0 -translate-y-full" appear="false" persisted="false" css="true">
+    <div test-id="openings-hours" class="bg-teal max-w-5xl w-fit mx-auto text-center p-5 rounded-lg shadow">
+      <p test-id="openings-hours-text" class="body-small"> Onze openingsuren zijn vandaag: 18:00 - 20:00, 20:00 - 23:00</p>
+    </div>
+  </transition-stub>
+</div>"
+`;

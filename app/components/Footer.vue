@@ -1,8 +1,8 @@
 <template>
-  <footer class="bg-secondary pt-[50px] pb-5">
+  <footer test-id="footer" class="bg-secondary pt-12.5 pb-5">
     <div class="container flex flex-col items-center gap-5">
-      <img src="/assets/images/kolibri.png" alt="Nooi logo" class="w-[85px]" />
-      <div class="flex gap-1">
+      <img src="/assets/images/kolibri.png" alt="Nooi logo" class="w-21.25" />
+      <div test-id="footer-socials" class="flex gap-1">
         <a
           href="https://www.google.be/maps/place/Nooi/@50.9845556,5.0496567,17z/data=!3m1!4b1!4m5!3m4!1s0x47c13f6fa13d98f1:0x204404adae3e0327!8m2!3d50.9845311!4d5.0519057"
           target="_blank"
@@ -59,7 +59,11 @@
     </div>
     <hr class="border-black my-10" />
     <div class="container flex justify-center">
-      <NuxtLink to="https://nooi.be/av-privacy/" class="body-normal">
+      <NuxtLink
+        to="https://nooi.be/av-privacy/"
+        test-id="footer-terms"
+        class="body-normal"
+      >
         Algemene voorwaarden & privacy
       </NuxtLink>
     </div>

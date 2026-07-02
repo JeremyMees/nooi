@@ -21,6 +21,11 @@ export default defineConfig({
         },
       },
       await defineVitestProject({
+        resolve: {
+          alias: {
+            '/assets': resolve(__dirname, 'app/assets'),
+          },
+        },
         test: {
           name: 'nuxt',
           include: ['test/nuxt/**/*.{test,spec}.ts'],

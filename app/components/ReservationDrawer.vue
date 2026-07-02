@@ -131,7 +131,7 @@ async function notifyUser(
   <Drawer v-model:visible="store.drawerOpen" position="right">
     <template #header>
       <div>
-        <p class="head-3">
+        <p test-id="reservation-drawer-title" class="head-3">
           {{
             store.selectedEvent
               ? 'Inschrijven voor '
@@ -153,6 +153,7 @@ async function notifyUser(
     </template>
     <div
       v-if="clickedRosterItem && !clickedRosterItem.allowReservation"
+      test-id="reservation-no-booking"
       class="flex flex-col gap-4 bg-teal/10 p-4 rounded-lg"
     >
       <p class="text-sm text-gray-500">

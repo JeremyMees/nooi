@@ -135,7 +135,7 @@ function clearFilters(): void {
 
 <template>
   <div class="space-y-4">
-    <p class="head-2 pb-4">
+    <p test-id="admin-title" class="head-2 pb-4">
       {{ values[type].title }}
     </p>
     <DataTable

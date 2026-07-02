@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Loader > matches snapshot 1`] = `
+"<svg data-v-f75b837b="" test-id="loader" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <circle data-v-f75b837b="" class="spin2" cx="400" cy="400" fill="none" r="200" stroke-width="50" stroke="currentColor" stroke-dasharray="700 1400" stroke-linecap="round"></circle>
+</svg>"
+`;

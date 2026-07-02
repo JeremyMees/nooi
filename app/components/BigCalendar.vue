@@ -38,7 +38,7 @@ function navigateCalendar(modifier: number): void {
             @click="navigateCalendar(-1)"
           />
         </div>
-        <div class="font-semibold capitalize">
+        <div test-id="calendar-month" class="font-semibold capitalize">
           {{ months[shownDate.month] }} {{ shownDate.year }}
         </div>
         <Button
@@ -77,6 +77,7 @@ function navigateCalendar(modifier: number): void {
         <div
           v-for="status in ['full', 'reservation', 'game'] as CalendarStatus[]"
           :key="status"
+          test-id="calendar-legend-item"
           class="flex items-center gap-2"
         >
           <div

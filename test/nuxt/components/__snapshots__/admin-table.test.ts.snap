@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AdminTable > matches snapshot 1`] = `
+"<div class="space-y-4">
+  <p test-id="admin-title" class="head-2 pb-4">Evenementen</p>
+  <data-table-stub selection="" data-key="id" size="small" paginator="" removable-sort="" lazy="" sort-field="day" sort-order="1" first="0" rows="10" total-records="0" loading="false" paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" current-page-report-template="{first} tot {last} van {totalRecords}" value=""></data-table-stub>
+  <animation-reveal-stub></animation-reveal-stub>
+</div>"
+`;

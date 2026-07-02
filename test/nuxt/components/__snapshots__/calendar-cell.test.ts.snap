@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CalendarCell > matches snapshot 1`] = `
+"<button test-id="calendar-cell" aria-label="Reservatie voor 2026-07-10" class="transition-all duration-200 border border-b-0 border-white p-1 flex flex-col items-start gap-y-1 overflow-x-hidden h-full w-full min-h-21.25" style="background-image: linear-gradient(to bottom, #53A688 0%, #53A688 50%, #53A688 50%, #53A688 100%);">
+  <div class="flex flex-col md:flex-row justify-between items-start w-full"><time test-id="cell-date" datetime="2026-07-10" class="flex h-6 w-6 items-center justify-center rounded-lg text-white">10</time>
+    <div test-id="cell-hours" class="flex flex-col items-start">
+      <p test-id="cell-hours-item" class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight whitespace-nowrap">18u - 20u</p>
+      <p test-id="cell-hours-item" class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight whitespace-nowrap">20u - 23u</p>
+    </div>
+  </div>
+</button>"
+`;

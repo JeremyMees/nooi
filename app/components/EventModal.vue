@@ -37,7 +37,7 @@ watch(
 <template>
   <Drawer v-model:visible="visible" position="bottom">
     <template #header>
-      <p class="head-3 sm:head-1">
+      <p test-id="event-modal-title" class="head-3 sm:head-1">
         {{ store.informationEvent?.name }}
       </p>
     </template>
@@ -55,10 +55,14 @@ watch(
 
     <template v-if="store.informationEvent">
       <template v-if="isFull">
-        <p v-if="store.informationEvent.external" class="pt-8">
+        <p
+          v-if="store.informationEvent.external"
+          test-id="event-modal-full"
+          class="pt-8"
+        >
           Dit event is volzet.
         </p>
-        <p v-else class="pt-8">
+        <p v-else test-id="event-modal-full" class="pt-8">
           Dit event is volzet. Je kunt je inschrijven op de wachtlijst door te
           mailen naar
           <a href="mailto:zin@nooi.be" class="text-primary underline">
@@ -79,7 +83,10 @@ watch(
               Inschrijvingen sluiten op
               {{ formatDateUI(store.informationEvent.bookingDeadline) }}
             </p>
-            <Button @click="addQuery({ status: 'reservation' })">
+            <Button
+              test-id="event-modal-submit"
+              @click="addQuery({ status: 'reservation' })"
+            >
               Inschrijven
             </Button>
           </template>

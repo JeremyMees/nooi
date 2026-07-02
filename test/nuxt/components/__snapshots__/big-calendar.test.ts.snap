@@ -1,0 +1,97 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BigCalendar > matches snapshot 1`] = `
+"<div class="p-card p-component w-full" data-pc-name="card" pc0_0_0="" data-pc-section="root">
+  <!---->
+  <div class="p-card-body" data-pc-section="body">
+    <div class="p-card-caption" data-pc-section="caption">
+      <div class="p-card-title" data-pc-section="title">
+        <div class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5">
+          <div class="flex flex-wrap gap-x-4"><button class="p-button p-component p-button-icon-only p-button-rounded p-button-outlined" data-p="icon-only rounded outlined" type="button" disabled="" aria-label="Vorige maand" data-pc-name="button" data-p-disabled="true" pc0_0_1="" data-pc-section="root"><span class="p-button-icon pi pi-angle-left" data-p="left" data-pc-section="icon"></span>
+              <!---->
+              <!---->
+            </button></div>
+          <div test-id="calendar-month" class="font-semibold capitalize">juli 2026</div><button class="p-button p-component p-button-icon-only p-button-rounded p-button-outlined p-2" data-p="icon-only rounded outlined" type="button" aria-label="Volgende maand" data-pc-name="button" data-p-disabled="false" pc0_0_2="" data-pc-section="root"><span class="p-button-icon pi pi-angle-right" data-p="left" data-pc-section="icon"></span>
+            <!---->
+            <!---->
+          </button>
+        </div>
+      </div>
+      <!---->
+    </div>
+    <div class="p-card-content" data-pc-section="content">
+      <div class="space-y-2 w-full">
+        <div class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center">
+          <div>ma</div>
+          <div>di</div>
+          <div>wo</div>
+          <div>do</div>
+          <div>vr</div>
+          <div>za</div>
+          <div>zo</div>
+        </div>
+        <div class="isolate grid grid-cols-7">
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+        </div>
+      </div>
+    </div>
+    <div class="p-card-footer" data-pc-section="footer">
+      <div class="flex flex-col sm:flex-row gap-x-6 gap-y-2">
+        <div test-id="calendar-legend-item" class="flex items-center gap-2">
+          <div class="h-6 w-10 rounded-md bg-secondary"></div><span>bezet</span>
+        </div>
+        <div test-id="calendar-legend-item" class="flex items-center gap-2">
+          <div class="h-6 w-10 rounded-md bg-primary"></div><span>reservatie mogelijk</span>
+        </div>
+        <div test-id="calendar-legend-item" class="flex items-center gap-2">
+          <div class="h-6 w-10 rounded-md bg-teal"></div><span>open spelcafé</span>
+        </div>
+      </div>
+      <div class="overflow-hidden">
+        <transition-stub enteractiveclass="transition-all duration-300 ease-out" enterfromclass="opacity-0 -translate-y-full" entertoclass="opacity-100 translate-y-0" leaveactiveclass="transition-all duration-300 ease-in" leavefromclass="opacity-100 translate-y-0" leavetoclass="opacity-0 -translate-y-full" appear="false" persisted="false" css="true"></transition-stub>
+      </div>
+    </div>
+  </div>
+</div>"
+`;

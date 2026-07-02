@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ReservationDrawer > matches snapshot 1`] = `
+"<div visible="true" position="right">
+  <div>
+    <p test-id="reservation-drawer-title" class="head-3">Reservatie / Verhuur
+      <!--v-if-->
+    </p>
+    <!--v-if-->
+  </div>
+  <form-kit-stub type="form" submit-label="Reserveren" config="[object Object]"></form-kit-stub>
+</div>"
+`;

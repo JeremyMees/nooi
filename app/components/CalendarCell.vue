@@ -86,6 +86,7 @@ function handleClick(event: MouseEvent): void {
 <template>
   <button
     ref="cell"
+    test-id="calendar-cell"
     :aria-label="`Reservatie voor ${day.key}`"
     class="transition-all duration-200 border border-b-0 border-white p-1 flex flex-col items-start gap-y-1 overflow-x-hidden h-full w-full min-h-21.25"
     :class="{ 'cursor-not-allowed': isPast || !isOpen }"
@@ -96,6 +97,7 @@ function handleClick(event: MouseEvent): void {
   >
     <div class="flex flex-col md:flex-row justify-between items-start w-full">
       <time
+        test-id="cell-date"
         :datetime="day.key"
         class="flex h-6 w-6 items-center justify-center rounded-lg text-white"
         :class="{
@@ -105,10 +107,15 @@ function handleClick(event: MouseEvent): void {
       >
         {{ day.date }}
       </time>
-      <div v-if="openingHours.length" class="flex flex-col items-start">
+      <div
+        v-if="openingHours.length"
+        test-id="cell-hours"
+        class="flex flex-col items-start"
+      >
         <p
           v-for="item in openingHours"
           :key="item.id"
+          test-id="cell-hours-item"
           class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight whitespace-nowrap"
         >
           {{ formatHourText(item.start) }} - {{ formatHourText(item.end) }}
