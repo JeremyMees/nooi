@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "nooi",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,7 +19,7 @@
     "deps": "npx taze -w",
     "stash": "npx @upstash/qstash-cli dev"
   },
-  "devDependencies": {
+  "dependencies": {
     "@iconify-json/carbon": "^1.2.23",
     "@iconify-json/ic": "^1.2.4",
     "@iconify-json/radix-icons": "^1.2.6",
@@ -32,11 +32,6 @@
     "eslint": "^10.5.0",
     "nuxt": "^4.4.8",
     "nuxt-og-image": "^6.6.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.4.0",
-    "prettier": "^3.8.3"
-  },
-  "dependencies": {
     "@formkit/core": "^1.7.2",
     "@formkit/i18n": "^1.7.2",
     "@formkit/icons": "^1.7.2",
@@ -64,14 +59,20 @@
     "vue": "^3.5.38",
     "vue-router": "^4.6.4"
   },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3"
+  },
   "overrides": {
     "vite-plugin-inspect": "11.4.1",
     "vite-plugin-vue-tracer": "1.4.0"
   },
   "lint-staged": {
-    "**/*.{js,ts,vue,css,}": [
+    "**/*.{js,ts,vue,css,json}": [
       "eslint .",
       "prettier . --check"
-    ]
+    ],
+    "**/*.{js,ts,vue}": "nuxt typecheck"
   }
 }
