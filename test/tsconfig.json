@@ -1,0 +1,8 @@
+{
+  // Extends the generated Nuxt config so test files inherit its path aliases
+  // (`~`, `~~`, `#shared`, …) and auto-imported ambient globals. The Nuxt
+  // tsconfig only includes `test/nuxt`, so this brings `test/unit` and
+  // `test/mock` into the same project for editor/type resolution.
+  "extends": "../.nuxt/tsconfig.json",
+  "include": ["../.nuxt/nuxt.d.ts", "./**/*", "../shared/**/*", "../app/**/*"]
+}

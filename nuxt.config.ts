@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@primevue/nuxt-module',
     '@nuxtjs/seo',
+    '@nuxt/test-utils/module',
   ],
 
   devtools: { enabled: true },
