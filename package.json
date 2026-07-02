@@ -6,8 +6,11 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "prod": "nuxt build && nuxt start",
+    "prepare": "husky",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -28,7 +31,9 @@
     "@primevue/nuxt-module": "^4.5.5",
     "eslint": "^10.5.0",
     "nuxt": "^4.4.8",
-    "nuxt-og-image": "^6.6.0"
+    "nuxt-og-image": "^6.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
   },
   "dependencies": {
     "@formkit/core": "^1.7.2",
@@ -61,5 +66,11 @@
   "overrides": {
     "vite-plugin-inspect": "11.4.1",
     "vite-plugin-vue-tracer": "1.4.0"
+  },
+  "lint-staged": {
+    "**/*.{js,ts,vue,css,}": [
+      "eslint .",
+      "prettier . --check"
+    ]
   }
 }
