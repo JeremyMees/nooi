@@ -67,12 +67,5 @@
   "overrides": {
     "vite-plugin-inspect": "11.4.1",
     "vite-plugin-vue-tracer": "1.4.0"
-  },
-  "lint-staged": {
-    "**/*.{js,ts,vue,css,json}": [
-      "eslint .",
-      "prettier . --check"
-    ],
-    "**/*.{js,ts,vue}": "nuxt typecheck"
   }
 }
