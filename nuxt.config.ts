@@ -4,7 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 import seo from './constants/seo'
 
 export default defineNuxtConfig({
-
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
@@ -19,10 +18,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  css: [
-    './assets/css/main.css',
-    '~~/node_modules/primeicons/primeicons.css',
-  ],
+  css: ['./assets/css/main.css', '~~/node_modules/primeicons/primeicons.css'],
 
   site: {
     url: seo.meta.url,
@@ -52,9 +48,7 @@ export default defineNuxtConfig({
   },
 
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
         '@vue/devtools-kit',
@@ -69,10 +63,6 @@ export default defineNuxtConfig({
         '@formkit/tempo',
       ],
     },
-  },
-
-  eslint: {
-    config: { stylistic: true },
   },
 
   formkit: { configFile: './formkit/config' },
