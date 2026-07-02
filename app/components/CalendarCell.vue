@@ -105,11 +105,11 @@ function handleClick(event: MouseEvent): void {
       >
         {{ day.date }}
       </time>
-      <div v-if="openingHours.length" class="flex flex-col">
+      <div v-if="openingHours.length" class="flex flex-col items-start">
         <p
           v-for="item in openingHours"
           :key="item.id"
-          class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight"
+          class="text-white text-[0.5rem] sm:text-[0.6rem] leading-tight whitespace-nowrap"
         >
           {{ formatHourText(item.start) }} - {{ formatHourText(item.end) }}
         </p>
