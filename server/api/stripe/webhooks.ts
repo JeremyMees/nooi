@@ -99,11 +99,6 @@ async function updateReservation(
         },
       },
     })
-
-    await $fetch('/api/set-reminder', {
-      method: 'POST',
-      body: reservation,
-    })
   } catch (error) {
     const { message } = error as Error
 

@@ -33,8 +33,8 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY,
     stripeWebhook: process.env.STRIPE_WEBHOOK,
     stripeSk: process.env.STRIPE_SK,
-    qStashUrl: process.env.QSTASH_URL,
-    qStashToken: process.env.QSTASH_TOKEN,
+    cronSecret: process.env.CRON_SECRET,
+    reminderEmails: process.env.REMINDER_EMAILS,
     public: {
       adminPassword: process.env.ADMIN_PASSWORD || 'admin',
     },

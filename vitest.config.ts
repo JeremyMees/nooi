@@ -2,6 +2,8 @@ import { defineConfig } from 'vitest/config'
 import { defineVitestProject } from '@nuxt/test-utils/config'
 import { resolve } from 'node:path'
 
+const ignoredLogs = [/^<Suspense>/, /Failed to load messages for locale/]
+
 export default defineConfig({
   test: {
     projects: [
@@ -33,5 +35,8 @@ export default defineConfig({
         },
       }),
     ],
+    onConsoleLog: l => {
+      return !ignoredLogs.some(p => p.test(l))
+    },
   },
 })
