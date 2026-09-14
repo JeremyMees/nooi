@@ -34,7 +34,7 @@ export default defineNuxtConfig({
     stripeWebhook: process.env.STRIPE_WEBHOOK,
     stripeSk: process.env.STRIPE_SK,
     cronSecret: process.env.CRON_SECRET,
-    reminderEmails: process.env.REMINDER_EMAILS,
+    reminderEmails: process.env.REMINDER_EMAILS || '',
     public: {
       adminPassword: process.env.ADMIN_PASSWORD || 'admin',
     },

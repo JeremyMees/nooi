@@ -243,7 +243,12 @@ describe('GET /api/reminders', () => {
       const result = await run()
 
       expect(send).toHaveBeenCalledTimes(1)
-      expect(result).toMatchObject({ total: 0, sent: [], reportError: null })
+      expect(result).toMatchObject({
+        total: 0,
+        sent: [],
+        reportError: null,
+        reportSentTo: ['a@nooi.be'],
+      })
     })
 
     it('skips the report when no addresses are configured', async () => {
@@ -253,6 +258,7 @@ describe('GET /api/reminders', () => {
 
       expect(send).not.toHaveBeenCalled()
       expect(result.reportError).toBeNull()
+      expect(result.reportSentTo).toEqual([])
     })
 
     it('surfaces a 500 when the report itself fails', async () => {

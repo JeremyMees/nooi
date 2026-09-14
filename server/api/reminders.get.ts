@@ -73,8 +73,13 @@ export default defineEventHandler(async event => {
     skipped: skipped.map(reservation => reminderOutcome(reservation)),
   }
 
-  const reportError = await sendReport(resend, day, report, reminderEmails)
-  const summary = { day, ...report, reportError }
+  const { sentTo, error: reportError } = await sendReport(
+    resend,
+    day,
+    report,
+    reminderEmails,
+  )
+  const summary = { day, ...report, reportSentTo: sentTo, reportError }
 
   if (failed.length || reportError) {
     throw createError({
@@ -92,11 +97,11 @@ async function sendReport(
   day: string,
   report: ReminderReport,
   emails?: string,
-): Promise<string | null> {
+): Promise<{ sentTo: string[]; error: string | null }> {
   const to = reportRecipients(emails)
 
   if (!to.length) {
-    return null
+    return { sentTo: [], error: null }
   }
 
   const html = await render(ReportTemplate, report)
@@ -111,5 +116,5 @@ async function sendReport(
     { idempotencyKey: reportKey(day, report) },
   )
 
-  return error ? error.message : null
+  return { sentTo: to, error: error ? error.message : null }
 }
