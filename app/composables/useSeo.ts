@@ -1,4 +1,4 @@
-import config from '~~/constants/seo'
+import config from '~~/shared/constants/seo'
 
 export function useSeo() {
   const { url, name, logo, description } = config.meta

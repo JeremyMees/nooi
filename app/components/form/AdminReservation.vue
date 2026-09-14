@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { maxSpots } from '~~/constants/info'
+import { maxSpots } from '~~/shared/constants/info'
 
 const store = useAdminStore()
 

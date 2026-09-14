@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { FormKitNode } from '@formkit/core'
 import { checkTimeValid } from '~~/formkit/rules'
-import { maxSpots, minTimeSlot, minTimeSlotRental } from '~~/constants/info'
+import {
+  maxSpots,
+  minTimeSlot,
+  minTimeSlotRental,
+} from '~~/shared/constants/info'
 
 const store = useReservationStore()
 const roster = useRosterStore()
