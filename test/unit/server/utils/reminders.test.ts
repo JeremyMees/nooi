@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
   brusselsDay,
   reminderOutcome,
@@ -8,23 +8,8 @@ import {
   reportSubject,
   splitReminders,
 } from '~~/server/utils/reminders'
-import {
-  formatDateMail,
-  formatHour,
-  padDate,
-} from '~~/shared/utils/date-helpers'
 import type { ReminderReport } from '~~/shared/types/mails'
 import type { ReservationWithEvent } from '~~/shared/types/supabase'
-
-beforeAll(() => {
-  vi.stubGlobal('padDate', padDate)
-  vi.stubGlobal('formatHour', formatHour)
-  vi.stubGlobal('formatDateMail', formatDateMail)
-})
-
-afterAll(() => {
-  vi.unstubAllGlobals()
-})
 
 function reservation(
   overrides: Partial<ReservationWithEvent> = {},

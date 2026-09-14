@@ -11,7 +11,15 @@ mockNuxtImport('useRosterStore', () => () => ({
   getDayRoster: () => dayRoster,
 }))
 
-mockNuxtImport('useToast', () => () => ({ add: vi.fn() }))
+const hoisted = vi.hoisted(() => ({
+  toastAdd: vi.fn(),
+  addQuery: vi.fn(),
+  removeQuery: vi.fn(),
+}))
+
+mockNuxtImport('useToast', () => () => ({ add: hoisted.toastAdd }))
+mockNuxtImport('addQuery', () => hoisted.addQuery)
+mockNuxtImport('removeQuery', () => hoisted.removeQuery)
 
 const futureDay = {
   key: '2026-07-10',
@@ -34,6 +42,9 @@ describe('CalendarCell', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(2026, 6, 2, 12, 0, 0))
     open = true
+    hoisted.toastAdd.mockClear()
+    hoisted.addQuery.mockClear()
+    hoisted.removeQuery.mockClear()
     dayRoster = [
       { ...mockRoster, id: 1, status: 'game', start: '18:00', end: '20:00' },
       { ...mockRoster, id: 2, status: 'game', start: '20:00', end: '23:00' },
@@ -131,5 +142,100 @@ describe('CalendarCell', () => {
     expect(wrapper.find('[test-id="calendar-cell"]').classes()).not.toContain(
       'cursor-not-allowed',
     )
+  })
+
+  describe('clicking a day', () => {
+    async function click(day = futureDay) {
+      const wrapper = await mountSuspended(CalendarCell, {
+        props: { day, events: [] },
+      })
+      await wrapper.find('button').trigger('click')
+      return wrapper
+    }
+
+    it('starts a game booking for an open evening', async () => {
+      dayRoster = [{ ...mockRoster, id: 1, status: 'game', day: '2026-07-10' }]
+
+      await click()
+
+      expect(hoisted.addQuery).toHaveBeenCalledWith({
+        date: '2026-07-10',
+        type: 'game',
+        rosterIndex: 0,
+      })
+    })
+
+    it('starts a reservation when the slot is bookable', async () => {
+      dayRoster = [
+        { ...mockRoster, id: 1, status: 'reservation', day: '2026-07-10' },
+      ]
+
+      await click()
+
+      expect(hoisted.addQuery).toHaveBeenCalledWith({
+        date: '2026-07-10',
+        type: 'reservation',
+        rosterIndex: 0,
+      })
+    })
+
+    it('refuses an occupied slot with an explanation', async () => {
+      dayRoster = [
+        { ...mockRoster, id: 1, status: 'occupied', day: '2026-07-10' },
+      ]
+
+      await click()
+
+      expect(hoisted.toastAdd).toHaveBeenCalledWith(
+        expect.objectContaining({ summary: 'Bezet!' }),
+      )
+      expect(hoisted.removeQuery).toHaveBeenCalledWith([
+        'date',
+        'type',
+        'rosterIndex',
+      ])
+      expect(hoisted.addQuery).not.toHaveBeenCalled()
+    })
+
+    it('refuses a same-day booking', async () => {
+      const today = {
+        key: '2026-07-02',
+        date: 2,
+        dateFull: new Date(2026, 6, 2),
+        currentMonth: true,
+        today: true,
+      }
+      dayRoster = [{ ...mockRoster, id: 1, status: 'game', day: '2026-07-02' }]
+
+      await click(today)
+
+      expect(hoisted.toastAdd).toHaveBeenCalledWith(
+        expect.objectContaining({ summary: 'Vandaag reserveren gaat niet' }),
+      )
+      expect(hoisted.addQuery).not.toHaveBeenCalled()
+    })
+
+    it('ignores a day in the past', async () => {
+      await click(pastDay)
+
+      expect(hoisted.addQuery).not.toHaveBeenCalled()
+      expect(hoisted.toastAdd).not.toHaveBeenCalled()
+    })
+
+    it('ignores a day the cafe is closed', async () => {
+      open = false
+
+      await click()
+
+      expect(hoisted.addQuery).not.toHaveBeenCalled()
+    })
+
+    it('ignores a day without any roster line', async () => {
+      dayRoster = []
+
+      await click()
+
+      expect(hoisted.addQuery).not.toHaveBeenCalled()
+    })
   })
 })

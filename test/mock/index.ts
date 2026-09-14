@@ -120,3 +120,12 @@ export const mockRosters: RosterRow[] = [
   },
   { ...mockRoster, id: 3, status: 'occupied', start: '22:00', end: '23:00' },
 ]
+
+/**
+ * Reads the internals of a `<script setup>` component. They exist at runtime
+ * but are not part of the public instance type, so tests reach them through
+ * this deliberate escape hatch instead of casting at every call site.
+ */
+export function setup(wrapper: { vm: unknown }): Record<string, any> {
+  return wrapper.vm as Record<string, any>
+}

@@ -16,12 +16,16 @@ export default defineEventHandler(async event => {
     const resend = new Resend(resendApiKey)
     const html = await render(Template, props)
 
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: 'Nooi <zin@nooi.be>',
       subject: 'Jouw boeking voor Nooi',
       to,
       html,
     })
+
+    if (error) {
+      throw new Error(error.message)
+    }
 
     return { message: 'Email sent' }
   } catch (error) {

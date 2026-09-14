@@ -53,4 +53,30 @@ describe('LoginDialog', () => {
 
     expect(wrapper.find('[test-id="login-header"]').exists()).toBe(false)
   })
+
+  it('validates against the configured admin password', async () => {
+    const { adminPassword } = useRuntimeConfig().public
+
+    // The default FormKit stub drops its slot, so render one that keeps it.
+    const wrapper = await mountSuspended(LoginDialog, {
+      global: {
+        stubs: {
+          ...stubs,
+          FormKit: { template: '<div v-bind="$attrs"><slot /></div>' },
+        },
+      },
+    })
+
+    expect(wrapper.find('[name="password"]').attributes('validation')).toBe(
+      `required|is:${adminPassword}`,
+    )
+  })
+
+  it('marks the session authenticated when the form is submitted', async () => {
+    const wrapper = await mount()
+
+    await wrapper.findComponent({ name: 'FormKit' }).vm.$emit('submit')
+
+    expect(authCookie).toBe('authenticated')
+  })
 })

@@ -81,6 +81,8 @@ export default defineNuxtConfig({
     disallow: ['/admin'],
   },
 
+  sitemap: { zeroRuntime: true },
+
   supabase: {
     redirect: false,
     types: '../shared/types/database.ts',
