@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   brusselsDay,
+  reminderDay,
   reminderOutcome,
   reminderProps,
   reportKey,
@@ -45,6 +46,29 @@ describe('brusselsDay', () => {
 
   it('rolls over to the next day after Brussels midnight', () => {
     expect(brusselsDay(new Date('2026-09-14T22:30:00Z'))).toBe('2026-09-15')
+  })
+})
+
+describe('reminderDay', () => {
+  it('returns the day after the Brussels date', () => {
+    expect(reminderDay(new Date('2026-09-14T06:00:00Z'))).toBe('2026-09-15')
+  })
+
+  it('rolls over to the next month', () => {
+    expect(reminderDay(new Date('2026-09-30T06:00:00Z'))).toBe('2026-10-01')
+  })
+
+  it('rolls over to the next year', () => {
+    expect(reminderDay(new Date('2026-12-31T06:00:00Z'))).toBe('2027-01-01')
+  })
+
+  it('stays correct across the DST switch', () => {
+    expect(reminderDay(new Date('2026-10-24T06:00:00Z'))).toBe('2026-10-25')
+    expect(reminderDay(new Date('2026-03-28T06:00:00Z'))).toBe('2026-03-29')
+  })
+
+  it('uses the Brussels date, not the UTC date', () => {
+    expect(reminderDay(new Date('2026-09-14T22:30:00Z'))).toBe('2026-09-16')
   })
 })
 

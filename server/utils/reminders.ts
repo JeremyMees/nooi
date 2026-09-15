@@ -1,3 +1,5 @@
+import { addDay } from '@formkit/tempo'
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export interface ReminderProps {
@@ -16,6 +18,10 @@ export function brusselsDay(date: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Europe/Brussels',
   }).format(date)
+}
+
+export function reminderDay(date: Date): string {
+  return brusselsDay(addDay(date, 1))
 }
 
 export function splitReminders(

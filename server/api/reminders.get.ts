@@ -17,7 +17,7 @@ export default defineEventHandler(async event => {
   }
 
   const supabase = serverSupabaseServiceRole<Database>(event)
-  const day = brusselsDay(new Date())
+  const day = reminderDay(new Date())
 
   const { data, error } = await supabase
     .from('reservations')

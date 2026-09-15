@@ -7,7 +7,7 @@ import handler from '~~/server/api/reminders.get'
 import type { H3Event } from 'h3'
 import type { ReservationRow } from '~~/shared/types/supabase'
 
-const day = '2026-09-14'
+const day = '2026-09-15'
 
 function reservation(overrides: Partial<ReservationRow> = {}) {
   return {
@@ -88,7 +88,7 @@ describe('GET /api/reminders', () => {
   })
 
   describe('fetching reservations', () => {
-    it('queries confirmed reservations for today in Brussels', async () => {
+    it('queries confirmed reservations for the next Brussels day', async () => {
       const chain = mockChain({ data: [], error: null })
       const from = mockFrom({ reservations: chain })
 
@@ -227,9 +227,9 @@ describe('GET /api/reminders', () => {
         expect.objectContaining({
           to: ['a@nooi.be', 'b@nooi.be'],
           subject:
-            'Herinneringen maandag 14 september 2026: 1 verstuurd, 0 mislukt',
+            'Herinneringen dinsdag 15 september 2026: 1 verstuurd, 0 mislukt',
         }),
-        { idempotencyKey: 'reminder-report/2026-09-14-1-0-0' },
+        { idempotencyKey: 'reminder-report/2026-09-15-1-0-0' },
       )
     })
 
