@@ -3,7 +3,7 @@ import { Stripe } from 'stripe'
 import { mockEvent } from '~~/test/unit/stubs/api-event'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
 import { mockChain, mockFrom } from '~~/test/unit/stubs/supabase'
-import { mockFetch } from '~~/test/unit/stubs/fetch'
+import { mockSend, render, send } from '~~/test/unit/stubs/mail'
 import handler from '~~/server/api/stripe/webhooks'
 
 const reservation = {
@@ -14,6 +14,7 @@ const reservation = {
   start: '19:00:00',
   paymentNeeded: true,
   paymentIdentifier: null,
+  type: 'event',
   event: { name: 'Minipainting' },
 }
 
@@ -45,9 +46,8 @@ function stripeEvent(type: string, object: Record<string, unknown> = {}) {
 }
 
 beforeEach(() => {
-  mockRuntimeConfig({ stripeWebhook: secret })
-  mockFetch.mockReset()
-  mockFetch.mockResolvedValue({ message: 'Email sent' })
+  mockRuntimeConfig({ stripeWebhook: secret, resendApiKey: 're_test' })
+  mockSend()
 })
 
 describe('POST /api/stripe/webhooks', () => {
@@ -61,7 +61,7 @@ describe('POST /api/stripe/webhooks', () => {
       statusCode: 400,
       message: 'Invalid signature',
     })
-    expect(mockFetch).not.toHaveBeenCalled()
+    expect(send).not.toHaveBeenCalled()
   })
 
   it('rejects a request signed with another secret', async () => {
@@ -101,105 +101,116 @@ describe('POST /api/stripe/webhooks', () => {
 
     await expect(handler(event)).rejects.toMatchObject({
       statusCode: 400,
-      message: 'Webhook Error: No reservation id found',
+      message: 'No reservation id found',
+    })
+  })
+
+  it('ignores a reservation that no longer exists', async () => {
+    mockFrom({ reservations: mockChain({ data: null, error: null }) })
+
+    await expect(
+      handler(stripeEvent('payment_intent.succeeded')),
+    ).resolves.toBe('Reservation not found. Ignoring.')
+    expect(send).not.toHaveBeenCalled()
+  })
+
+  it('surfaces a 500 when the reservation cannot be fetched', async () => {
+    mockFrom({
+      reservations: mockChain({ data: null, error: { message: 'db down' } }),
+    })
+
+    await expect(
+      handler(stripeEvent('payment_intent.succeeded')),
+    ).rejects.toMatchObject({
+      statusCode: 500,
+      message: 'Could not fetch reservation: db down',
     })
   })
 
   describe('payment_intent.succeeded', () => {
     it('marks the reservation paid and mails the confirmation', async () => {
-      const chain = mockChain({ data: [reservation], error: null })
+      const chain = mockChain({ data: reservation, error: null })
       mockFrom({ reservations: chain })
 
-      await handler(stripeEvent('payment_intent.succeeded'))
+      await expect(
+        handler(stripeEvent('payment_intent.succeeded')),
+      ).resolves.toBe('Reservation paid')
 
       expect(chain.update).toHaveBeenCalledWith({
         paymentIdentifier: 'pi_123',
         paymentNeeded: false,
       })
-      expect(mockFetch).toHaveBeenCalledWith('/api/mail/reservation-success', {
-        method: 'POST',
-        body: {
+      expect(render).toHaveBeenCalledWith(expect.anything(), {
+        name: 'Jef Van Laer',
+        date: 'maandag 14 september 2026',
+        time: '19:00',
+        event: 'Minipainting',
+      })
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
           to: 'jef@example.com',
-          props: {
-            name: 'Jef Van Laer',
-            date: 'maandag 14 september 2026',
-            time: '19:00',
-          },
-        },
-      })
-    })
-
-    it('does nothing when the webhook was already processed', async () => {
-      mockFrom({
-        reservations: mockChain({
-          data: [{ ...reservation, paymentIdentifier: 'pi_123' }],
-          error: null,
+          subject: 'Jouw inschrijving bij Nooi',
         }),
-      })
-
-      await expect(
-        handler(stripeEvent('payment_intent.succeeded')),
-      ).resolves.toBe('Webhook already processed for this reservation')
-      expect(mockFetch).not.toHaveBeenCalled()
+        { idempotencyKey: 'confirmation/2599' },
+      )
     })
 
-    it('fails loudly when the confirmation mail cannot be sent', async () => {
-      mockFrom({
-        reservations: mockChain({ data: [reservation], error: null }),
-      })
-      mockFetch.mockRejectedValue(new Error('mail down'))
-
-      await expect(
-        handler(stripeEvent('payment_intent.succeeded')),
-      ).rejects.toMatchObject({
-        statusCode: 400,
-        message: expect.stringContaining('Error updating reservation'),
-      })
-    })
-  })
-
-  describe('payment_intent.canceled', () => {
-    it('removes the reservation', async () => {
-      const chain = mockChain({ data: [], error: null })
-      mockFrom({ reservations: chain })
-
-      await handler(stripeEvent('payment_intent.canceled'))
-
-      expect(chain.delete).toHaveBeenCalled()
-      expect(chain.eq).toHaveBeenCalledWith('id', 2599)
-    })
-  })
-
-  describe('checkout.session.expired', () => {
-    it('removes a reservation that was never paid', async () => {
-      const chain = mockChain({ data: [reservation], error: null })
-      mockFrom({ reservations: chain })
-
-      await handler(stripeEvent('checkout.session.expired'))
-
-      expect(chain.delete).toHaveBeenCalled()
-    })
-
-    it('keeps a reservation that was already paid', async () => {
+    it('only resends the confirmation when the payment was already recorded', async () => {
       const chain = mockChain({
-        data: [{ ...reservation, paymentNeeded: false }],
+        data: { ...reservation, paymentIdentifier: 'pi_123' },
         error: null,
       })
       mockFrom({ reservations: chain })
 
-      await handler(stripeEvent('checkout.session.expired'))
+      await handler(stripeEvent('payment_intent.succeeded'))
 
-      expect(chain.delete).not.toHaveBeenCalled()
+      expect(chain.update).not.toHaveBeenCalled()
+      expect(send).toHaveBeenCalledWith(expect.anything(), {
+        idempotencyKey: 'confirmation/2599',
+      })
     })
 
-    it('ignores an expired session for an unknown reservation', async () => {
+    it('surfaces a 500 so Stripe retries when the mail fails', async () => {
       mockFrom({
-        reservations: mockChain({ data: null, error: { message: 'gone' } }),
+        reservations: mockChain({ data: reservation, error: null }),
       })
+      mockSend({ error: { message: 'mail down' } })
 
       await expect(
-        handler(stripeEvent('checkout.session.expired')),
-      ).resolves.toBe('Session expired but reservation not found. Ignoring.')
+        handler(stripeEvent('payment_intent.succeeded')),
+      ).rejects.toMatchObject({
+        statusCode: 500,
+        message: 'Could not send confirmation: mail down',
+      })
     })
   })
+
+  describe.each(['payment_intent.canceled', 'checkout.session.expired'])(
+    '%s',
+    type => {
+      it('removes a reservation that was never paid', async () => {
+        const chain = mockChain({ data: reservation, error: null })
+        mockFrom({ reservations: chain })
+
+        await expect(handler(stripeEvent(type))).resolves.toBe(
+          'Unpaid reservation removed',
+        )
+        expect(chain.delete).toHaveBeenCalled()
+        expect(chain.eq).toHaveBeenCalledWith('id', 2599)
+      })
+
+      it('keeps a reservation that was already paid', async () => {
+        const chain = mockChain({
+          data: { ...reservation, paymentNeeded: false },
+          error: null,
+        })
+        mockFrom({ reservations: chain })
+
+        await expect(handler(stripeEvent(type))).resolves.toBe(
+          'Reservation already paid. Ignoring.',
+        )
+        expect(chain.delete).not.toHaveBeenCalled()
+      })
+    },
+  )
 })

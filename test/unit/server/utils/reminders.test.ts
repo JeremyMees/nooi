@@ -3,7 +3,7 @@ import {
   brusselsDay,
   reminderDay,
   reminderOutcome,
-  reminderProps,
+  mailProps,
   reportKey,
   reportRecipients,
   reportSubject,
@@ -103,9 +103,9 @@ describe('splitReminders', () => {
   })
 })
 
-describe('reminderProps', () => {
+describe('mailProps', () => {
   it('formats the date and time for the template', () => {
-    expect(reminderProps(reservation())).toEqual({
+    expect(mailProps(reservation())).toEqual({
       name: 'Jef Van Laer',
       date: 'maandag 14 september 2026',
       time: '19:00',
@@ -114,7 +114,7 @@ describe('reminderProps', () => {
   })
 
   it('leaves the event undefined for a plain reservation', () => {
-    expect(reminderProps(reservation({ event: null })).event).toBeUndefined()
+    expect(mailProps(reservation({ event: null })).event).toBeUndefined()
   })
 })
 

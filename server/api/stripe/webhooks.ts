@@ -1,4 +1,5 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { serverSupabaseServiceRole } from '#supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Stripe } from 'stripe'
 
 const HANDLED_TYPES = [
@@ -12,11 +13,13 @@ type HandledEvent = Extract<
   { type: (typeof HANDLED_TYPES)[number] }
 >
 
+type Client = SupabaseClient<Database>
+
 function isHandled(webhookEvent: Stripe.Event): webhookEvent is HandledEvent {
   return (HANDLED_TYPES as readonly string[]).includes(webhookEvent.type)
 }
 
-export default defineEventHandler(async (event): Promise<any> => {
+export default defineEventHandler(async (event): Promise<string> => {
   const raw = (await readRawBody(event)) as string
   const signature = getHeader(event, 'stripe-signature') || ''
 
@@ -32,112 +35,96 @@ export default defineEventHandler(async (event): Promise<any> => {
     throw createError({ status: 400, message: 'Invalid signature' })
   }
 
-  const client = await serverSupabaseClient<Database>(event)
-
-  try {
-    if (!isHandled(webhookEvent)) {
-      return `Webhook received but this event is not handled -> ${webhookEvent.type}`
-    }
-
-    const id = webhookEvent.data.object.metadata?.reservation
-
-    if (!id) {
-      throw createError({ status: 400, message: 'No reservation id found' })
-    }
-
-    const reservationId = +id
-
-    if (webhookEvent.type === 'payment_intent.succeeded') {
-      const existing = await getReservation(client, reservationId)
-
-      if (existing.paymentIdentifier) {
-        return 'Webhook already processed for this reservation'
-      }
-
-      await updateReservation(
-        client,
-        reservationId,
-        webhookEvent.data.object.id,
-      )
-    } else if (webhookEvent.type === 'payment_intent.canceled') {
-      await removeReservation(client, reservationId)
-    } else {
-      try {
-        const reservation = await getReservation(client, reservationId)
-
-        if (reservation.paymentNeeded) {
-          await removeReservation(client, reservationId)
-        }
-      } catch (error) {
-        return 'Session expired but reservation not found. Ignoring.'
-      }
-    }
-  } catch (err) {
-    const { message } = err as Error
-
-    throw createError({ status: 400, message: `Webhook Error: ${message}` })
+  if (!isHandled(webhookEvent)) {
+    return `Webhook received but this event is not handled -> ${webhookEvent.type}`
   }
+
+  const id = Number(webhookEvent.data.object.metadata?.reservation)
+
+  if (!Number.isInteger(id)) {
+    throw createError({ status: 400, message: 'No reservation id found' })
+  }
+
+  const client = serverSupabaseServiceRole<Database>(event)
+  const reservation = await getReservation(client, id)
+
+  if (!reservation) {
+    return 'Reservation not found. Ignoring.'
+  }
+
+  if (webhookEvent.type === 'payment_intent.succeeded') {
+    if (!reservation.paymentIdentifier) {
+      await markPaid(client, id, webhookEvent.data.object.id)
+    }
+
+    // A failed mail throws so Stripe retries; the idempotency key keeps the
+    // retry from mailing a confirmation that did go out.
+    const { error } = await sendConfirmation(reservation)
+
+    if (error) {
+      throw createError({
+        status: 500,
+        message: `Could not send confirmation: ${error}`,
+      })
+    }
+
+    return 'Reservation paid'
+  }
+
+  if (!reservation.paymentNeeded) {
+    return 'Reservation already paid. Ignoring.'
+  }
+
+  await removeReservation(client, id)
+
+  return 'Unpaid reservation removed'
 })
 
-async function getReservation(client: any, id: number): Promise<any> {
+async function getReservation(
+  client: Client,
+  id: number,
+): Promise<ReservationWithEvent | null> {
   const { error, data } = await client
     .from('reservations')
     .select('*, event(name)')
     .eq('id', id)
+    .maybeSingle()
 
   if (error) {
-    throw error
+    throw createError({
+      status: 500,
+      message: `Could not fetch reservation: ${error.message}`,
+    })
   }
 
-  return data?.[0]
+  return data as ReservationWithEvent | null
 }
 
-async function updateReservation(
-  client: any,
+async function markPaid(
+  client: Client,
   id: number,
   payment: string,
 ): Promise<void> {
-  try {
-    await client
-      .from('reservations')
-      .update({
-        paymentIdentifier: payment,
-        paymentNeeded: false,
-      })
-      .eq('id', id)
+  const { error } = await client
+    .from('reservations')
+    .update({ paymentIdentifier: payment, paymentNeeded: false })
+    .eq('id', id)
 
-    const reservation = await getReservation(client, id)
-
-    await $fetch('/api/mail/reservation-success', {
-      method: 'POST',
-      body: {
-        to: reservation.email,
-        props: {
-          name: reservation.name,
-          date: formatDateMail(reservation.day),
-          time: formatHour(reservation.start),
-        },
-      },
-    })
-  } catch (error) {
-    const { message } = error as Error
-
+  if (error) {
     throw createError({
-      status: 400,
-      message: `Error updating reservation: ${message}`,
+      status: 500,
+      message: `Could not update reservation: ${error.message}`,
     })
   }
 }
 
-async function removeReservation(client: any, id: number): Promise<void> {
-  try {
-    await client.from('reservations').delete().eq('id', id)
-  } catch (error) {
-    const { message } = error as Error
+async function removeReservation(client: Client, id: number): Promise<void> {
+  const { error } = await client.from('reservations').delete().eq('id', id)
 
+  if (error) {
     throw createError({
-      status: 400,
-      message: `Error removing temporary reservation: ${message}`,
+      status: 500,
+      message: `Could not remove reservation: ${error.message}`,
     })
   }
 }

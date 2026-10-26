@@ -1,5 +1,3 @@
-import { Resend } from 'resend'
-import { render } from '@vue-email/render'
 import { serverSupabaseServiceRole } from '#supabase/server'
 import Template from '~~/emails/Reminder.vue'
 import ReportTemplate from '~~/emails/ReminderReport.vue'
@@ -9,8 +7,7 @@ const throttle = 600
 export default defineEventHandler(async event => {
   requireCron(event)
 
-  const { resendApiKey, reminderEmails } = useRuntimeConfig()
-
+  const { reminderEmails } = useRuntimeConfig()
   const supabase = serverSupabaseServiceRole<Database>(event)
   const day = reminderDay(new Date())
 
@@ -30,7 +27,6 @@ export default defineEventHandler(async event => {
   const reservations = (data ?? []) as unknown as ReservationWithEvent[]
   const { recipients, skipped } = splitReminders(reservations)
 
-  const resend = new Resend(resendApiKey)
   const sent: ReminderOutcome[] = []
   const failed: ReminderOutcome[] = []
 
@@ -39,22 +35,18 @@ export default defineEventHandler(async event => {
       await new Promise(resolve => setTimeout(resolve, throttle))
     }
 
-    const html = await render(Template, reminderProps(reservation))
-
     // The idempotency key expires after 24h, so a retried or manually
     // triggered run can never send the same reminder twice.
-    const { error: sendError } = await resend.emails.send(
-      {
-        from: 'Nooi <zin@nooi.be>',
-        to: reservation.email as string,
-        subject: 'We zien je snel in Nooi!',
-        html,
-      },
-      { idempotencyKey: `reminder/${reservation.id}` },
-    )
+    const { error: sendError } = await sendMail({
+      to: reservation.email as string,
+      subject: 'We zien je snel in Nooi!',
+      template: Template,
+      props: mailProps(reservation),
+      idempotencyKey: `reminder/${reservation.id}`,
+    })
 
     if (sendError) {
-      failed.push(reminderOutcome(reservation, sendError.message))
+      failed.push(reminderOutcome(reservation, sendError))
     } else {
       sent.push(reminderOutcome(reservation))
     }
@@ -69,7 +61,6 @@ export default defineEventHandler(async event => {
   }
 
   const { sentTo, error: reportError } = await sendReport(
-    resend,
     day,
     report,
     reminderEmails,
@@ -88,7 +79,6 @@ export default defineEventHandler(async event => {
 })
 
 async function sendReport(
-  resend: Resend,
   day: string,
   report: ReminderReport,
   emails?: string,
@@ -99,17 +89,13 @@ async function sendReport(
     return { sentTo: [], error: null }
   }
 
-  const html = await render(ReportTemplate, report)
+  const { error } = await sendMail({
+    to,
+    subject: reportSubject(report),
+    template: ReportTemplate,
+    props: report,
+    idempotencyKey: reportKey(day, report),
+  })
 
-  const { error } = await resend.emails.send(
-    {
-      from: 'Nooi <zin@nooi.be>',
-      to,
-      subject: reportSubject(report),
-      html,
-    },
-    { idempotencyKey: reportKey(day, report) },
-  )
-
-  return { sentTo: to, error: error ? error.message : null }
+  return { sentTo: to, error }
 }

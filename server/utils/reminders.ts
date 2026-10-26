@@ -2,7 +2,7 @@ import { addDay } from '@formkit/tempo'
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export interface ReminderProps {
+export interface MailProps {
   name: string
   date: string
   time: string
@@ -41,9 +41,7 @@ export function splitReminders(
   return { recipients, skipped }
 }
 
-export function reminderProps(
-  reservation: ReservationWithEvent,
-): ReminderProps {
+export function mailProps(reservation: ReservationWithEvent): MailProps {
   return {
     name: reservation.name,
     date: formatDateMail(reservation.day),
