@@ -1,6 +1,6 @@
 export const useAdminStore = defineStore('useAdminStore', () => {
   const supabase = useSupabaseClient<Database>()
-  const authCookie = useCookie('auth', { maxAge: 60 * 60 * 24 * 7 })
+  const authenticated = ref<boolean>()
 
   const events = ref<EventReservation[]>([])
 
@@ -12,6 +12,45 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     rosters: { ...defaultOptions },
   })
 
+  async function checkSession(): Promise<void> {
+    const session = await $fetch('/api/admin/session')
+
+    authenticated.value = session.authenticated
+  }
+
+  async function login(password: string): Promise<boolean> {
+    try {
+      await $fetch('/api/admin/login', {
+        method: 'POST',
+        body: { password },
+      })
+
+      authenticated.value = true
+    } catch {
+      authenticated.value = false
+    }
+
+    return authenticated.value
+  }
+
+  async function run(
+    type: DatabaseTable,
+    action: () => Promise<unknown>,
+    message: string,
+  ): Promise<void> {
+    try {
+      data.value[type].loading = true
+      data.value[type].error = undefined
+
+      await action()
+      await fetchData(type)
+    } catch {
+      data.value[type].error = message
+    } finally {
+      data.value[type].loading = false
+    }
+  }
+
   async function fetchData(
     type: DatabaseTable,
     query: Partial<SbQueryOptions> = {},
@@ -20,38 +59,24 @@ export const useAdminStore = defineStore('useAdminStore', () => {
       data.value[type].loading = true
       data.value[type].error = undefined
 
-      const options: SbQueryOptions = {
-        table: type,
-        page: 0,
-        perPage: 10,
-        ...query,
-      }
+      const day = query.eq?.find(({ field }) => field === 'day')?.value
 
-      if (type === 'events') {
-        options.select = '*, reservations:reservations(id, spots)'
-
-        options.eq = options.eq?.length
-          ? [
-              ...options.eq,
-              { field: 'reservations.paymentNeeded', value: false },
-            ]
-          : [{ field: 'reservations.paymentNeeded', value: false }]
-      } else if (type === 'reservations') {
-        options.select = '*, event(id, name)'
-
-        options.eq = options.eq?.length
-          ? [...options.eq, { field: 'paymentNeeded', value: false }]
-          : [{ field: 'paymentNeeded', value: false }]
-      }
-
-      const { data: fetchedData, count } = await sbQuery<RosterRow[]>(
-        supabase,
-        options,
+      const { data: fetchedData, count } = await $fetch<SbQuery<never>>(
+        `/api/admin/${type}`,
+        {
+          query: {
+            page: query.page,
+            search: query.search || undefined,
+            day,
+            sortField: query.sort?.field,
+            sortOrder: query.sort?.order,
+          },
+        },
       )
 
       data.value[type] = {
         ...data.value[type],
-        data: fetchedData as any[],
+        data: fetchedData,
         count,
       }
     } catch (error) {
@@ -65,50 +90,26 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     type: DatabaseTable,
     arr: (RosterRow | EventRow | ReservationRow)[],
   ): Promise<void> {
-    try {
-      data.value[type].loading = true
-      data.value[type].error = undefined
-
-      const { error } = await supabase
-        .from(type)
-        .delete()
-        .in(
-          'id',
-          arr.map((item: any) => item.id),
-        )
-
-      if (error) {
-        data.value[type].error = 'Error tijdens items verwijderen in database'
-      } else {
-        fetchData(type)
-      }
-    } catch (error) {
-      data.value[type].error = (error as Error).message
-    } finally {
-      data.value[type].loading = false
-    }
+    await run(
+      type,
+      () =>
+        $fetch(`/api/admin/${type}`, {
+          method: 'DELETE',
+          body: { ids: arr.map(({ id }) => id) },
+        }),
+      'Error tijdens items verwijderen in database',
+    )
   }
 
   async function createData(
     type: DatabaseTable,
     insert: RosterInsert | EventInsert | ReservationInsert,
   ): Promise<void> {
-    try {
-      data.value[type].loading = true
-      data.value[type].error = undefined
-
-      const { error } = await supabase.from(type).insert([insert] as never[])
-
-      if (error) {
-        data.value[type].error = 'Error tijdens toevoegen in database'
-      } else {
-        fetchData(type)
-      }
-    } catch (error) {
-      data.value[type].error = (error as Error).message
-    } finally {
-      data.value[type].loading = false
-    }
+    await run(
+      type,
+      () => $fetch(`/api/admin/${type}`, { method: 'POST', body: insert }),
+      'Error tijdens toevoegen in database',
+    )
   }
 
   async function updateData(
@@ -116,22 +117,12 @@ export const useAdminStore = defineStore('useAdminStore', () => {
     type: DatabaseTable,
     payload: RosterUpdate | EventUpdate | ReservationUpdate,
   ): Promise<void> {
-    try {
-      data.value[type].loading = true
-      data.value[type].error = undefined
-
-      const { error } = await supabase.from(type).update(payload).eq('id', id)
-
-      if (error) {
-        data.value[type].error = 'Error tijdens bijwerken in database'
-      } else {
-        fetchData(type)
-      }
-    } catch (error) {
-      data.value[type].error = (error as Error).message
-    } finally {
-      data.value[type].loading = false
-    }
+    await run(
+      type,
+      () =>
+        $fetch(`/api/admin/${type}/${id}`, { method: 'PATCH', body: payload }),
+      'Error tijdens bijwerken in database',
+    )
   }
 
   async function getEvents(): Promise<void> {
@@ -153,7 +144,9 @@ export const useAdminStore = defineStore('useAdminStore', () => {
   }
 
   return {
-    authCookie,
+    authenticated,
+    checkSession,
+    login,
     data,
     events,
     fetchData,

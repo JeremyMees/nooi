@@ -1,8 +1,13 @@
 <script setup lang="ts">
 const store = useAdminStore()
-const { adminPassword } = useRuntimeConfig().public
 
-const needsAuth = computed<boolean>(() => store.authCookie !== 'authenticated')
+const wrongPassword = ref<boolean>(false)
+
+const needsAuth = computed<boolean>(() => store.authenticated === false)
+
+async function submit({ password }: AdminForm): Promise<void> {
+  wrongPassword.value = !(await store.login(password))
+}
 </script>
 
 <template>
@@ -12,18 +17,16 @@ const needsAuth = computed<boolean>(() => store.authCookie !== 'authenticated')
     header="Inloggen op admin paneel"
     :closable="false"
   >
-    <FormKit
-      type="form"
-      submit-label="Inloggen"
-      @submit="store.authCookie = 'authenticated'"
-    >
+    <FormKit type="form" submit-label="Inloggen" @submit="submit">
       <FormKit
         type="password"
         name="password"
         label="Wachtwoord"
-        :validation="`required|is:${adminPassword}`"
-        :validation-messages="{ is: 'Wachtwoord is verkeerd' }"
+        validation="required"
       />
+      <p v-if="wrongPassword" test-id="login-error" class="text-secondary">
+        Wachtwoord is verkeerd
+      </p>
     </FormKit>
   </Dialog>
 </template>

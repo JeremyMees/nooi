@@ -36,8 +36,9 @@ export default defineNuxtConfig({
     stripeSk: process.env.STRIPE_SK,
     cronSecret: process.env.CRON_SECRET,
     reminderEmails: process.env.REMINDER_EMAILS || '',
+    adminPassword: process.env.ADMIN_PASSWORD,
+    appSecret: process.env.NUXT_APP_SECRET,
     public: {
-      adminPassword: process.env.ADMIN_PASSWORD || 'admin',
       sentry: {
         dsn: process.env.SENTRY_DSN,
       },

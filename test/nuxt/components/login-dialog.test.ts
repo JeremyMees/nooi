@@ -1,16 +1,16 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import LoginDialog from '~/components/LoginDialog.vue'
 
-let authCookie: string | undefined
+let authenticated: boolean | undefined
+
+const login = vi.hoisted(() => vi.fn())
 
 mockNuxtImport('useAdminStore', () => () => ({
-  get authCookie() {
-    return authCookie
+  get authenticated() {
+    return authenticated
   },
-  set authCookie(value: string | undefined) {
-    authCookie = value
-  },
+  login,
 }))
 
 const stubs = {
@@ -28,7 +28,8 @@ async function mount() {
 
 describe('LoginDialog', () => {
   beforeEach(() => {
-    authCookie = undefined
+    authenticated = false
+    login.mockReset()
   })
 
   it('matches snapshot', async () => {
@@ -46,37 +47,58 @@ describe('LoginDialog', () => {
     expect(wrapper.findComponent({ name: 'FormKit' }).exists()).toBe(true)
   })
 
-  it('hides the dialog once authenticated', async () => {
-    authCookie = 'authenticated'
+  it('stays hidden while the session is still being checked', async () => {
+    authenticated = undefined
 
     const wrapper = await mount()
 
     expect(wrapper.find('[test-id="login-header"]').exists()).toBe(false)
   })
 
-  it('validates against the configured admin password', async () => {
-    const { adminPassword } = useRuntimeConfig().public
+  it('hides the dialog once authenticated', async () => {
+    authenticated = true
 
-    // The default FormKit stub drops its slot, so render one that keeps it.
+    const wrapper = await mount()
+
+    expect(wrapper.find('[test-id="login-header"]').exists()).toBe(false)
+  })
+
+  it('never ships the admin password to the browser', () => {
+    expect(useRuntimeConfig().public).not.toHaveProperty('adminPassword')
+  })
+
+  it('logs in with the submitted password', async () => {
+    login.mockResolvedValue(true)
+    const wrapper = await mount()
+
+    await wrapper
+      .findComponent({ name: 'FormKit' })
+      .vm.$emit('submit', { password: 'hunter22' })
+
+    expect(login).toHaveBeenCalledWith('hunter22')
+    expect(wrapper.find('[test-id="login-error"]').exists()).toBe(false)
+  })
+
+  it('tells the admin when the password is wrong', async () => {
+    login.mockResolvedValue(false)
     const wrapper = await mountSuspended(LoginDialog, {
       global: {
         stubs: {
           ...stubs,
-          FormKit: { template: '<div v-bind="$attrs"><slot /></div>' },
+          FormKit: {
+            name: 'FormKit',
+            emits: ['submit'],
+            template: '<div><slot /></div>',
+          },
         },
       },
     })
 
-    expect(wrapper.find('[name="password"]').attributes('validation')).toBe(
-      `required|is:${adminPassword}`,
-    )
-  })
+    await wrapper
+      .findComponent({ name: 'FormKit' })
+      .vm.$emit('submit', { password: 'admin' })
+    await new Promise(resolve => setTimeout(resolve))
 
-  it('marks the session authenticated when the form is submitted', async () => {
-    const wrapper = await mount()
-
-    await wrapper.findComponent({ name: 'FormKit' }).vm.$emit('submit')
-
-    expect(authCookie).toBe('authenticated')
+    expect(wrapper.find('[test-id="login-error"]').exists()).toBe(true)
   })
 })

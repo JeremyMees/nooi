@@ -34,6 +34,8 @@ export function nuxtAutoImports(): Plugin {
         'getRequestHeader',
         'setHeader',
         'sendRedirect',
+        'getRouterParam',
+        'useSession',
       ].map(name => ({ name, from: 'h3' })),
     ],
     presets: ['vue'],

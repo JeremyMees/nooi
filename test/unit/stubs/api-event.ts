@@ -14,8 +14,10 @@ export function mockEvent({
   query?: Record<string, string>
 } = {}): H3Event {
   const search = query ? `?${new URLSearchParams(query)}` : ''
+  const responseHeaders = new Map<string, unknown>()
 
   return {
+    __is_event__: true,
     path: `${path}${search}`,
     method,
     context: {},
@@ -29,7 +31,18 @@ export function mockEvent({
         },
         socket: { remoteAddress: '127.0.0.1' },
       },
-      res: { setHeader: () => {}, getHeader: () => undefined },
+      res: {
+        setHeader: (name: string, value: unknown) =>
+          responseHeaders.set(name.toLowerCase(), value),
+        getHeader: (name: string) => responseHeaders.get(name.toLowerCase()),
+        removeHeader: (name: string) =>
+          responseHeaders.delete(name.toLowerCase()),
+        appendHeader: (name: string, value: string) =>
+          responseHeaders.set(name.toLowerCase(), [
+            ...[responseHeaders.get(name.toLowerCase()) ?? []].flat(),
+            value,
+          ]),
+      },
     },
     _requestBody: body,
   } as unknown as H3Event

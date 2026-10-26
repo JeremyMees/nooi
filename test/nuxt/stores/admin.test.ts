@@ -7,19 +7,58 @@ import { createSupabaseMock } from '~~/test/mock'
 
 let supabase: ReturnType<typeof createSupabaseMock>
 
+const $fetch = vi.hoisted(() => vi.fn())
+
 mockNuxtImport('useSupabaseClient', () => () => supabase)
-mockNuxtImport('useCookie', () => () => ref<string>())
-mockNuxtImport('useToast', () => () => ({ add: vi.fn() }))
+mockNuxtImport('$fetch', () => $fetch)
 
 describe('useAdminStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     supabase = createSupabaseMock({ data: [], count: 0, error: null })
+    $fetch.mockReset()
+    $fetch.mockResolvedValue({ data: [], count: 0 })
+  })
+
+  describe('session', () => {
+    it('starts out unknown', () => {
+      expect(useAdminStore().authenticated).toBeUndefined()
+    })
+
+    it('asks the server whether the visitor is logged in', async () => {
+      $fetch.mockResolvedValue({ authenticated: true })
+      const store = useAdminStore()
+
+      await store.checkSession()
+
+      expect($fetch).toHaveBeenCalledWith('/api/admin/session')
+      expect(store.authenticated).toBe(true)
+    })
+
+    it('logs in with the password', async () => {
+      const store = useAdminStore()
+
+      await expect(store.login('hunter22')).resolves.toBe(true)
+
+      expect($fetch).toHaveBeenCalledWith('/api/admin/login', {
+        method: 'POST',
+        body: { password: 'hunter22' },
+      })
+      expect(store.authenticated).toBe(true)
+    })
+
+    it('stays logged out after a wrong password', async () => {
+      $fetch.mockRejectedValue(new Error('401'))
+      const store = useAdminStore()
+
+      await expect(store.login('admin')).resolves.toBe(false)
+      expect(store.authenticated).toBe(false)
+    })
   })
 
   describe('fetchData', () => {
     it('stores the fetched rows and count for the type', async () => {
-      supabase.result = { data: [{ id: 1 }, { id: 2 }], count: 5, error: null }
+      $fetch.mockResolvedValue({ data: [{ id: 1 }, { id: 2 }], count: 5 })
       const store = useAdminStore()
 
       await store.fetchData('rosters')
@@ -29,34 +68,29 @@ describe('useAdminStore', () => {
       expect(store.data.rosters.loading).toBe(false)
     })
 
-    it('selects the reservations relation and filters unpaid for events', async () => {
+    it('passes paging, search, day and sort to the server', async () => {
       const store = useAdminStore()
 
-      await store.fetchData('events')
-
-      expect(supabase.select).toHaveBeenCalledWith(
-        '*, reservations:reservations(id, spots)',
-        { count: 'exact' },
-      )
-      expect(supabase.eq).toHaveBeenCalledWith(
-        'reservations.paymentNeeded',
-        false,
-      )
-    })
-
-    it('selects the event relation and filters unpaid for reservations', async () => {
-      const store = useAdminStore()
-
-      await store.fetchData('reservations')
-
-      expect(supabase.select).toHaveBeenCalledWith('*, event(id, name)', {
-        count: 'exact',
+      await store.fetchData('events', {
+        page: 2,
+        search: 'quiz',
+        eq: [{ field: 'day', value: '2026-09-14' }],
+        sort: { field: 'name', order: 'desc' },
       })
-      expect(supabase.eq).toHaveBeenCalledWith('paymentNeeded', false)
+
+      expect($fetch).toHaveBeenCalledWith('/api/admin/events', {
+        query: {
+          page: 2,
+          search: 'quiz',
+          day: '2026-09-14',
+          sortField: 'name',
+          sortOrder: 'desc',
+        },
+      })
     })
 
-    it('records an error message when the query fails', async () => {
-      supabase.result = { error: new Error('db down') }
+    it('records an error message when the request fails', async () => {
+      $fetch.mockRejectedValue(new Error('db down'))
       const store = useAdminStore()
 
       await store.fetchData('rosters')
@@ -67,17 +101,23 @@ describe('useAdminStore', () => {
   })
 
   describe('createData', () => {
-    it('inserts into the table for the type', async () => {
+    it('posts the row and reloads the table', async () => {
       const store = useAdminStore()
 
       await store.createData('rosters', { day: '2026-07-10' } as never)
 
-      expect(supabase.from).toHaveBeenCalledWith('rosters')
-      expect(supabase.insert).toHaveBeenCalledWith([{ day: '2026-07-10' }])
+      expect($fetch).toHaveBeenCalledWith('/api/admin/rosters', {
+        method: 'POST',
+        body: { day: '2026-07-10' },
+      })
+      expect($fetch).toHaveBeenLastCalledWith(
+        '/api/admin/rosters',
+        expect.objectContaining({ query: expect.any(Object) }),
+      )
     })
 
     it('sets an error message when the insert fails', async () => {
-      supabase.result = { error: { message: 'nope' } }
+      $fetch.mockRejectedValue(new Error('nope'))
       const store = useAdminStore()
 
       await store.createData('rosters', {} as never)
@@ -94,19 +134,23 @@ describe('useAdminStore', () => {
 
       await store.removeData('events', [{ id: 1 }, { id: 3 }] as never)
 
-      expect(supabase.delete).toHaveBeenCalled()
-      expect(supabase.in).toHaveBeenCalledWith('id', [1, 3])
+      expect($fetch).toHaveBeenCalledWith('/api/admin/events', {
+        method: 'DELETE',
+        body: { ids: [1, 3] },
+      })
     })
   })
 
   describe('updateData', () => {
-    it('updates the row with the given id', async () => {
+    it('patches the row with the given id', async () => {
       const store = useAdminStore()
 
       await store.updateData(7, 'events', { name: 'x' } as never)
 
-      expect(supabase.update).toHaveBeenCalledWith({ name: 'x' })
-      expect(supabase.eq).toHaveBeenCalledWith('id', 7)
+      expect($fetch).toHaveBeenCalledWith('/api/admin/events/7', {
+        method: 'PATCH',
+        body: { name: 'x' },
+      })
     })
   })
 

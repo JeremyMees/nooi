@@ -2,14 +2,13 @@
 const store = useAdminStore()
 
 const types: DatabaseTable[] = ['reservations', 'events', 'rosters']
+
+onMounted(store.checkSession)
 </script>
 
 <template>
   <NuxtLayout>
-    <div
-      v-if="store.authCookie === 'authenticated'"
-      class="container flex flex-col gap-20"
-    >
+    <div v-if="store.authenticated" class="container flex flex-col gap-20">
       <AdminTable v-for="type in types" :key="type" :type="type" />
     </div>
     <LoginDialog />
