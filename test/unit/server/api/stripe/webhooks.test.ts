@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { Stripe } from 'stripe'
 import { mockEvent } from '~~/test/unit/stubs/api-event'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
 import { mockChain, mockFrom } from '~~/test/unit/stubs/supabase'
@@ -16,25 +17,74 @@ const reservation = {
   event: { name: 'Minipainting' },
 }
 
-function stripeEvent(type: string, object: Record<string, unknown> = {}) {
+const secret = 'whsec_test'
+const { webhooks } = new Stripe('sk_test_placeholder')
+
+function signedEvent(payload: string, signingSecret = secret) {
   return mockEvent({
     method: 'POST',
-    body: {
-      type,
-      data: {
-        object: { id: 'pi_123', metadata: { reservation: '2599' }, ...object },
-      },
+    body: payload,
+    headers: {
+      'stripe-signature': webhooks.generateTestHeaderString({
+        payload,
+        secret: signingSecret,
+      }),
     },
   })
 }
 
+function stripeEvent(type: string, object: Record<string, unknown> = {}) {
+  return signedEvent(
+    JSON.stringify({
+      type,
+      data: {
+        object: { id: 'pi_123', metadata: { reservation: '2599' }, ...object },
+      },
+    }),
+  )
+}
+
 beforeEach(() => {
-  mockRuntimeConfig({})
+  mockRuntimeConfig({ stripeWebhook: secret })
   mockFetch.mockReset()
   mockFetch.mockResolvedValue({ message: 'Email sent' })
 })
 
 describe('POST /api/stripe/webhooks', () => {
+  it('rejects a request without a signature', async () => {
+    const event = mockEvent({
+      method: 'POST',
+      body: JSON.stringify({ type: 'payment_intent.succeeded' }),
+    })
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 400,
+      message: 'Invalid signature',
+    })
+    expect(mockFetch).not.toHaveBeenCalled()
+  })
+
+  it('rejects a request signed with another secret', async () => {
+    const payload = JSON.stringify({ type: 'payment_intent.succeeded' })
+
+    await expect(
+      handler(signedEvent(payload, 'whsec_other')),
+    ).rejects.toMatchObject({ statusCode: 400, message: 'Invalid signature' })
+  })
+
+  it('rejects a payload that was altered after signing', async () => {
+    const event = signedEvent(
+      JSON.stringify({ type: 'payment_intent.canceled' }),
+    )
+    ;(event as unknown as { _requestBody: string })._requestBody =
+      JSON.stringify({ type: 'payment_intent.succeeded' })
+
+    await expect(handler(event)).rejects.toMatchObject({
+      statusCode: 400,
+      message: 'Invalid signature',
+    })
+  })
+
   it('ignores event types it does not handle', async () => {
     await expect(handler(stripeEvent('invoice.paid'))).resolves.toBe(
       'Webhook received but this event is not handled -> invoice.paid',
@@ -42,10 +92,12 @@ describe('POST /api/stripe/webhooks', () => {
   })
 
   it('fails when the event carries no reservation id', async () => {
-    const event = mockEvent({
-      method: 'POST',
-      body: { type: 'payment_intent.succeeded', data: { object: {} } },
-    })
+    const event = signedEvent(
+      JSON.stringify({
+        type: 'payment_intent.succeeded',
+        data: { object: {} },
+      }),
+    )
 
     await expect(handler(event)).rejects.toMatchObject({
       statusCode: 400,

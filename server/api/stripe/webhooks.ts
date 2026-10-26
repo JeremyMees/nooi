@@ -1,45 +1,65 @@
 import { serverSupabaseClient } from '#supabase/server'
+import type { Stripe } from 'stripe'
+
+const HANDLED_TYPES = [
+  'payment_intent.succeeded',
+  'payment_intent.canceled',
+  'checkout.session.expired',
+] as const
+
+type HandledEvent = Extract<
+  Stripe.Event,
+  { type: (typeof HANDLED_TYPES)[number] }
+>
+
+function isHandled(webhookEvent: Stripe.Event): webhookEvent is HandledEvent {
+  return (HANDLED_TYPES as readonly string[]).includes(webhookEvent.type)
+}
 
 export default defineEventHandler(async (event): Promise<any> => {
-  const client = await serverSupabaseClient<Database>(event)
-  const body = await readBody(event)
-  // const raw = await readRawBody(event) as string
-  // const signature = event.headers.get('stripe-signature') || ''
+  const raw = (await readRawBody(event)) as string
+  const signature = getHeader(event, 'stripe-signature') || ''
+
+  let webhookEvent: Stripe.Event
 
   try {
-    // const webhookSecret = config.stripeWebhook
-    // const webhookEvent = stripe.webhooks.constructEvent(raw, signature, webhookSecret)
+    webhookEvent = stripe.webhooks.constructEvent(
+      raw,
+      signature,
+      useRuntimeConfig().stripeWebhook,
+    )
+  } catch {
+    throw createError({ status: 400, message: 'Invalid signature' })
+  }
 
-    if (
-      ![
-        'payment_intent.succeeded',
-        'payment_intent.canceled',
-        'checkout.session.expired',
-      ].includes(body.type)
-    ) {
-      return `Webhook received but this event is not handled -> ${body.type}`
+  const client = await serverSupabaseClient<Database>(event)
+
+  try {
+    if (!isHandled(webhookEvent)) {
+      return `Webhook received but this event is not handled -> ${webhookEvent.type}`
     }
 
-    let reservationId
+    const id = webhookEvent.data.object.metadata?.reservation
 
-    if (
-      'metadata' in body.data.object &&
-      body.data.object.metadata?.reservation
-    ) {
-      reservationId = +body.data.object.metadata.reservation
-    } else {
+    if (!id) {
       throw createError({ status: 400, message: 'No reservation id found' })
     }
 
-    if (body.type === 'payment_intent.succeeded') {
+    const reservationId = +id
+
+    if (webhookEvent.type === 'payment_intent.succeeded') {
       const existing = await getReservation(client, reservationId)
 
       if (existing.paymentIdentifier) {
         return 'Webhook already processed for this reservation'
       }
 
-      await updateReservation(client, reservationId, body.data.object.id)
-    } else if (body.type === 'payment_intent.canceled') {
+      await updateReservation(
+        client,
+        reservationId,
+        webhookEvent.data.object.id,
+      )
+    } else if (webhookEvent.type === 'payment_intent.canceled') {
       await removeReservation(client, reservationId)
     } else {
       try {
