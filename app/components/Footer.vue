@@ -9,7 +9,7 @@
           aria-label="Locatie"
           class="bg-black w-8 h-8 flex flex-col justify-center items-center rounded hover:opacity-80 transition-opacity duration-300 ease-in-out"
         >
-          <Icon name="carbon:location-filled" class="text-white text-lg" />
+          <Icon name="lucide:map-pin" class="text-white text-lg" />
         </a>
         <a
           href="https://www.instagram.com/nooidiest/"
@@ -17,7 +17,7 @@
           aria-label="Instagram"
           class="bg-black w-8 h-8 flex flex-col justify-center items-center rounded hover:opacity-80 transition-opacity duration-300 ease-in-out"
         >
-          <Icon name="radix-icons:instagram-logo" class="text-white text-lg" />
+          <Icon name="nooi:instagram" class="text-white text-lg" />
         </a>
         <a
           href="https://www.facebook.com/nooidiest"
@@ -25,7 +25,7 @@
           aria-label="Facebook"
           class="bg-black w-8 h-8 flex flex-col justify-center items-center rounded hover:opacity-80 transition-opacity duration-300 ease-in-out"
         >
-          <Icon name="ic:baseline-facebook" class="text-white text-lg" />
+          <Icon name="nooi:facebook" class="text-white text-lg" />
         </a>
         <a
           href="https://www.tiktok.com/@nooidiest"
@@ -33,7 +33,7 @@
           aria-label="Tiktok"
           class="bg-black w-8 h-8 flex flex-col justify-center items-center rounded hover:opacity-80 transition-opacity duration-300 ease-in-out"
         >
-          <Icon name="ic:baseline-tiktok" class="text-white text-lg" />
+          <Icon name="nooi:tiktok" class="text-white text-lg" />
         </a>
         <a
           href="https://api.whatsapp.com/send/?phone=32496672361&text&type=phone_number&app_absent=0"
@@ -41,7 +41,7 @@
           aria-label="Tiktok"
           class="bg-black w-8 h-8 flex flex-col justify-center items-center rounded hover:opacity-80 transition-opacity duration-300 ease-in-out"
         >
-          <Icon name="ic:baseline-whatsapp" class="text-white text-lg" />
+          <Icon name="nooi:whatsapp" class="text-white text-lg" />
         </a>
       </div>
       <div class="body-normal">

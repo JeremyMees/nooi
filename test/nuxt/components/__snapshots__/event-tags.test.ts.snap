@@ -2,12 +2,12 @@
 
 exports[`EventTags > matches snapshot 1`] = `
 "<div test-id="event-tags" class="flex flex-wrap gap-2">
-  <div test-id="event-tag-day" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-calendar text-lg text-primary"></i><span test-id="icon-label-text">10 jul 2026</span></div>
-  <div test-id="event-tag-time" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-clock text-lg text-primary"></i><span test-id="icon-label-text">19:00  tot 23:00</span></div>
-  <div test-id="event-tag-price" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-wallet text-lg text-primary"></i><span test-id="icon-label-text"> € 5 online</span></div>
-  <div test-id="event-tag-spots" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-user text-lg text-primary"></i><span test-id="icon-label-text">15 vrije plaatsen</span></div>
+  <div test-id="event-tag-day" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:calendar size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">10 jul 2026</span></div>
+  <div test-id="event-tag-time" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:clock size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">19:00  tot 23:00</span></div>
+  <div test-id="event-tag-price" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:wallet size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text"> € 5 online</span></div>
+  <div test-id="event-tag-spots" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:user size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">15 vrije plaatsen</span></div>
   <!--v-if-->
-  <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-tag text-lg text-primary"></i><span test-id="icon-label-text">strategie</span></div>
-  <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-tag text-lg text-primary"></i><span test-id="icon-label-text">familie</span></div>
+  <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:tag size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">strategie</span></div>
+  <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:tag size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">familie</span></div>
 </div>"
 `;

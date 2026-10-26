@@ -80,10 +80,15 @@ async function submit(form: Omit<BookingRequest, 'type'>): Promise<void> {
 </script>
 
 <template>
-  <Drawer v-model:visible="store.drawerOpen" position="right">
-    <template #header>
-      <div>
-        <p test-id="reservation-drawer-title" class="head-3">
+  <USlideover
+    v-model:open="store.drawerOpen"
+    side="right"
+    description="Vul je gegevens in om te reserveren"
+    :ui="{ description: 'sr-only' }"
+  >
+    <template #title>
+      <span class="block">
+        <span test-id="reservation-drawer-title" class="head-3 block">
           {{
             store.selectedEvent
               ? 'Inschrijven voor '
@@ -94,39 +99,41 @@ async function submit(form: Omit<BookingRequest, 'type'>): Promise<void> {
           <span v-if="store.selectedEvent" class="text-secondary">
             {{ store.selectedEvent?.name }}
           </span>
-        </p>
+        </span>
         <span v-if="store.selectedEvent" class="font-medium">
           {{ formatHour(store.selectedEvent.start) }}
           <span v-if="store.selectedEvent.end">
             - {{ formatHour(store.selectedEvent.end) }}
           </span>
         </span>
-      </div>
+      </span>
     </template>
-    <div
-      v-if="clickedRosterItem && !clickedRosterItem.allowReservation"
-      test-id="reservation-no-booking"
-      class="flex flex-col gap-4 bg-teal/10 p-4 rounded-lg"
-    >
-      <p class="text-sm text-gray-500">
-        Voor dit tijdslot kan je niet reserveren. Er gaat wellicht een evenement
-        door met vrije toegang. Al kunnen we geen zitplekje garanderen, je bent
-        uiteraard welkom! We zijn open van
-        {{ formatHour(clickedRosterItem.start) }} tot
-        {{ formatHour(clickedRosterItem.end) }}.
-      </p>
-    </div>
-    <template v-else>
-      <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
-      <FormKit
-        v-else
-        type="form"
-        :submit-label="submitLabel"
-        :config="{ validationVisibility: 'blur' }"
-        @submit="submit"
+    <template #body>
+      <div
+        v-if="clickedRosterItem && !clickedRosterItem.allowReservation"
+        test-id="reservation-no-booking"
+        class="flex flex-col gap-4 bg-teal/10 p-4 rounded-lg"
       >
-        <FormReservation :payment="payment" />
-      </FormKit>
+        <p class="text-sm text-gray-500">
+          Voor dit tijdslot kan je niet reserveren. Er gaat wellicht een
+          evenement door met vrije toegang. Al kunnen we geen zitplekje
+          garanderen, je bent uiteraard welkom! We zijn open van
+          {{ formatHour(clickedRosterItem.start) }} tot
+          {{ formatHour(clickedRosterItem.end) }}.
+        </p>
+      </div>
+      <template v-else>
+        <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
+        <FormKit
+          v-else
+          type="form"
+          :submit-label="submitLabel"
+          :config="{ validationVisibility: 'blur' }"
+          @submit="submit"
+        >
+          <FormReservation :payment="payment" />
+        </FormKit>
+      </template>
     </template>
-  </Drawer>
+  </USlideover>
 </template>

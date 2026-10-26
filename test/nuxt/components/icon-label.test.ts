@@ -21,13 +21,13 @@ describe('IconLabel', () => {
     expect(wrapper.find('[test-id="icon-label-text"]').text()).toBe('Vandaag')
   })
 
-  it('applies the primevue icon class for the given icon', async () => {
+  it('shows the lucide icon with the given name', async () => {
     const wrapper = await mountSuspended(IconLabel, {
       props: { icon: 'clock' },
     })
 
-    expect(wrapper.find('[test-id="icon-label-icon"]').classes()).toContain(
-      'pi-clock',
+    expect(wrapper.findComponent({ name: 'UIcon' }).props('name')).toBe(
+      'i-lucide-clock',
     )
   })
 })

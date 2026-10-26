@@ -7,10 +7,10 @@ const items: EditorToolbarItem[][] = [
   [
     {
       kind: 'undo',
-      icon: 'i-carbon-undo',
+      icon: 'i-lucide-undo-2',
       tooltip: { text: 'Ongedaan maken' },
     },
-    { kind: 'redo', icon: 'i-carbon-redo', tooltip: { text: 'Opnieuw' } },
+    { kind: 'redo', icon: 'i-lucide-redo-2', tooltip: { text: 'Opnieuw' } },
   ],
   [
     { kind: 'heading', level: 1, label: 'H1', tooltip: { text: 'Titel 1' } },
@@ -21,45 +21,45 @@ const items: EditorToolbarItem[][] = [
     {
       kind: 'mark',
       mark: 'bold',
-      icon: 'i-carbon-text-bold',
+      icon: 'i-lucide-bold',
       tooltip: { text: 'Vet' },
     },
     {
       kind: 'mark',
       mark: 'italic',
-      icon: 'i-carbon-text-italic',
+      icon: 'i-lucide-italic',
       tooltip: { text: 'Cursief' },
     },
     {
       kind: 'mark',
       mark: 'strike',
-      icon: 'i-carbon-text-strikethrough',
+      icon: 'i-lucide-strikethrough',
       tooltip: { text: 'Doorstreept' },
     },
   ],
   [
     {
       kind: 'bulletList',
-      icon: 'i-carbon-list-bulleted',
+      icon: 'i-lucide-list',
       tooltip: { text: 'Lijst' },
     },
     {
       kind: 'orderedList',
-      icon: 'i-carbon-list-numbered',
+      icon: 'i-lucide-list-ordered',
       tooltip: { text: 'Genummerde lijst' },
     },
     {
       kind: 'blockquote',
-      icon: 'i-carbon-quotes',
+      icon: 'i-lucide-text-quote',
       tooltip: { text: 'Citaat' },
     },
     {
       kind: 'horizontalRule',
-      icon: 'i-carbon-subtract-large',
+      icon: 'i-lucide-minus',
       tooltip: { text: 'Lijn' },
     },
   ],
-  [{ kind: 'link', icon: 'i-carbon-link', tooltip: { text: 'Link' } }],
+  [{ kind: 'link', icon: 'i-lucide-link', tooltip: { text: 'Link' } }],
 ]
 </script>
 

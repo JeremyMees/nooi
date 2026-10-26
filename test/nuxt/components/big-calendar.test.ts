@@ -31,11 +31,7 @@ describe('BigCalendar', () => {
       global: {
         stubs: {
           CalendarCell: true,
-          Button: true,
-          Card: {
-            template:
-              '<div><slot name="title" /><slot name="content" /><slot name="footer" /></div>',
-          },
+          UButton: true,
         },
       },
     })

@@ -80,6 +80,10 @@ export default defineNuxtConfig({
 
   ui: { fonts: false, colorMode: false },
 
+  icon: {
+    customCollections: [{ prefix: 'nooi', dir: './app/assets/icons' }],
+  },
+
   primevue: {
     options: { unstyled: true },
     importPT: { as: 'Lara', from: '~~/presets/lara/' },

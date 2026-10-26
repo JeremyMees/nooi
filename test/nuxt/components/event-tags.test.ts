@@ -17,10 +17,12 @@ describe('EventTags', () => {
       props: { event: mockEventReservation },
     })
 
-    expect(wrapper.find('[test-id="event-tag-day"]').exists()).toBe(true)
-    expect(
-      wrapper.find('[test-id="event-tag-day"] .pi-calendar').exists(),
-    ).toBe(true)
+    const day = wrapper.findComponent('[test-id="event-tag-day"]')
+
+    expect(day.exists()).toBe(true)
+    expect(day.findComponent({ name: 'UIcon' }).props('name')).toBe(
+      'i-lucide-calendar',
+    )
   })
 
   it('renders a time label with the start and end time', async () => {

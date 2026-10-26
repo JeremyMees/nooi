@@ -23,56 +23,61 @@ function navigateCalendar(modifier: number): void {
 </script>
 
 <template>
-  <Card class="w-full">
-    <template #title>
-      <div
-        class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5"
-      >
-        <div class="flex flex-wrap gap-x-4">
-          <Button
-            icon="pi pi-angle-left"
-            outlined
-            rounded
-            aria-label="Vorige maand"
-            :disabled="isCurrentMonth"
-            @click="navigateCalendar(-1)"
+  <div class="w-full rounded-md bg-surface-0 text-surface-700 shadow-md">
+    <div class="flex flex-col gap-2 pb-5">
+      <div class="mb-2 text-2xl font-bold">
+        <div
+          class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5"
+        >
+          <div class="flex flex-wrap gap-x-4">
+            <UButton
+              icon="i-lucide-chevron-left"
+              variant="outline"
+              square
+              aria-label="Vorige maand"
+              class="size-12 justify-center rounded-full"
+              :disabled="isCurrentMonth"
+              @click="navigateCalendar(-1)"
+            />
+          </div>
+          <div test-id="calendar-month" class="font-semibold capitalize">
+            {{ months[shownDate.month] }} {{ shownDate.year }}
+          </div>
+          <UButton
+            icon="i-lucide-chevron-right"
+            variant="outline"
+            square
+            aria-label="Volgende maand"
+            class="size-12 justify-center rounded-full"
+            @click="navigateCalendar(1)"
           />
         </div>
-        <div test-id="calendar-month" class="font-semibold capitalize">
-          {{ months[shownDate.month] }} {{ shownDate.year }}
-        </div>
-        <Button
-          icon="pi pi-angle-right"
-          outlined
-          rounded
-          aria-label="Volgende maand"
-          class="p-2"
-          @click="navigateCalendar(1)"
-        />
       </div>
-    </template>
-    <template #content>
-      <div class="space-y-2 w-full">
-        <div
-          class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center"
-        >
-          <div v-for="(day, index) in daysOfWeek" :key="index">
-            {{ day }}
+      <div class="py-5">
+        <div class="space-y-2 w-full">
+          <div
+            class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center"
+          >
+            <div v-for="(day, index) in daysOfWeek" :key="index">
+              {{ day }}
+            </div>
+          </div>
+          <div class="isolate grid grid-cols-7">
+            <CalendarCell
+              v-for="(day, index) in grid"
+              :key="`${index}-${day.key}`"
+              :day="day"
+              :events="
+                store.events.filter(e => e.day === formatDay(day.dateFull))
+              "
+            />
           </div>
         </div>
-        <div class="isolate grid grid-cols-7">
-          <CalendarCell
-            v-for="(day, index) in grid"
-            :key="`${index}-${day.key}`"
-            :day="day"
-            :events="
-              store.events.filter(e => e.day === formatDay(day.dateFull))
-            "
-          />
-        </div>
       </div>
-    </template>
-    <template #footer>
+    </div>
+    <div
+      class="flex flex-wrap items-start justify-between gap-2 px-5 pt-0 pb-5"
+    >
       <div class="flex flex-col sm:flex-row gap-x-6 gap-y-2">
         <div
           v-for="status in ['full', 'reservation', 'game'] as CalendarStatus[]"
@@ -92,11 +97,11 @@ function navigateCalendar(modifier: number): void {
         </div>
       </div>
       <AnimationReveal>
-        <Button
+        <UButton
           v-if="!isCurrentMonth"
-          size="small"
-          text
-          icon="pi pi-directions"
+          size="sm"
+          variant="ghost"
+          icon="i-lucide-locate-fixed"
           label="Huidige maand tonen"
           @click="
             () => {
@@ -108,6 +113,6 @@ function navigateCalendar(modifier: number): void {
           "
         />
       </AnimationReveal>
-    </template>
-  </Card>
+    </div>
+  </div>
 </template>

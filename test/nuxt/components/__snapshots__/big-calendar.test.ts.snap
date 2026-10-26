@@ -1,82 +1,90 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`BigCalendar > matches snapshot 1`] = `
-"<div class="w-full">
-  <div class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5">
-    <div class="flex flex-wrap gap-x-4">
-      <button-stub icon="pi pi-angle-left" outlined="" rounded="" aria-label="Vorige maand" disabled="true"></button-stub>
+"<div class="w-full rounded-md bg-surface-0 text-surface-700 shadow-md">
+  <div class="flex flex-col gap-2 pb-5">
+    <div class="mb-2 text-2xl font-bold">
+      <div class="flex items-center justify-between border-b border-surface-200 py-3 text-xl px-5">
+        <div class="flex flex-wrap gap-x-4">
+          <u-button-stub icon="i-lucide-chevron-left" variant="outline" class="size-12 justify-center rounded-full" square="true" block="false" loadingauto="false" leading="false" trailing="false" loading="false" disabled="true" active="false" exact="false" exactquery="false" exacthash="false" locale="false" external="false" norel="false" prefetch="false" noprefetch="false" viewtransition="false" replace="false" aria-label="Vorige maand"></u-button-stub>
+        </div>
+        <div test-id="calendar-month" class="font-semibold capitalize">juli 2026</div>
+        <u-button-stub icon="i-lucide-chevron-right" variant="outline" class="size-12 justify-center rounded-full" square="true" block="false" loadingauto="false" leading="false" trailing="false" loading="false" disabled="false" active="false" exact="false" exactquery="false" exacthash="false" locale="false" external="false" norel="false" prefetch="false" noprefetch="false" viewtransition="false" replace="false" aria-label="Volgende maand"></u-button-stub>
+      </div>
     </div>
-    <div test-id="calendar-month" class="font-semibold capitalize">juli 2026</div>
-    <button-stub icon="pi pi-angle-right" outlined="" rounded="" aria-label="Volgende maand" class="p-2"></button-stub>
-  </div>
-  <div class="space-y-2 w-full">
-    <div class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center">
-      <div>ma</div>
-      <div>di</div>
-      <div>wo</div>
-      <div>do</div>
-      <div>vr</div>
-      <div>za</div>
-      <div>zo</div>
-    </div>
-    <div class="isolate grid grid-cols-7">
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-      <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
-    </div>
-  </div>
-  <div class="flex flex-col sm:flex-row gap-x-6 gap-y-2">
-    <div test-id="calendar-legend-item" class="flex items-center gap-2">
-      <div class="h-6 w-10 rounded-md bg-secondary"></div><span>bezet</span>
-    </div>
-    <div test-id="calendar-legend-item" class="flex items-center gap-2">
-      <div class="h-6 w-10 rounded-md bg-primary"></div><span>reservatie mogelijk</span>
-    </div>
-    <div test-id="calendar-legend-item" class="flex items-center gap-2">
-      <div class="h-6 w-10 rounded-md bg-teal"></div><span>open spelcafé</span>
+    <div class="py-5">
+      <div class="space-y-2 w-full">
+        <div class="grid grid-cols-7 capitalize text-surface-500 font-semibold text-center">
+          <div>ma</div>
+          <div>di</div>
+          <div>wo</div>
+          <div>do</div>
+          <div>vr</div>
+          <div>za</div>
+          <div>zo</div>
+        </div>
+        <div class="isolate grid grid-cols-7">
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+          <calendar-cell-stub day="[object Object]" events=""></calendar-cell-stub>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="overflow-hidden">
-    <transition-stub enteractiveclass="transition-all duration-300 ease-out" enterfromclass="opacity-0 -translate-y-full" entertoclass="opacity-100 translate-y-0" leaveactiveclass="transition-all duration-300 ease-in" leavefromclass="opacity-100 translate-y-0" leavetoclass="opacity-0 -translate-y-full" appear="false" persisted="false" css="true"></transition-stub>
+  <div class="flex flex-wrap items-start justify-between gap-2 px-5 pt-0 pb-5">
+    <div class="flex flex-col sm:flex-row gap-x-6 gap-y-2">
+      <div test-id="calendar-legend-item" class="flex items-center gap-2">
+        <div class="h-6 w-10 rounded-md bg-secondary"></div><span>bezet</span>
+      </div>
+      <div test-id="calendar-legend-item" class="flex items-center gap-2">
+        <div class="h-6 w-10 rounded-md bg-primary"></div><span>reservatie mogelijk</span>
+      </div>
+      <div test-id="calendar-legend-item" class="flex items-center gap-2">
+        <div class="h-6 w-10 rounded-md bg-teal"></div><span>open spelcafé</span>
+      </div>
+    </div>
+    <div class="overflow-hidden">
+      <transition-stub enteractiveclass="transition-all duration-300 ease-out" enterfromclass="opacity-0 -translate-y-full" entertoclass="opacity-100 translate-y-0" leaveactiveclass="transition-all duration-300 ease-in" leavefromclass="opacity-100 translate-y-0" leavetoclass="opacity-0 -translate-y-full" appear="false" persisted="false" css="true"></transition-stub>
+    </div>
   </div>
 </div>"
 `;

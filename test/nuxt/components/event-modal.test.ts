@@ -22,8 +22,8 @@ mockNuxtImport('addQuery', () => hoisted.addQuery)
 mockNuxtImport('useRoute', () => () => mockRoute(query))
 
 const stubs = {
-  Drawer: {
-    template: '<div><slot name="header" /><slot /></div>',
+  USlideover: {
+    template: '<div><slot name="title" /><slot name="body" /></div>',
   },
   MarkdownContent: true,
 }
@@ -54,7 +54,7 @@ describe('EventModal', () => {
 
   it('matches snapshot', async () => {
     const wrapper = await mountSuspended(EventModal, {
-      global: { stubs: { ...stubs, Button: true } },
+      global: { stubs: { ...stubs, UButton: true } },
     })
 
     expect(wrapper.html()).toMatchSnapshot()

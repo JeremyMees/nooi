@@ -31,8 +31,8 @@ mockNuxtImport('useToast', () => () => ({ add: hoisted.toastAdd }))
 mockNuxtImport('useRoute', () => () => mockRoute(query))
 
 const stubs = {
-  Drawer: {
-    template: '<div><slot name="header" /><slot /></div>',
+  USlideover: {
+    template: '<div><slot name="title" /><slot name="body" /></div>',
   },
   FormKit: true,
   FormReservation: true,

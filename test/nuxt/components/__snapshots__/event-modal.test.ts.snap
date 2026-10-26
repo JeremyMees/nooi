@@ -1,23 +1,22 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`EventModal > matches snapshot 1`] = `
-"<div visible="false" position="bottom">
-  <p test-id="event-modal-title" class="head-3 sm:head-1">Bordspellen avond</p>
+"<div open="false" side="bottom" description="Bordspellen avond" ui="[object Object]"><span test-id="event-modal-title" class="head-3 sm:head-1">Bordspellen avond</span>
   <div test-id="event-tags" class="flex flex-wrap gap-2">
-    <div test-id="event-tag-day" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-calendar text-lg text-primary"></i><span test-id="icon-label-text">10 jul 2026</span></div>
-    <div test-id="event-tag-time" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-clock text-lg text-primary"></i><span test-id="icon-label-text">19:00  tot 23:00</span></div>
-    <div test-id="event-tag-price" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-wallet text-lg text-primary"></i><span test-id="icon-label-text"> € 5 online</span></div>
-    <div test-id="event-tag-spots" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-user text-lg text-primary"></i><span test-id="icon-label-text">18 vrije plaatsen</span></div>
+    <div test-id="event-tag-day" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:calendar size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">10 jul 2026</span></div>
+    <div test-id="event-tag-time" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:clock size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">19:00  tot 23:00</span></div>
+    <div test-id="event-tag-price" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:wallet size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text"> € 5 online</span></div>
+    <div test-id="event-tag-spots" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:user size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">18 vrije plaatsen</span></div>
     <!--v-if-->
-    <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-tag text-lg text-primary"></i><span test-id="icon-label-text">strategie</span></div>
-    <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><i test-id="icon-label-icon" class="pi pi-tag text-lg text-primary"></i><span test-id="icon-label-text">familie</span></div>
+    <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:tag size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">strategie</span></div>
+    <div test-id="event-tag-theme" class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"><span class="iconify i-lucide:tag size-[1.125rem] text-primary" aria-hidden="true" test-id="icon-label-icon"></span><span test-id="icon-label-text">familie</span></div>
   </div>
   <div class="pt-6">
     <markdown-content-stub content="Een gezellige avond vol bordspellen." class="event-description"></markdown-content-stub>
   </div>
   <div class="flex justify-end items-center flex-wrap gap-x-4 gap-y-2 pt-8">
     <p class="mr-4 body-small text-pretty text-left"> Inschrijvingen sluiten op 9 jul 2026</p>
-    <button-stub test-id="event-modal-submit"></button-stub>
+    <u-button-stub square="false" block="false" loadingauto="false" leading="false" trailing="false" loading="false" disabled="false" active="false" exact="false" exactquery="false" exacthash="false" locale="false" external="false" norel="false" prefetch="false" noprefetch="false" viewtransition="false" replace="false" test-id="event-modal-submit"></u-button-stub>
   </div>
 </div>"
 `;

@@ -235,9 +235,7 @@ function clearFilters(): void {
         <template #body="{ data }">
           <Icon
             v-if="['exclusive', 'allowReservation'].includes(column.field)"
-            :name="
-              data[column.field] ? 'radix-icons:check' : 'radix-icons:cross-2'
-            "
+            :name="data[column.field] ? 'lucide:check' : 'lucide:x'"
             :class="[data[column.field] ? 'text-teal' : 'text-secondary']"
             class="h-6 w-6"
           />

@@ -7,9 +7,10 @@ defineProps<{ icon: string }>()
     test-id="icon-label"
     class="flex items-center gap-2 bg-primary-50 px-2 py-1 rounded-lg shadow"
   >
-    <i
+    <UIcon
       test-id="icon-label-icon"
-      :class="`pi pi-${icon} text-lg text-primary`"
+      :name="`i-lucide-${icon}`"
+      class="size-[1.125rem] text-primary"
     />
     <span test-id="icon-label-text">
       <slot />
