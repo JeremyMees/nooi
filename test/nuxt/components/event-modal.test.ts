@@ -25,7 +25,7 @@ const stubs = {
   USlideover: {
     template: '<div><slot name="title" /><slot name="body" /></div>',
   },
-  MarkdownContent: true,
+  LazyMarkdownContent: true,
 }
 
 async function mount() {

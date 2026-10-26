@@ -53,7 +53,7 @@ watch(
       />
       <ClientOnly>
         <div class="pt-6">
-          <MarkdownContent
+          <LazyMarkdownContent
             v-if="store.informationEvent?.description"
             :content="store.informationEvent.description"
             class="event-description"
