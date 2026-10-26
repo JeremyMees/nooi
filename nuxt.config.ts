@@ -7,7 +7,6 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@nuxtjs/supabase',
     '@formkit/nuxt',
     '@nuxt/image',
     '@nuxt/eslint',
@@ -30,6 +29,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     url: process.env.NUXT_PUBLIC_URL,
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseSecretKey: process.env.SUPABASE_SECRET_KEY,
     resendApiKey: process.env.RESEND_API_KEY,
     stripeWebhook: process.env.STRIPE_WEBHOOK,
     stripeSk: process.env.STRIPE_SK,
@@ -99,9 +100,4 @@ export default defineNuxtConfig({
   },
 
   sitemap: { zeroRuntime: true },
-
-  supabase: {
-    redirect: false,
-    types: '../shared/types/database.ts',
-  },
 })

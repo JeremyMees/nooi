@@ -2,7 +2,7 @@
 const store = useReservationStore()
 
 onMounted(() => store.init())
-onBeforeUnmount(() => store.unsubscribe())
+onBeforeUnmount(() => store.stopRefresh())
 </script>
 
 <template>
@@ -12,7 +12,7 @@ onBeforeUnmount(() => store.unsubscribe())
         KALENDER
       </h1>
       <div
-        class="flex flex-col justify-center gap-[10px] font-light text-[18px] leading-[29px] max-w-5xl text-center mx-auto"
+        class="flex flex-col justify-center gap-2.5 font-light text-[18px] leading-7.25 max-w-5xl text-center mx-auto"
       >
         <p>
           In de kalender krijg je een overzicht van onze events en

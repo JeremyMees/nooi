@@ -1,4 +1,3 @@
-import { serverSupabaseServiceRole } from '#supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Stripe } from 'stripe'
 
@@ -45,7 +44,7 @@ export default defineEventHandler(async (event): Promise<string> => {
     throw createError({ status: 400, message: 'No reservation id found' })
   }
 
-  const client = serverSupabaseServiceRole<Database>(event)
+  const client = serviceClient()
   const reservation = await getReservation(client, id)
 
   if (!reservation) {
@@ -56,9 +55,6 @@ export default defineEventHandler(async (event): Promise<string> => {
     if (!reservation.paymentIdentifier) {
       await markPaid(client, id, webhookEvent.data.object.id)
     }
-
-    // A failed mail throws so Stripe retries; the idempotency key keeps the
-    // retry from mailing a confirmation that did go out.
     const { error } = await sendConfirmation(reservation)
 
     if (error) {

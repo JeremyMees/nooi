@@ -1,5 +1,3 @@
-import { serverSupabaseServiceRole } from '#supabase/server'
-
 export default defineEventHandler(async event => {
   await requireAdmin(event)
 
@@ -12,7 +10,7 @@ export default defineEventHandler(async event => {
 
   const payload = adminPayload(await readBody(event))
 
-  const { error } = await serverSupabaseServiceRole<Database>(event)
+  const { error } = await serviceClient()
     .from(table)
     .update(payload as never)
     .eq('id', id)

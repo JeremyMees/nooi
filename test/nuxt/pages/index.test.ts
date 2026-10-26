@@ -4,12 +4,12 @@ import IndexPage from '~/pages/index.vue'
 
 const hoisted = vi.hoisted(() => ({
   init: vi.fn(),
-  unsubscribe: vi.fn(),
+  stopRefresh: vi.fn(),
 }))
 
 mockNuxtImport('useReservationStore', () => () => ({
   init: hoisted.init,
-  unsubscribe: hoisted.unsubscribe,
+  stopRefresh: hoisted.stopRefresh,
 }))
 
 const stubs = { NuxtLayout: { template: '<div><slot /></div>' } }
@@ -21,7 +21,7 @@ async function mount() {
 describe('index page', () => {
   beforeEach(() => {
     hoisted.init.mockClear()
-    hoisted.unsubscribe.mockClear()
+    hoisted.stopRefresh.mockClear()
   })
 
   it('starts the reservation store when it opens', async () => {
@@ -35,7 +35,7 @@ describe('index page', () => {
 
     wrapper.unmount()
 
-    expect(hoisted.unsubscribe).toHaveBeenCalled()
+    expect(hoisted.stopRefresh).toHaveBeenCalled()
   })
 
   it('explains the calendar to the visitor', async () => {

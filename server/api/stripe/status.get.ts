@@ -1,7 +1,3 @@
-import { serverSupabaseServiceRole } from '#supabase/server'
-
-// Only the outcome leaves the server: the session itself carries the
-// customer's details.
 export default defineEventHandler(async (event): Promise<{ paid: boolean }> => {
   const { id } = getQuery(event)
 
@@ -22,7 +18,7 @@ export default defineEventHandler(async (event): Promise<{ paid: boolean }> => {
   const reservation = Number(session.metadata?.reservation)
 
   if (Number.isInteger(reservation)) {
-    await serverSupabaseServiceRole<Database>(event)
+    await serviceClient()
       .from('reservations')
       .delete()
       .eq('id', reservation)

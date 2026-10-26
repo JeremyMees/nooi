@@ -1,5 +1,4 @@
 export const useAdminStore = defineStore('useAdminStore', () => {
-  const supabase = useSupabaseClient<Database>()
   const authenticated = ref<boolean>()
 
   const events = ref<EventReservation[]>([])
@@ -127,17 +126,7 @@ export const useAdminStore = defineStore('useAdminStore', () => {
 
   async function getEvents(): Promise<void> {
     try {
-      const day = formatDay(new Date())
-
-      const { data } = await supabase
-        .from('events')
-        .select('*, reservations:reservations(id, spots)')
-        .gte('day', day)
-        .order('day', { ascending: true })
-
-      if (data) {
-        events.value = data
-      }
+      events.value = await $fetch('/api/admin/upcoming-events')
     } catch (error) {
       console.error(error)
     }

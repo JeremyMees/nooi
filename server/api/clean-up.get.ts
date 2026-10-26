@@ -1,10 +1,8 @@
 import { addDay } from '@formkit/tempo'
-import { serverSupabaseServiceRole } from '#supabase/server'
-
 export default defineEventHandler(async event => {
   requireCron(event)
 
-  const supabase = serverSupabaseServiceRole<Database>(event)
+  const supabase = serviceClient()
 
   const date = addDay(new Date(), -30)
   const day = `${date.getFullYear()}-${padDate(date.getMonth() + 1)}-${padDate(date.getDate())}`

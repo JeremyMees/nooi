@@ -3,19 +3,14 @@ import { flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useAdminStore } from '~/stores/admin'
-import { createSupabaseMock } from '~~/test/mock'
-
-let supabase: ReturnType<typeof createSupabaseMock>
 
 const $fetch = vi.hoisted(() => vi.fn())
 
-mockNuxtImport('useSupabaseClient', () => () => supabase)
 mockNuxtImport('$fetch', () => $fetch)
 
 describe('useAdminStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    supabase = createSupabaseMock({ data: [], count: 0, error: null })
     $fetch.mockReset()
     $fetch.mockResolvedValue({ data: [], count: 0 })
   })
@@ -156,12 +151,12 @@ describe('useAdminStore', () => {
 
   describe('getEvents', () => {
     it('loads upcoming events into state', async () => {
-      supabase.result = { data: [{ id: 9 }] }
+      $fetch.mockResolvedValue([{ id: 9 }])
       const store = useAdminStore()
 
       await store.getEvents()
-      await flushPromises()
 
+      expect($fetch).toHaveBeenCalledWith('/api/admin/upcoming-events')
       expect(store.events).toEqual([{ id: 9 }])
     })
   })

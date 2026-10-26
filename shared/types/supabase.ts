@@ -33,13 +33,6 @@ export interface ReservationWithEvent extends Omit<ReservationRow, 'event'> {
   event?: { name: string } | null
 }
 
-export interface SbFetchOptions {
-  table: DatabaseTable
-  select?: string
-  date?: Date
-  eq?: SbEq
-}
-
 export interface SbQueryOptions {
   table: DatabaseTable
   fields?: string[]
@@ -70,4 +63,9 @@ export interface SbRange {
 export interface SbQuery<T> {
   data: T[]
   count: number
+}
+
+export interface Calendar {
+  events: EventReservation[]
+  rosters: RosterRow[]
 }

@@ -1,6 +1,7 @@
+const refreshInterval = 60_000
+
 export const useReservationStore = defineStore('useReservationStore', () => {
   const rosterStore = useRosterStore()
-  const supabase = useSupabaseClient<Database>()
   const toast = useToast()
   const route = useRoute()
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
@@ -157,7 +158,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     loading.value = true
 
     try {
-      subscribe()
+      startRefreshing()
 
       const { day, session_id } = route.query
 
@@ -193,53 +194,48 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       loading.value = true
 
       const { event } = route.query
-      const date = new Date(shownDate.value.year, shownDate.value.month)
-
-      events.value = await sbFetch<EventReservation[]>(supabase, {
-        table: 'events',
-        select: '*, reservations:reservations(id, spots, paymentNeeded)',
-        date,
-        eq: { field: 'reservations.paymentNeeded', value: false },
+      const calendar = await $fetch('/api/calendar', {
+        query: {
+          year: shownDate.value.year,
+          month: shownDate.value.month,
+          event: event && !isNaN(+event) ? +event : undefined,
+        },
       })
 
-      // Fetch single event if query param is present and its not in the current fetched month
-      if (
-        event &&
-        !isNaN(+event) &&
-        !events.value.find(({ id }) => id === +event)
-      ) {
-        const fetchedEvent = await supabase
-          .from('events')
-          .select('*, reservations:reservations(id, spots, paymentNeeded)')
-          .eq('id', +event)
-          .eq('reservations.paymentNeeded', false)
-
-        if (fetchedEvent.data?.length && fetchedEvent.data[0]) {
-          events.value.push(fetchedEvent.data[0])
-        }
-      }
+      events.value = calendar.events
+      rosterStore.rosters = calendar.rosters
+    } catch {
+      toast.add({
+        color: 'error',
+        title: 'Oeps!',
+        description:
+          'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
+        duration: 5000,
+      })
     } finally {
       loading.value = false
     }
   }
 
-  function subscribe() {
-    supabase
-      .channel('reservation')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'reservations',
-        },
-        async () => await getData(),
-      )
-      .subscribe()
+  let stopRefreshing: (() => void) | undefined
+
+  function startRefreshing(): void {
+    if (stopRefreshing) return
+
+    const { pause } = useIntervalFn(getData, refreshInterval)
+    const stopListening = useEventListener(document, 'visibilitychange', () => {
+      if (document.visibilityState === 'visible') getData()
+    })
+
+    stopRefreshing = () => {
+      pause()
+      stopListening()
+      stopRefreshing = undefined
+    }
   }
 
-  function unsubscribe() {
-    supabase.removeAllChannels()
+  function stopRefresh(): void {
+    stopRefreshing?.()
   }
 
   return {
@@ -252,8 +248,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     form,
     shownDate,
     init,
-    subscribe,
-    unsubscribe,
+    startRefreshing,
+    stopRefresh,
     book,
   }
 })

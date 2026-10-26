@@ -1,10 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
-import {
-  mockChain,
-  mockFrom,
-  serverSupabaseServiceRole,
-} from '~~/test/unit/stubs/supabase'
+import { mockChain, mockFrom, serviceClient } from '~~/test/unit/stubs/supabase'
 import { mockSend, send } from '~~/test/unit/stubs/mail'
 import { createSession } from '~~/test/unit/stubs/stripe'
 import { createBooking, parseBooking } from '~~/server/utils/booking'
@@ -45,7 +41,7 @@ function reservation(overrides: Record<string, unknown> = {}) {
 }
 
 function client() {
-  return serverSupabaseServiceRole() as never
+  return serviceClient() as never
 }
 
 beforeEach(() => {

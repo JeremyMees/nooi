@@ -74,8 +74,6 @@ export interface AdminQuery {
   sort?: SbSort
 }
 
-// The table decides what is selected and which rows count: unpaid
-// reservations stay invisible to the admin, as they always were.
 export function adminQueryOptions(
   table: DatabaseTable,
   query: AdminQuery,

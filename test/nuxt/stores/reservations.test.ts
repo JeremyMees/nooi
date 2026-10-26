@@ -1,15 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
 import { useReservationStore } from '~/stores/reservations'
-import {
-  createSupabaseMock,
-  mockEventReservation,
-  type SupabaseMock,
-} from '~~/test/mock'
+import { mockEventReservation, mockRoster } from '~~/test/mock'
 
-let supabase: SupabaseMock
 const query = reactive<Record<string, unknown>>({})
 
 const hoisted = vi.hoisted(() => ({
@@ -19,33 +14,56 @@ const hoisted = vi.hoisted(() => ({
   cookie: { value: undefined as Record<string, string> | undefined },
   dayRoster: vi.fn<(day: string) => unknown>(() => []),
   $fetch: vi.fn(),
+  calendar: vi.fn(),
+  rosterStore: { rosters: [] as unknown[] },
 }))
 
 const $fetch = hoisted.$fetch
 
-mockNuxtImport('useSupabaseClient', () => () => supabase)
 mockNuxtImport('useToast', () => () => ({ add: hoisted.toastAdd }))
 mockNuxtImport('useCookie', () => () => hoisted.cookie)
 mockNuxtImport('useRoute', () => () => ({ query }))
 mockNuxtImport('removeQuery', () => hoisted.removeQuery)
 mockNuxtImport('navigateTo', () => hoisted.navigateTo)
-mockNuxtImport('$fetch', () => hoisted.$fetch)
-mockNuxtImport('useRosterStore', () => () => ({
-  getDayRoster: hoisted.dayRoster,
-}))
+mockNuxtImport(
+  '$fetch',
+  () => (url: string, options?: unknown) =>
+    url === '/api/calendar'
+      ? hoisted.calendar(url, options)
+      : hoisted.$fetch(url, options),
+)
+mockNuxtImport(
+  'useRosterStore',
+  () => () =>
+    Object.assign(hoisted.rosterStore, { getDayRoster: hoisted.dayRoster }),
+)
 
 const event = { ...mockEventReservation, id: 1, spots: 20 }
+const roster = { ...mockRoster, id: 5 }
+
+function serveCalendar(events: unknown[] = [event]) {
+  hoisted.calendar.mockResolvedValue({ events, rosters: [roster] })
+}
+
+const stores: ReturnType<typeof useReservationStore>[] = []
 
 async function createStore() {
   const store = useReservationStore()
+  stores.push(store)
   await flushPromises()
   return store
 }
 
 describe('useReservationStore', () => {
+  afterEach(() => {
+    stores.splice(0).forEach(store => store.stopRefresh())
+  })
+
   beforeEach(() => {
     setActivePinia(createPinia())
-    supabase = createSupabaseMock({ data: [event] })
+    serveCalendar()
+    hoisted.rosterStore.rosters = []
+    hoisted.toastAdd.mockClear()
     Object.keys(query).forEach(key => delete query[key])
     hoisted.cookie.value = undefined
     hoisted.removeQuery.mockClear()
@@ -58,6 +76,40 @@ describe('useReservationStore', () => {
     const store = await createStore()
 
     expect(store.events).toEqual([event])
+  })
+
+  it('loads the calendar for the shown month from the server', async () => {
+    await createStore()
+
+    expect(hoisted.calendar).toHaveBeenCalledWith('/api/calendar', {
+      query: {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth(),
+        event: undefined,
+      },
+    })
+    expect(hoisted.rosterStore.rosters).toEqual([roster])
+  })
+
+  it('asks for a linked event so it can be shown outside the month', async () => {
+    query.event = '12'
+
+    await createStore()
+
+    expect(hoisted.calendar).toHaveBeenCalledWith('/api/calendar', {
+      query: expect.objectContaining({ event: 12 }),
+    })
+  })
+
+  it('warns the visitor when the calendar cannot be loaded', async () => {
+    hoisted.calendar.mockRejectedValue(new Error('down'))
+
+    const store = await createStore()
+
+    expect(hoisted.toastAdd).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Oeps!' }),
+    )
+    expect(store.loading).toBe(false)
   })
 
   describe('selectedEvent', () => {
@@ -137,9 +189,7 @@ describe('useReservationStore', () => {
     })
 
     it('refuses a full event with a toast instead of opening', async () => {
-      supabase = createSupabaseMock({
-        data: [{ ...event, spots: 1 }],
-      })
+      serveCalendar([{ ...event, spots: 1 }])
       const store = await createStore()
 
       query.event = '1'
@@ -270,7 +320,6 @@ describe('useReservationStore', () => {
 
       await store.init()
 
-      expect(supabase.delete).not.toHaveBeenCalled()
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Oeps!' }),
       )
@@ -290,27 +339,49 @@ describe('useReservationStore', () => {
     })
   })
 
-  describe('realtime', () => {
-    it('subscribes to reservation changes', async () => {
-      const store = await createStore()
-
-      store.subscribe()
-
-      expect(supabase.channel).toHaveBeenCalledWith('reservation')
-      expect(supabase.on).toHaveBeenCalledWith(
-        'postgres_changes',
-        expect.objectContaining({ table: 'reservations' }),
-        expect.any(Function),
-      )
-      expect(supabase.subscribe).toHaveBeenCalled()
+  describe('refreshing', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] })
     })
 
-    it('removes every channel on unsubscribe', async () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('reloads the calendar every minute', async () => {
       const store = await createStore()
+      hoisted.calendar.mockClear()
 
-      store.unsubscribe()
+      store.startRefreshing()
+      vi.advanceTimersByTime(60_000)
 
-      expect(supabase.removeAllChannels).toHaveBeenCalled()
+      expect(hoisted.calendar).toHaveBeenCalledTimes(1)
+
+      store.stopRefresh()
+    })
+
+    it('reloads the calendar when the visitor returns to the tab', async () => {
+      const store = await createStore()
+      store.startRefreshing()
+      hoisted.calendar.mockClear()
+
+      document.dispatchEvent(new Event('visibilitychange'))
+
+      expect(hoisted.calendar).toHaveBeenCalledTimes(1)
+
+      store.stopRefresh()
+    })
+
+    it('stops reloading once stopped', async () => {
+      const store = await createStore()
+      store.startRefreshing()
+      store.stopRefresh()
+      hoisted.calendar.mockClear()
+
+      vi.advanceTimersByTime(120_000)
+      document.dispatchEvent(new Event('visibilitychange'))
+
+      expect(hoisted.calendar).not.toHaveBeenCalled()
     })
   })
 })

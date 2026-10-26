@@ -1,16 +1,11 @@
 <script setup lang="ts">
 const store = useRosterStore()
-const rosters = ref<RosterRow[]>([])
 
-const filteredRoster = computed<RosterRow[]>(() => {
-  return rosters.value
-    .filter(({ status }) => status === 'game')
-    .sort((a, b) => a.start.localeCompare(b.start))
-})
+const today = formatDay(new Date())
 
-onMounted(async () => {
-  rosters.value = await store.fetchRoster(new Date())
-})
+const filteredRoster = computed<RosterRow[]>(() =>
+  store.getDayRoster(today).filter(({ status }) => status === 'game'),
+)
 </script>
 
 <template>

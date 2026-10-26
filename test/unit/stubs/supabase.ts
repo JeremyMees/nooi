@@ -1,13 +1,12 @@
 import { vi } from 'vitest'
 
 const hoisted = vi.hoisted(() => ({
-  serverSupabaseClient: vi.fn(),
-  serverSupabaseServiceRole: vi.fn(),
+  serviceClient: vi.fn(),
 }))
 
-export const { serverSupabaseClient, serverSupabaseServiceRole } = hoisted
+export const { serviceClient } = hoisted
 
-vi.mock('#supabase/server', () => hoisted)
+vi.mock('~~/server/utils/supabase', () => hoisted)
 
 const CHAIN_METHODS = [
   'select',
@@ -81,8 +80,7 @@ export function mockFrom(
 
   const client = { from }
 
-  serverSupabaseClient.mockResolvedValue(client)
-  serverSupabaseServiceRole.mockReturnValue(client)
+  serviceClient.mockReturnValue(client)
 
   return from
 }

@@ -44,8 +44,6 @@ export async function sendMail({
   return { error: error ? error.message : null }
 }
 
-// Keyed on the reservation, so a retried webhook never mails the same
-// confirmation twice.
 export async function sendConfirmation(
   reservation: ReservationWithEvent,
 ): Promise<{ error: string | null }> {

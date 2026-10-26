@@ -6,9 +6,9 @@ import { mockRoster } from '~~/test/mock'
 
 let roster: RosterRow[]
 
-mockNuxtImport('useRosterStore', () => () => ({
-  fetchRoster: () => Promise.resolve(roster),
-}))
+const getDayRoster = vi.fn((day: string) => (day ? roster : []))
+
+mockNuxtImport('useRosterStore', () => () => ({ getDayRoster }))
 
 async function mount() {
   const wrapper = await mountSuspended(OpeningsHours)
@@ -62,6 +62,12 @@ describe('OpeningsHours', () => {
 
     expect(text).toContain('18:00 - 20:00')
     expect(text).not.toContain('20:00 - 23:00')
+  })
+
+  it("shows today's hours", async () => {
+    await mount()
+
+    expect(getDayRoster).toHaveBeenCalledWith(formatDay(new Date()))
   })
 
   it('does not render the block when there are no game rosters', async () => {

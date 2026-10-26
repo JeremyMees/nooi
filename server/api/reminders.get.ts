@@ -1,4 +1,3 @@
-import { serverSupabaseServiceRole } from '#supabase/server'
 import Template from '~~/emails/Reminder.vue'
 import ReportTemplate from '~~/emails/ReminderReport.vue'
 
@@ -8,7 +7,7 @@ export default defineEventHandler(async event => {
   requireCron(event)
 
   const { reminderEmails } = useRuntimeConfig()
-  const supabase = serverSupabaseServiceRole<Database>(event)
+  const supabase = serviceClient()
   const day = reminderDay(new Date())
 
   const { data, error } = await supabase
