@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockEvent } from '~~/test/unit/stubs/api-event'
+import { mockCronEvent, mockEvent } from '~~/test/unit/stubs/api-event'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
 import { mockChain, mockFrom } from '~~/test/unit/stubs/supabase'
 import handler from '~~/server/api/clean-up.get'
@@ -11,13 +11,33 @@ beforeEach(() => {
 })
 
 describe('GET /api/clean-up', () => {
-  it('looks for unpaid reservations older than thirty days', async () => {
+  it('rejects a request without the cron secret', async () => {
+    const from = mockFrom({
+      reservations: mockChain({ data: [], error: null }),
+    })
+
+    await expect(handler(mockEvent())).rejects.toMatchObject({
+      statusCode: 401,
+    })
+    expect(from).not.toHaveBeenCalled()
+  })
+
+  it('rejects every request when no cron secret is configured', async () => {
+    mockRuntimeConfig({ cronSecret: '' })
+    const event = mockEvent({ headers: { authorization: 'Bearer ' } })
+
+    await expect(handler(event)).rejects.toMatchObject({ statusCode: 401 })
+  })
+
+  it('deletes unpaid reservations older than thirty days in one query', async () => {
     const chain = mockChain({ data: [], error: null })
     const from = mockFrom({ reservations: chain })
 
-    await handler(mockEvent())
+    await handler(mockCronEvent())
 
+    expect(from).toHaveBeenCalledTimes(1)
     expect(from).toHaveBeenCalledWith('reservations')
+    expect(chain.delete).toHaveBeenCalledTimes(1)
     expect(chain.lte).toHaveBeenCalledWith('created_at', '2026-08-15')
     expect(chain.eq).toHaveBeenCalledWith('paymentNeeded', true)
   })
@@ -25,31 +45,30 @@ describe('GET /api/clean-up', () => {
   it('reports when there is nothing to clean up', async () => {
     mockFrom({ reservations: mockChain({ data: [], error: null }) })
 
-    await expect(handler(mockEvent())).resolves.toBe('No clean up needed')
+    await expect(handler(mockCronEvent())).resolves.toBe('No clean up needed')
   })
 
-  it('deletes every stale reservation it finds', async () => {
-    const chain = mockChain({
-      data: [{ id: 1 }, { id: 2 }, { id: 3 }],
-      error: null,
+  it('reports how many reservations were removed', async () => {
+    mockFrom({
+      reservations: mockChain({
+        data: [{ id: 1 }, { id: 2 }, { id: 3 }],
+        error: null,
+      }),
     })
-    mockFrom({ reservations: chain })
 
-    await expect(handler(mockEvent())).resolves.toBe(
+    await expect(handler(mockCronEvent())).resolves.toBe(
       'Removed 3 items from the database',
     )
-    expect(chain.delete).toHaveBeenCalledTimes(3)
-    expect(chain.eq).toHaveBeenCalledWith('id', 1)
-    expect(chain.eq).toHaveBeenCalledWith('id', 3)
   })
 
-  it('reports a failed fetch instead of throwing', async () => {
+  it('surfaces a 500 when the delete fails', async () => {
     mockFrom({
       reservations: mockChain({ data: null, error: { message: 'boom' } }),
     })
 
-    await expect(handler(mockEvent())).resolves.toBe(
-      'Error while fetching reservations',
-    )
+    await expect(handler(mockCronEvent())).rejects.toMatchObject({
+      statusCode: 500,
+      message: 'Could not clean up reservations: boom',
+    })
   })
 })

@@ -2,6 +2,8 @@ import { addDay } from '@formkit/tempo'
 import { serverSupabaseServiceRole } from '#supabase/server'
 
 export default defineEventHandler(async event => {
+  requireCron(event)
+
   const supabase = serverSupabaseServiceRole<Database>(event)
 
   const date = addDay(new Date(), -30)
@@ -9,21 +11,19 @@ export default defineEventHandler(async event => {
 
   const { data, error } = await supabase
     .from('reservations')
-    .select('*, event(name)')
+    .delete()
     .lte('created_at', day)
     .eq('paymentNeeded', true)
+    .select('id')
 
   if (error) {
-    return 'Error while fetching reservations'
+    throw createError({
+      status: 500,
+      message: `Could not clean up reservations: ${error.message}`,
+    })
   }
 
-  if (data?.length) {
-    for (const reservation of data) {
-      await supabase.from('reservations').delete().eq('id', reservation.id)
-    }
-
-    return `Removed ${data?.length} items from the database`
-  } else {
-    return 'No clean up needed'
-  }
+  return data.length
+    ? `Removed ${data.length} items from the database`
+    : 'No clean up needed'
 })

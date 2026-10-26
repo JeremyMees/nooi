@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { mockEvent } from '~~/test/unit/stubs/api-event'
+import { mockCronEvent, mockEvent } from '~~/test/unit/stubs/api-event'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
 import { mockChain, mockFrom } from '~~/test/unit/stubs/supabase'
 import { mockSend, send } from '~~/test/unit/stubs/mail'
@@ -30,7 +30,7 @@ function reservation(overrides: Partial<ReservationRow> = {}) {
   }
 }
 
-async function run(event: H3Event = mockEvent()) {
+async function run(event: H3Event = mockCronEvent()) {
   const settled = handler(event).then(
     data => () => data,
     (error: unknown) => () => {
@@ -59,7 +59,7 @@ describe('GET /api/reminders', () => {
     it('rejects a request without the cron secret', async () => {
       mockRuntimeConfig({ resendApiKey: 're_test', cronSecret: 'topsecret' })
 
-      await expect(run()).rejects.toMatchObject({ statusCode: 401 })
+      await expect(run(mockEvent())).rejects.toMatchObject({ statusCode: 401 })
       expect(send).not.toHaveBeenCalled()
     })
 
@@ -80,10 +80,12 @@ describe('GET /api/reminders', () => {
       await expect(run(event)).resolves.toMatchObject({ day, total: 0 })
     })
 
-    it('runs unauthenticated when no cron secret is configured', async () => {
-      mockFrom({ reservations: mockChain({ data: [], error: null }) })
+    it('rejects every request when no cron secret is configured', async () => {
+      mockRuntimeConfig({ resendApiKey: 're_test', cronSecret: '' })
+      const event = mockEvent({ headers: { authorization: 'Bearer ' } })
 
-      await expect(run()).resolves.toMatchObject({ day, total: 0 })
+      await expect(run(event)).rejects.toMatchObject({ statusCode: 401 })
+      expect(send).not.toHaveBeenCalled()
     })
   })
 
@@ -141,7 +143,7 @@ describe('GET /api/reminders', () => {
         }),
       })
 
-      const settled = handler(mockEvent()).catch(() => undefined)
+      const settled = handler(mockCronEvent()).catch(() => undefined)
 
       await vi.advanceTimersByTimeAsync(0)
       expect(send).toHaveBeenCalledTimes(1)

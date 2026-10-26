@@ -5,6 +5,7 @@ const hoisted = vi.hoisted(() => ({
   useRuntimeConfig: vi.fn<() => Record<string, unknown>>(() => ({
     public: {},
     stripeSk: 'sk_test_placeholder',
+    cronSecret: 'cron_test',
   })),
 }))
 
@@ -16,6 +17,7 @@ export function mockRuntimeConfig(config: Record<string, unknown>) {
   useRuntimeConfig.mockReturnValue({
     public: {},
     stripeSk: 'sk_test_placeholder',
+    cronSecret: 'cron_test',
     ...config,
   })
 }

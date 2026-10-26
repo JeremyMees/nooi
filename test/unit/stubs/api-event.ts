@@ -34,3 +34,7 @@ export function mockEvent({
     _requestBody: body,
   } as unknown as H3Event
 }
+
+export function mockCronEvent(): H3Event {
+  return mockEvent({ headers: { authorization: 'Bearer cron_test' } })
+}

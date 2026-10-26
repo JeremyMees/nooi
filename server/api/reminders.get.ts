@@ -7,14 +7,9 @@ import ReportTemplate from '~~/emails/ReminderReport.vue'
 const throttle = 600
 
 export default defineEventHandler(async event => {
-  const { resendApiKey, reminderEmails, cronSecret } = useRuntimeConfig()
+  requireCron(event)
 
-  if (
-    cronSecret &&
-    getHeader(event, 'authorization') !== `Bearer ${cronSecret}`
-  ) {
-    throw createError({ status: 401, message: 'Unauthorized' })
-  }
+  const { resendApiKey, reminderEmails } = useRuntimeConfig()
 
   const supabase = serverSupabaseServiceRole<Database>(event)
   const day = reminderDay(new Date())
