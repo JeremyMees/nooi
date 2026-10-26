@@ -6,7 +6,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
   const events = ref<EventReservation[]>([])
-  const reservations = ref<ReservationRow[]>([])
   const loading = ref<boolean>(false)
   const drawerOpen = ref<boolean>(false)
   const activeStep = ref<number>(0)
@@ -218,12 +217,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
           events.value.push(fetchedEvent.data[0])
         }
       }
-
-      reservations.value = await sbFetch<ReservationRow[]>(supabase, {
-        table: 'reservations',
-        date,
-        eq: { field: 'paymentNeeded', value: false },
-      })
     } finally {
       loading.value = false
     }
@@ -252,7 +245,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     events,
     selectedEvent,
     informationEvent,
-    reservations,
     loading,
     drawerOpen,
     activeStep,
