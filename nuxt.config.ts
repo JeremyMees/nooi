@@ -68,6 +68,7 @@ export default defineNuxtConfig({
         '@formkit/i18n',
         '@unhead/schema-org/vue',
         '@formkit/tempo',
+        '@vue/devtools-core',
       ],
     },
   },

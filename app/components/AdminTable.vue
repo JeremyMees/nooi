@@ -1,29 +1,66 @@
 <script setup lang="ts">
 import { reset } from '@formkit/core'
-import DataTable from 'primevue/datatable'
+import type { TableColumn } from '@nuxt/ui'
 import { values } from '~~/shared/constants/admin'
+
+type Row = Record<string, any>
 
 const props = defineProps<{ type: DatabaseTable }>()
 
 const store = useAdminStore()
 
+const perPage = 10
+const sortable = ['name', 'day']
+
 const content = ref<string>('')
 const creating = ref<boolean>(false)
-const selected = ref<any[]>([])
-const expandedRows = ref<Record<string, boolean>>()
+const rowSelection = ref<Record<string, boolean>>({})
+const expandedRows = ref<Record<string, boolean>>({})
 
-const filters = ref<Record<string, any>>({
+const filters = ref<{
+  search: string
+  date: string | null
+  page: number
+  sort?: SbSort
+}>({
   search: '',
   date: null,
-  first: 0,
-  sortField: null,
-  sortOrder: null,
+  page: 1,
+})
+
+const rows = computed<Row[]>(() => store.data[props.type].data)
+
+const selected = computed<Row[]>(() =>
+  rows.value.filter(({ id }) => rowSelection.value[id]),
+)
+
+const editing = computed<boolean>(
+  () => !!Object.keys(expandedRows.value).length,
+)
+
+const columns = computed<TableColumn<Row>[]>(() => [
+  { id: 'select' },
+  { id: 'expand' },
+  ...values[props.type].table.map(({ field, header }) => ({
+    id: field,
+    accessorKey: field,
+    header,
+  })),
+])
+
+const range = computed<string>(() => {
+  const total = store.data[props.type].count ?? 0
+  const first = total ? (filters.value.page - 1) * perPage + 1 : 0
+  const last = Math.min(filters.value.page * perPage, total)
+
+  return `${first} tot ${last} van ${total}`
 })
 
 watchDebounced(
   [() => filters.value.search, () => filters.value.date],
   async () => {
-    await onTableEvent()
+    filters.value.page = 1
+    await load()
   },
   { debounce: 500, maxWait: 1000 },
 )
@@ -32,7 +69,7 @@ onMounted(async () => {
   await store.fetchData(props.type)
 })
 
-function generateString(data: Record<string, any>, field: string): string {
+function generateString(data: Row, field: string): string {
   if (!data[field]) return ''
   else if (['start', 'end'].includes(field)) return formatHour(data[field])
   else if (field === 'type') return getType(data[field])
@@ -87,30 +124,60 @@ async function submit(
   creating.value = false
 }
 
-async function onTableEvent(data?: TableEvent): Promise<void> {
-  filters.value = { ...filters.value, ...(data || {}) }
-  const page = data ? (filters.value.first ? filters.value.first / 10 : 0) : 0
+async function load(): Promise<void> {
+  const { search, date, page, sort } = filters.value
 
-  const options: Partial<SbQueryOptions> = {
+  await store.fetchData(props.type, {
     fuzzy: true,
-    page,
-    search: filters.value.search,
-    ...(filters.value.date
-      ? { eq: [{ field: 'day', value: filters.value.date }] }
-      : {}),
+    page: page - 1,
+    search,
+    ...(date ? { eq: [{ field: 'day', value: date }] } : {}),
     fields: values[props.type].filter,
-    sort: filters.value.sortField
-      ? {
-          field: filters.value.sortField,
-          order: filters.value.sortOrder === 1 ? 'asc' : 'desc',
-        }
-      : undefined,
-  }
-
-  await store.fetchData(props.type, options)
+    sort,
+  })
 }
 
-function onRowExpand({ data }: { data: Record<string, any> }): void {
+async function changePage(page: number): Promise<void> {
+  filters.value.page = page
+  await load()
+}
+
+async function toggleSort(field: string): Promise<void> {
+  const { sort } = filters.value
+
+  filters.value.sort =
+    sort?.field !== field
+      ? { field, order: 'asc' }
+      : sort.order === 'asc'
+        ? { field, order: 'desc' }
+        : undefined
+  filters.value.page = 1
+
+  await load()
+}
+
+function sortIcon(field: string): string {
+  const { sort } = filters.value
+
+  if (sort?.field !== field) return 'i-lucide-arrow-up-down'
+
+  return sort.order === 'asc'
+    ? 'i-lucide-arrow-up-narrow-wide'
+    : 'i-lucide-arrow-down-wide-narrow'
+}
+
+function toggleRow(data: Row): void {
+  if (expandedRows.value[data.id]) {
+    expandedRows.value = {}
+    reset(`${props.type}-${data.id}`)
+
+    if (props.type === 'events') {
+      content.value = ''
+    }
+
+    return
+  }
+
   expandedRows.value = { [data.id]: true }
 
   if (props.type === 'events') {
@@ -118,18 +185,19 @@ function onRowExpand({ data }: { data: Record<string, any> }): void {
   }
 }
 
-function onRowCollapse({ data }: { data: Record<string, any> }): void {
-  reset(`${props.type}-${data.id}`)
+async function removeSelected(): Promise<void> {
+  const items = selected.value
 
-  if (props.type === 'events') {
-    content.value = ''
-  }
+  rowSelection.value = {}
+  clearFilters()
+
+  await store.removeData(props.type, items as never)
 }
 
 function clearFilters(): void {
   filters.value.search = ''
   filters.value.date = null
-  filters.value.first = 0
+  filters.value.page = 1
 }
 </script>
 
@@ -138,127 +206,157 @@ function clearFilters(): void {
     <p test-id="admin-title" class="head-2 pb-4">
       {{ values[type].title }}
     </p>
-    <DataTable
-      v-model:selection="selected"
-      v-model:expanded-rows="expandedRows"
-      data-key="id"
-      size="small"
-      :value="store.data[type].data"
-      paginator
-      removable-sort
-      lazy
-      sort-field="day"
-      :sort-order="1"
-      :first="filters.first"
-      :rows="10"
-      :total-records="store.data[type].count"
-      :loading="store.data[type].loading"
-      paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-      current-page-report-template="{first} tot {last} van {totalRecords}"
-      @page="onTableEvent"
-      @sort="onTableEvent"
-      @row-expand="onRowExpand"
-      @row-collapse="onRowCollapse"
-    >
-      <template #header>
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center gap-4 justify-between flex-wrap">
-            <div class="flex gap-4 flex-wrap items-center">
-              <FormKit
-                v-if="values[type].filter.length"
-                v-model="filters.search"
-                :disabled="creating || !!Object.keys(expandedRows || {}).length"
-                type="search"
-                prefix-icon="search"
-                outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
-              />
-              <FormKit
-                v-model="filters.date"
-                :disabled="creating || !!Object.keys(expandedRows || {}).length"
-                type="date"
-                outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
-              />
-              <AnimationReveal>
-                <Button
-                  v-if="filters.search || filters.date"
-                  :disabled="
-                    creating || !!Object.keys(expandedRows || {}).length
-                  "
-                  icon="pi pi-trash"
-                  label="Filters verwijderen"
-                  severity="danger"
-                  text
-                  @click="clearFilters"
-                />
-              </AnimationReveal>
-            </div>
-            <Button
-              :disabled="!!Object.keys(expandedRows || {}).length"
-              :icon="`pi pi-${creating ? 'times' : 'plus'}`"
-              :severity="creating ? 'danger' : undefined"
-              :label="creating ? 'Annuleer toevoegen' : 'Toevoegen'"
-              @click="creating = !creating"
+    <div class="flex flex-col gap-4">
+      <div class="flex items-center gap-4 justify-between flex-wrap">
+        <div class="flex gap-4 flex-wrap items-center">
+          <FormKit
+            v-if="values[type].filter.length"
+            v-model="filters.search"
+            :disabled="creating || editing"
+            type="search"
+            prefix-icon="search"
+            outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+          />
+          <FormKit
+            v-model="filters.date"
+            :disabled="creating || editing"
+            type="date"
+            outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+          />
+          <AnimationReveal>
+            <UButton
+              v-if="filters.search || filters.date"
+              test-id="admin-clear-filters"
+              :disabled="creating || editing"
+              icon="i-lucide-trash-2"
+              label="Filters verwijderen"
+              color="error"
+              variant="ghost"
+              @click="clearFilters"
             />
-          </div>
-          <ClientOnly>
-            <AnimationExpand>
-              <FormKit
-                v-if="creating && !Object.keys(expandedRows || {}).length"
-                :id="type"
-                type="form"
-                submit-label="Toevoegen"
-                :config="{ validationVisibility: 'blur' }"
-                @submit="submit"
-              >
-                <FormRoster v-if="type === 'rosters'" />
-                <FormEvent v-else-if="type === 'events'" />
-                <FormAdminReservation v-else-if="type === 'reservations'" />
-                <div v-if="type === 'events'" class="mb-10">
-                  <span class="text-sm text-black"> Omscrijving </span>
-                  <MarkdownEditor v-model:content="content" />
-                </div>
-              </FormKit>
-            </AnimationExpand>
-          </ClientOnly>
+          </AnimationReveal>
         </div>
-      </template>
+        <UButton
+          test-id="admin-create-toggle"
+          :disabled="editing"
+          :icon="creating ? 'i-lucide-x' : 'i-lucide-plus'"
+          :color="creating ? 'error' : 'primary'"
+          :label="creating ? 'Annuleer toevoegen' : 'Toevoegen'"
+          @click="creating = !creating"
+        />
+      </div>
+      <ClientOnly>
+        <AnimationExpand>
+          <FormKit
+            v-if="creating && !editing"
+            :id="type"
+            type="form"
+            submit-label="Toevoegen"
+            :config="{ validationVisibility: 'blur' }"
+            @submit="submit"
+          >
+            <FormRoster v-if="type === 'rosters'" />
+            <FormEvent v-else-if="type === 'events'" />
+            <FormAdminReservation v-else-if="type === 'reservations'" />
+            <div v-if="type === 'events'" class="mb-10">
+              <span class="text-sm text-black"> Omscrijving </span>
+              <MarkdownEditor v-model:content="content" />
+            </div>
+          </FormKit>
+        </AnimationExpand>
+      </ClientOnly>
+    </div>
 
-      <Column selection-mode="multiple" header-style="width: 2rem" />
-      <Column expander />
-      <Column
+    <UTable
+      v-model:row-selection="rowSelection"
+      v-model:expanded="expandedRows"
+      :data="rows"
+      :columns="columns"
+      :loading="store.data[type].loading"
+      :get-row-id="(row: Row) => String(row.id)"
+      :ui="{
+        root: 'rounded-lg border border-surface-200 bg-surface-0 shadow-lg',
+        thead: 'bg-surface-50',
+        tbody: 'divide-surface-200',
+        tr: 'hover:bg-surface-100 data-[selected=true]:bg-primary/10',
+        th: 'px-3 py-2 text-sm font-bold text-surface-700',
+        td: 'px-3 py-2 text-sm text-surface-700',
+      }"
+    >
+      <template #select-header="{ table }">
+        <UCheckbox
+          :model-value="
+            table.getIsSomePageRowsSelected()
+              ? 'indeterminate'
+              : table.getIsAllPageRowsSelected()
+          "
+          aria-label="Alles selecteren"
+          @update:model-value="table.toggleAllPageRowsSelected(!!$event)"
+        />
+      </template>
+      <template #select-cell="{ row }">
+        <UCheckbox
+          :model-value="row.getIsSelected()"
+          aria-label="Rij selecteren"
+          @update:model-value="row.toggleSelected(!!$event)"
+        />
+      </template>
+      <template #expand-cell="{ row }">
+        <UButton
+          test-id="admin-row-toggle"
+          :icon="
+            row.getIsExpanded()
+              ? 'i-lucide-chevron-down'
+              : 'i-lucide-chevron-right'
+          "
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          :aria-label="row.getIsExpanded() ? 'Sluiten' : 'Bewerken'"
+          @click="toggleRow(row.original)"
+        />
+      </template>
+      <template
         v-for="column in values[type].table"
         :key="column.field"
-        :sortable="['name', 'day'].includes(column.field)"
-        :field="column.field"
-        :header="column.header"
+        #[`${column.field}-header`]
       >
-        <template #body="{ data }">
-          <Icon
-            v-if="['exclusive', 'allowReservation'].includes(column.field)"
-            :name="data[column.field] ? 'lucide:check' : 'lucide:x'"
-            :class="[data[column.field] ? 'text-teal' : 'text-secondary']"
-            class="h-6 w-6"
-          />
-          <Button
-            v-else-if="column.field === 'update'"
-            icon="pi pi-cog"
-            outlined
-            size="small"
-          />
-          <span v-else>
-            {{ generateString(data, column.field) }}
-          </span>
-        </template>
-      </Column>
+        <UButton
+          v-if="sortable.includes(column.field)"
+          :label="column.header"
+          :trailing-icon="sortIcon(column.field)"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          class="-mx-3 font-bold"
+          @click="toggleSort(column.field)"
+        />
+        <span v-else>{{ column.header }}</span>
+      </template>
+      <template
+        v-for="column in values[type].table"
+        :key="column.field"
+        #[`${column.field}-cell`]="{ row }"
+      >
+        <UIcon
+          v-if="['exclusive', 'allowReservation'].includes(column.field)"
+          :name="row.original[column.field] ? 'i-lucide-check' : 'i-lucide-x'"
+          :class="[row.original[column.field] ? 'text-teal' : 'text-secondary']"
+          class="size-6"
+        />
+        <span v-else>
+          {{ generateString(row.original, column.field) }}
+        </span>
+      </template>
 
-      <template #expansion="slotProps">
+      <template #expanded="{ row }">
         <div class="p-3">
           <ClientOnly>
             <FormKit
-              :id="`${type}-${slotProps.data.id}`"
+              :id="`${type}-${row.original.id}`"
               type="form"
               submit-label="Bijwerken"
-              :value="slotProps.data"
+              :value="row.original"
               :config="{ validationVisibility: 'blur' }"
               @submit="submit"
             >
@@ -279,20 +377,30 @@ function clearFilters(): void {
           Geen {{ values[type].title.toLowerCase() }} gevonden met deze filters
         </p>
       </template>
-    </DataTable>
+    </UTable>
+
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <span test-id="admin-range" class="text-sm text-surface-500">
+        {{ range }}
+      </span>
+      <UPagination
+        :page="filters.page"
+        :total="store.data[type].count ?? 0"
+        :items-per-page="perPage"
+        :sibling-count="1"
+        show-edges
+        @update:page="changePage"
+      />
+    </div>
+
     <AnimationReveal>
-      <Button
+      <UButton
         v-if="selected.length"
-        severity="danger"
-        icon="pi pi-trash"
+        test-id="admin-remove-selected"
+        color="error"
+        icon="i-lucide-trash-2"
         label="Verwijder geselecteerde"
-        @click="
-          () => {
-            store.removeData(type, selected)
-            selected = []
-            clearFilters()
-          }
-        "
+        @click="removeSelected"
       />
     </AnimationReveal>
   </div>

@@ -11,22 +11,26 @@ async function submit({ password }: AdminForm): Promise<void> {
 </script>
 
 <template>
-  <Dialog
-    v-model:visible="needsAuth"
-    modal
-    header="Inloggen op admin paneel"
-    :closable="false"
+  <UModal
+    :open="needsAuth"
+    :dismissible="false"
+    :close="false"
+    title="Inloggen op admin paneel"
+    description="Log in met het admin wachtwoord"
+    :ui="{ description: 'sr-only' }"
   >
-    <FormKit type="form" submit-label="Inloggen" @submit="submit">
-      <FormKit
-        type="password"
-        name="password"
-        label="Wachtwoord"
-        validation="required"
-      />
-      <p v-if="wrongPassword" test-id="login-error" class="text-secondary">
-        Wachtwoord is verkeerd
-      </p>
-    </FormKit>
-  </Dialog>
+    <template #body>
+      <FormKit type="form" submit-label="Inloggen" @submit="submit">
+        <FormKit
+          type="password"
+          name="password"
+          label="Wachtwoord"
+          validation="required"
+        />
+        <p v-if="wrongPassword" test-id="login-error" class="text-secondary">
+          Wachtwoord is verkeerd
+        </p>
+      </FormKit>
+    </template>
+  </UModal>
 </template>

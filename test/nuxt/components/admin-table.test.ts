@@ -10,12 +10,16 @@ const updateData = vi.fn()
 const removeData = vi.fn()
 let events: EventRow[] = []
 
+const rows: Record<string, unknown[]> = {}
+const counts: Record<string, number> = {}
+
 mockNuxtImport('useAdminStore', () => () => ({
-  data: {
-    events: { data: [], count: 0, loading: false },
-    reservations: { data: [], count: 0, loading: false },
-    rosters: { data: [], count: 0, loading: false },
-  },
+  data: Object.fromEntries(
+    ['events', 'reservations', 'rosters'].map(type => [
+      type,
+      { data: rows[type] ?? [], count: counts[type] ?? 0, loading: false },
+    ]),
+  ),
   get events() {
     return events
   },
@@ -42,6 +46,8 @@ describe('AdminTable', () => {
     updateData.mockClear()
     removeData.mockClear()
     events = []
+    Object.keys(rows).forEach(key => delete rows[key])
+    Object.keys(counts).forEach(key => delete counts[key])
   })
 
   it('matches snapshot', async () => {
@@ -139,11 +145,11 @@ describe('AdminTable', () => {
     })
   })
 
-  describe('onTableEvent', () => {
+  describe('load', () => {
     it('queries the first page by default', async () => {
       const wrapper = await mount()
 
-      await setup(wrapper).onTableEvent()
+      await setup(wrapper).load()
 
       expect(fetchData).toHaveBeenCalledWith('events', {
         fuzzy: true,
@@ -154,10 +160,10 @@ describe('AdminTable', () => {
       })
     })
 
-    it('turns a row offset into a page number', async () => {
+    it('turns the pagination page into a zero based page', async () => {
       const wrapper = await mount()
 
-      await setup(wrapper).onTableEvent({ first: 30 })
+      await setup(wrapper).changePage(4)
 
       expect(fetchData).toHaveBeenCalledWith(
         'events',
@@ -167,8 +173,9 @@ describe('AdminTable', () => {
 
     it('adds a day filter when a date is picked', async () => {
       const wrapper = await mount()
+      setup(wrapper).filters.date = '2026-09-14'
 
-      await setup(wrapper).onTableEvent({ date: '2026-09-14' })
+      await setup(wrapper).load()
 
       expect(fetchData).toHaveBeenCalledWith(
         'events',
@@ -178,19 +185,41 @@ describe('AdminTable', () => {
       )
     })
 
-    it('maps the sort order onto asc and desc', async () => {
+    it('cycles a column through ascending, descending and no sort', async () => {
       const wrapper = await mount()
 
-      await setup(wrapper).onTableEvent({ sortField: 'day', sortOrder: 1 })
-      expect(fetchData).toHaveBeenCalledWith(
+      await setup(wrapper).toggleSort('day')
+      expect(fetchData).toHaveBeenLastCalledWith(
         'events',
         expect.objectContaining({ sort: { field: 'day', order: 'asc' } }),
       )
 
-      await setup(wrapper).onTableEvent({ sortField: 'day', sortOrder: -1 })
-      expect(fetchData).toHaveBeenCalledWith(
+      await setup(wrapper).toggleSort('day')
+      expect(fetchData).toHaveBeenLastCalledWith(
         'events',
         expect.objectContaining({ sort: { field: 'day', order: 'desc' } }),
+      )
+
+      await setup(wrapper).toggleSort('day')
+      expect(fetchData).toHaveBeenLastCalledWith(
+        'events',
+        expect.objectContaining({ sort: undefined }),
+      )
+    })
+
+    it('starts a new column at ascending and goes back to page one', async () => {
+      const wrapper = await mount()
+      await setup(wrapper).toggleSort('day')
+      setup(wrapper).filters.page = 3
+
+      await setup(wrapper).toggleSort('name')
+
+      expect(fetchData).toHaveBeenLastCalledWith(
+        'events',
+        expect.objectContaining({
+          page: 0,
+          sort: { field: 'name', order: 'asc' },
+        }),
       )
     })
   })
@@ -276,9 +305,8 @@ describe('AdminTable', () => {
     it('opens one row at a time and loads its description', async () => {
       const wrapper = await mount()
 
-      setup(wrapper).onRowExpand({
-        data: { id: 4, description: 'Kom schilderen' },
-      })
+      setup(wrapper).toggleRow({ id: 3, description: 'Quiz' })
+      setup(wrapper).toggleRow({ id: 4, description: 'Kom schilderen' })
 
       expect(setup(wrapper).expandedRows).toEqual({ 4: true })
       expect(setup(wrapper).content).toBe('Kom schilderen')
@@ -287,18 +315,17 @@ describe('AdminTable', () => {
     it('clears the description when the row closes', async () => {
       const wrapper = await mount()
 
-      setup(wrapper).onRowExpand({
-        data: { id: 4, description: 'Kom schilderen' },
-      })
-      setup(wrapper).onRowCollapse({ data: { id: 4 } })
+      setup(wrapper).toggleRow({ id: 4, description: 'Kom schilderen' })
+      setup(wrapper).toggleRow({ id: 4, description: 'Kom schilderen' })
 
+      expect(setup(wrapper).expandedRows).toEqual({})
       expect(setup(wrapper).content).toBe('')
     })
 
     it('leaves the description alone for other tables', async () => {
       const wrapper = await mount('rosters')
 
-      setup(wrapper).onRowExpand({ data: { id: 4, description: 'ignored' } })
+      setup(wrapper).toggleRow({ id: 4, description: 'ignored' })
 
       expect(setup(wrapper).content).toBe('')
       expect(setup(wrapper).expandedRows).toEqual({ 4: true })
@@ -308,42 +335,46 @@ describe('AdminTable', () => {
   it('resets the filters after a submit', async () => {
     const wrapper = await mount()
     setup(wrapper).filters.search = 'jef'
-    setup(wrapper).filters.first = 20
+    setup(wrapper).filters.page = 3
 
     await setup(wrapper).submit({ name: 'Minipainting' })
 
     expect(setup(wrapper).filters).toMatchObject({
       search: '',
       date: null,
-      first: 0,
+      page: 1,
     })
   })
 
   describe('bulk delete', () => {
-    async function mountWithButton() {
-      return mountSuspended(AdminTable, {
-        props: { type: 'events' },
-        global: { stubs: { DataTable: true, ClientOnly: true } },
-      })
-    }
-
     it('stays hidden while nothing is selected', async () => {
-      const wrapper = await mountWithButton()
+      const wrapper = await mount()
 
-      expect(wrapper.find('button').exists()).toBe(false)
+      expect(wrapper.find('[test-id="admin-remove-selected"]').exists()).toBe(
+        false,
+      )
     })
 
-    it('removes the selection and clears the filters', async () => {
-      const wrapper = await mountWithButton()
-      setup(wrapper).selected = [{ id: 1 }, { id: 2 }]
+    it('removes the selected rows and clears the filters', async () => {
+      rows.events = [{ id: 1 }, { id: 2 }, { id: 3 }]
+      const wrapper = await mount()
+      setup(wrapper).rowSelection = { 1: true, 3: true }
       setup(wrapper).filters.search = 'jef'
-      await nextTick()
 
-      await wrapper.find('button').trigger('click')
+      await setup(wrapper).removeSelected()
 
-      expect(removeData).toHaveBeenCalledWith('events', [{ id: 1 }, { id: 2 }])
-      expect(setup(wrapper).selected).toEqual([])
-      expect(setup(wrapper).filters).toMatchObject({ search: '', first: 0 })
+      expect(removeData).toHaveBeenCalledWith('events', [{ id: 1 }, { id: 3 }])
+      expect(setup(wrapper).rowSelection).toEqual({})
+      expect(setup(wrapper).filters).toMatchObject({ search: '', page: 1 })
     })
+  })
+
+  it('reports which rows of the total are shown', async () => {
+    counts.events = 23
+    const wrapper = await mount()
+
+    await setup(wrapper).changePage(3)
+
+    expect(setup(wrapper).range).toBe('21 tot 23 van 23')
   })
 })

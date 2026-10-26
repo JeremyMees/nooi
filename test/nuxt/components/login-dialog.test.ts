@@ -14,10 +14,10 @@ mockNuxtImport('useAdminStore', () => () => ({
 }))
 
 const stubs = {
-  Dialog: {
-    props: ['visible', 'header'],
+  UModal: {
+    props: ['open', 'title'],
     template:
-      '<div v-if="visible"><span test-id="login-header">{{ header }}</span><slot /></div>',
+      '<div v-if="open"><span test-id="login-header">{{ title }}</span><slot name="body" /></div>',
   },
   FormKit: true,
 }

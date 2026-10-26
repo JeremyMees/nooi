@@ -3,7 +3,21 @@
 exports[`AdminTable > matches snapshot 1`] = `
 "<div class="space-y-4">
   <p test-id="admin-title" class="head-2 pb-4">Evenementen</p>
-  <data-table-stub selection="" data-key="id" size="small" paginator="" removable-sort="" lazy="" sort-field="day" sort-order="1" first="0" rows="10" total-records="0" loading="false" paginator-template="FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" current-page-report-template="{first} tot {last} van {totalRecords}" value=""></data-table-stub>
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center gap-4 justify-between flex-wrap">
+      <div class="flex gap-4 flex-wrap items-center">
+        <form-kit-stub modelvalue="" type="search" disabled="false" prefix-icon="search" outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"></form-kit-stub>
+        <form-kit-stub type="date" disabled="false" outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"></form-kit-stub>
+        <animation-reveal-stub></animation-reveal-stub>
+      </div>
+      <u-button-stub icon="i-lucide-plus" color="primary" label="Toevoegen" square="false" block="false" loadingauto="false" leading="false" trailing="false" loading="false" disabled="false" active="false" exact="false" exactquery="false" exacthash="false" locale="false" external="false" norel="false" prefetch="false" noprefetch="false" viewtransition="false" replace="false" test-id="admin-create-toggle"></u-button-stub>
+    </div>
+    <client-only-stub></client-only-stub>
+  </div>
+  <u-table-stub rowselection="[object Object]" data="" columns="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" getrowid="[Function]" ui="[object Object]" virtualize="false" sticky="false" loading="false" watchoptions="[object Object]" autoresetall="false" debugall="false" debugcells="false" debugcolumns="false" debugheaders="false" debugrows="false" debugtable="false" expanded="[object Object]"></u-table-stub>
+  <div class="flex flex-wrap items-center justify-between gap-4"><span test-id="admin-range" class="text-sm text-surface-500">0 tot 0 van 0</span>
+    <u-pagination-stub page="1" color="neutral" variant="outline" activecolor="primary" activevariant="solid" showcontrols="true" disabled="false" itemsperpage="10" showedges="true" siblingcount="1" total="0"></u-pagination-stub>
+  </div>
   <animation-reveal-stub></animation-reveal-stub>
 </div>"
 `;

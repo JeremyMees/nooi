@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`LoginDialog > matches snapshot 1`] = `
-"<div modal="" closable="false"><span test-id="login-header">Inloggen op admin paneel</span>
+"<div dismissible="false" close="false" description="Log in met het admin wachtwoord" ui="[object Object]"><span test-id="login-header">Inloggen op admin paneel</span>
   <form-kit-stub type="form" submit-label="Inloggen"></form-kit-stub>
 </div>"
 `;
