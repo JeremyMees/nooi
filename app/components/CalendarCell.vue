@@ -51,20 +51,20 @@ function handleClick(event: MouseEvent): void {
 
   if (row.status === 'occupied') {
     toast.add({
-      severity: 'info',
-      summary: 'Bezet!',
-      detail:
+      color: 'info',
+      title: 'Bezet!',
+      description:
         'Voor deze dag kan je niet meer reserveren. Wees welkom op een ander moment!',
-      life: 5000,
+      duration: 5000,
     })
     removeQuery(['date', 'type', 'rosterIndex'])
   } else if (sameDay(row.day, new Date())) {
     toast.add({
-      severity: 'info',
-      summary: 'Vandaag reserveren gaat niet',
-      detail:
+      color: 'info',
+      title: 'Vandaag reserveren gaat niet',
+      description:
         'Je kan niet reserveren op dezelfde dag. Wil je toch langs komen? Bel ons even op!',
-      life: 5000,
+      duration: 5000,
     })
     removeQuery(['date', 'type', 'rosterIndex'])
   } else if (row.status === 'reservation') {

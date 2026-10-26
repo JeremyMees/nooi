@@ -130,7 +130,7 @@ describe('ReservationDrawer', () => {
       })
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({
-          detail: 'We hebben je boeking goed ontvangen. Tot binnenkort!',
+          description: 'We hebben je boeking goed ontvangen. Tot binnenkort!',
         }),
       )
     })
@@ -145,7 +145,7 @@ describe('ReservationDrawer', () => {
       )
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({
-          detail: 'Je reservatie is bevestigd. Tot binnenkort!',
+          description: 'Je reservatie is bevestigd. Tot binnenkort!',
         }),
       )
     })
@@ -171,7 +171,8 @@ describe('ReservationDrawer', () => {
       })
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({
-          detail: 'Je bent ingeschreven voor Minipainting. Tot binnenkort!',
+          description:
+            'Je bent ingeschreven voor Minipainting. Tot binnenkort!',
         }),
       )
     })
@@ -199,7 +200,7 @@ describe('ReservationDrawer', () => {
       expect(store.drawerOpen).toBe(false)
       expect(setup(wrapper).loading).toBe(false)
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Gelukt!' }),
+        expect.objectContaining({ title: 'Gelukt!' }),
       )
     })
 
@@ -210,7 +211,7 @@ describe('ReservationDrawer', () => {
       await setup(wrapper).submit({ ...form })
 
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Oeps!' }),
+        expect.objectContaining({ title: 'Oeps!' }),
       )
     })
   })

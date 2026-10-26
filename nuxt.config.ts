@@ -12,7 +12,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/eslint',
     '@nuxt/ui',
-    '@primevue/nuxt-module',
     '@nuxtjs/seo',
     '@sentry/nuxt/module',
     '@nuxt/test-utils/module',
@@ -20,7 +19,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  css: ['~/assets/css/main.css', '~~/node_modules/primeicons/primeicons.css'],
+  css: ['~/assets/css/main.css'],
 
   site: {
     url: seo.meta.url,
@@ -69,6 +68,7 @@ export default defineNuxtConfig({
         '@unhead/schema-org/vue',
         '@formkit/tempo',
         '@vue/devtools-core',
+        'marked',
       ],
     },
   },
@@ -83,11 +83,6 @@ export default defineNuxtConfig({
 
   icon: {
     customCollections: [{ prefix: 'nooi', dir: './app/assets/icons' }],
-  },
-
-  primevue: {
-    options: { unstyled: true },
-    importPT: { as: 'Lara', from: '~~/presets/lara/' },
   },
 
   robots: {

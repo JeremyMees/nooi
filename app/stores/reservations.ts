@@ -69,10 +69,10 @@ export const useReservationStore = defineStore('useReservationStore', () => {
 
       if (event && event.spots && event.reservations.length >= event.spots) {
         toast.add({
-          severity: 'info',
-          summary: 'Volzet!',
-          detail: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
-          life: 5000,
+          color: 'info',
+          title: 'Volzet!',
+          description: `${event.name} is volledig volzet. Registratie is helaas niet meer mogelijk.`,
+          duration: 5000,
         })
 
         removeQuery(['event', 'status'])
@@ -134,17 +134,18 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       toast.add(
         paid
           ? {
-              severity: 'success',
-              summary: 'Betaling gelukt!',
-              detail:
+              color: 'success',
+              title: 'Betaling gelukt!',
+              description:
                 'De betaling is succesvol verwerkt en de reservering is bevestigd',
-              life: 5000,
+              duration: 5000,
             }
           : {
-              severity: 'error',
-              summary: 'Oeps!',
-              detail: 'Het lijkt erop dat er een probleem is met de betaling',
-              life: 5000,
+              color: 'error',
+              title: 'Oeps!',
+              description:
+                'Het lijkt erop dat er een probleem is met de betaling',
+              duration: 5000,
             },
       )
     } finally {
@@ -176,11 +177,11 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       }
     } catch (error) {
       toast.add({
-        severity: 'error',
-        summary: 'Oeps!',
-        detail:
+        color: 'error',
+        title: 'Oeps!',
+        description:
           'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
-        life: 5000,
+        duration: 5000,
       })
     } finally {
       loading.value = false

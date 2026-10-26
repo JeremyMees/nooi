@@ -1,8 +1,6 @@
 @import 'tailwindcss';
-@import 'tailwindcss-primeui';
 @import '@nuxt/ui';
 
-@source "../../../presets/lara/";
 @source "../../../formkit/";
 
 @theme inline {

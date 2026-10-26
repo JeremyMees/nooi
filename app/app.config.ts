@@ -1,4 +1,4 @@
-// Nuxt UI overrides that keep the look the Lara presets gave PrimeVue.
+// Nuxt UI overrides that keep the look of the original PrimeVue Lara theme.
 export default defineAppConfig({
   ui: {
     button: {

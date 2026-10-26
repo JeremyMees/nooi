@@ -47,7 +47,6 @@ export default defineConfig({
         'app/error.vue',
         'app/app.vue',
         'app/plugins/**',
-        'presets/**',
         'formkit/**',
         'emails/**',
       ],

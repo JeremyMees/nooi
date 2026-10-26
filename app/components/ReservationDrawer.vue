@@ -56,19 +56,19 @@ async function submit(form: Omit<BookingRequest, 'type'>): Promise<void> {
 
     if (result.status === 'confirmed') {
       toast.add({
-        detail: confirmation(request.type, event?.name),
-        severity: 'success',
-        summary: 'Gelukt!',
-        life: 5000,
+        description: confirmation(request.type, event?.name),
+        color: 'success',
+        title: 'Gelukt!',
+        duration: 5000,
       })
     }
   } catch (error) {
     toast.add({
-      severity: 'error',
-      summary: 'Oeps!',
-      detail:
+      color: 'error',
+      title: 'Oeps!',
+      description:
         'Het lijkt erop dat er een probleem was met het maken van een reservatie',
-      life: 5000,
+      duration: 5000,
     })
   } finally {
     if (!payment.value) {

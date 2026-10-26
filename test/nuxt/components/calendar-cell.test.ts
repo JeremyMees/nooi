@@ -187,7 +187,7 @@ describe('CalendarCell', () => {
       await click()
 
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Bezet!' }),
+        expect.objectContaining({ title: 'Bezet!' }),
       )
       expect(hoisted.removeQuery).toHaveBeenCalledWith([
         'date',
@@ -210,7 +210,7 @@ describe('CalendarCell', () => {
       await click(today)
 
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Vandaag reserveren gaat niet' }),
+        expect.objectContaining({ title: 'Vandaag reserveren gaat niet' }),
       )
       expect(hoisted.addQuery).not.toHaveBeenCalled()
     })

@@ -9,6 +9,5 @@ useSeo()
       error-color="#C35200"
     />
     <NuxtPage />
-    <Toast />
   </UApp>
 </template>

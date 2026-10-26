@@ -31,11 +31,11 @@ export const useRosterStore = defineStore('useRosterStore', () => {
       })
     } catch (error) {
       toast.add({
-        severity: 'error',
-        summary: 'Oeps!',
-        detail:
+        color: 'error',
+        title: 'Oeps!',
+        description:
           'Het lijkt erop dat er een probleem is met het ophalen van de gegevens',
-        life: 5000,
+        duration: 5000,
       })
     } finally {
       loading.value = false

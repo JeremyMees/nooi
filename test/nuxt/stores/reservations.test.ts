@@ -148,7 +148,7 @@ describe('useReservationStore', () => {
 
       expect(store.drawerOpen).toBe(false)
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Volzet!' }),
+        expect.objectContaining({ title: 'Volzet!' }),
       )
       expect(hoisted.removeQuery).toHaveBeenCalledWith(['event', 'status'])
     })
@@ -258,7 +258,7 @@ describe('useReservationStore', () => {
         query: { id: 'cs_123' },
       })
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Betaling gelukt!' }),
+        expect.objectContaining({ title: 'Betaling gelukt!' }),
       )
       expect(hoisted.removeQuery).toHaveBeenCalledWith(['session_id'])
     })
@@ -272,7 +272,7 @@ describe('useReservationStore', () => {
 
       expect(supabase.delete).not.toHaveBeenCalled()
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Oeps!' }),
+        expect.objectContaining({ title: 'Oeps!' }),
       )
     })
 
@@ -284,7 +284,7 @@ describe('useReservationStore', () => {
       await store.init()
 
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Oeps!' }),
+        expect.objectContaining({ title: 'Oeps!' }),
       )
       expect(store.loading).toBe(false)
     })
