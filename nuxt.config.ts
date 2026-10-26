@@ -14,12 +14,13 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@primevue/nuxt-module',
     '@nuxtjs/seo',
+    '@sentry/nuxt/module',
     '@nuxt/test-utils/module',
   ],
 
   devtools: { enabled: true },
 
-  css: ['./assets/css/main.css', '~~/node_modules/primeicons/primeicons.css'],
+  css: ['~/assets/css/main.css', '~~/node_modules/primeicons/primeicons.css'],
 
   site: {
     url: seo.meta.url,
@@ -37,10 +38,18 @@ export default defineNuxtConfig({
     reminderEmails: process.env.REMINDER_EMAILS || '',
     public: {
       adminPassword: process.env.ADMIN_PASSWORD || 'admin',
+      sentry: {
+        dsn: process.env.SENTRY_DSN,
+      },
     },
   },
 
   compatibilityDate: '2026-03-27',
+
+  sourcemap: {
+    client: 'hidden',
+    server: false,
+  },
 
   nitro: {
     rollupConfig: {
@@ -79,6 +88,15 @@ export default defineNuxtConfig({
 
   robots: {
     disallow: ['/admin'],
+  },
+
+  sentry: {
+    org: 'kees',
+    project: 'nooi',
+
+    sourcemaps: {
+      filesToDeleteAfterUpload: ['./.vercel/output/static/**/*.map'],
+    },
   },
 
   sitemap: { zeroRuntime: true },

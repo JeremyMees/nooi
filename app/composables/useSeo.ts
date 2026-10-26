@@ -3,9 +3,8 @@ import config from '~~/shared/constants/seo'
 export function useSeo() {
   const { url, name, logo, description } = config.meta
 
-  const head = computed(() => ({
+  useHead({
     titleTemplate: () => name,
-    name,
     link: [
       {
         rel: 'canonical',
@@ -69,9 +68,7 @@ export function useSeo() {
         content: description,
       },
     ],
-  }))
-
-  useHead(head.value)
+  })
 
   useSchemaOrg([defineWebPage({ name, url })])
 }

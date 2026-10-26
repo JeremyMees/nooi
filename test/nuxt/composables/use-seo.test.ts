@@ -30,7 +30,6 @@ describe('useSeo', () => {
 
   it('keeps the site name as the title on every page', () => {
     expect(head().titleTemplate()).toBe(name)
-    expect(head().name).toBe(name)
   })
 
   it('points the canonical link at the site url', () => {

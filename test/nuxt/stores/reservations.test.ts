@@ -18,9 +18,10 @@ const hoisted = vi.hoisted(() => ({
   navigateTo: vi.fn(),
   cookie: { value: undefined as Record<string, string> | undefined },
   dayRoster: vi.fn<(day: string) => unknown>(() => []),
+  $fetch: vi.fn(),
 }))
 
-const $fetch = vi.fn()
+const $fetch = hoisted.$fetch
 
 mockNuxtImport('useSupabaseClient', () => () => supabase)
 mockNuxtImport('useToast', () => () => ({ add: hoisted.toastAdd }))
@@ -28,6 +29,7 @@ mockNuxtImport('useCookie', () => () => hoisted.cookie)
 mockNuxtImport('useRoute', () => () => ({ query }))
 mockNuxtImport('removeQuery', () => hoisted.removeQuery)
 mockNuxtImport('navigateTo', () => hoisted.navigateTo)
+mockNuxtImport('$fetch', () => hoisted.$fetch)
 mockNuxtImport('useRosterStore', () => () => ({
   getDayRoster: hoisted.dayRoster,
 }))
@@ -48,7 +50,6 @@ describe('useReservationStore', () => {
     hoisted.cookie.value = undefined
     hoisted.removeQuery.mockClear()
     hoisted.dayRoster.mockReturnValue([])
-    vi.stubGlobal('$fetch', $fetch)
     $fetch.mockReset()
   })
 
