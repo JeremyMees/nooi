@@ -45,10 +45,10 @@ watch(
     <EventTags v-if="store.informationEvent" :event="store.informationEvent" />
     <ClientOnly>
       <div class="pt-6">
-        <v-md-editor
+        <MarkdownContent
           v-if="store.informationEvent?.description"
-          v-model="store.informationEvent.description"
-          mode="preview"
+          :content="store.informationEvent.description"
+          class="event-description"
         />
       </div>
     </ClientOnly>
@@ -99,12 +99,8 @@ watch(
 <style>
 @reference '~/assets/css/main.css';
 
-.v-md-editor--preview {
+.event-description {
   max-height: clamp(150px, calc(100vh - 400px), 400px);
-  @apply overflow-y-hidden;
-}
-
-.github-markdown-body {
-  @apply p-0 pr-2;
+  @apply overflow-y-auto pr-2;
 }
 </style>

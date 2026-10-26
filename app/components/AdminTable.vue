@@ -213,7 +213,7 @@ function clearFilters(): void {
                 <FormRoster v-if="type === 'rosters'" />
                 <FormEvent v-else-if="type === 'events'" />
                 <FormAdminReservation v-else-if="type === 'reservations'" />
-                <div v-if="type === 'events'" class="h-100 mb-10">
+                <div v-if="type === 'events'" class="mb-10">
                   <span class="text-sm text-black"> Omscrijving </span>
                   <MarkdownEditor v-model:content="content" />
                 </div>
@@ -267,7 +267,7 @@ function clearFilters(): void {
               <FormRoster v-if="type === 'rosters'" />
               <FormEvent v-else-if="type === 'events'" />
               <FormAdminReservation v-else-if="type === 'reservations'" />
-              <div v-if="type === 'events'" class="h-100 mb-10">
+              <div v-if="type === 'events'" class="mb-10">
                 <span class="text-sm text-black"> Omscrijving </span>
                 <MarkdownEditor v-model:content="content" />
               </div>

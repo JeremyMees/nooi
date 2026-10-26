@@ -25,7 +25,7 @@ const stubs = {
   Drawer: {
     template: '<div><slot name="header" /><slot /></div>',
   },
-  VMdEditor: true,
+  MarkdownContent: true,
 }
 
 async function mount() {

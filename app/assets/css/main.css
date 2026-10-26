@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
+@import '@nuxt/ui';
 
 @source "../../../presets/lara/";
 @source "../../../formkit/";
@@ -65,6 +66,25 @@
   --surface-800: hsl(37 9% 18%);
   --surface-900: hsl(36 11% 9%);
   --surface-950: hsl(30 8% 5%);
+
+  --ui-primary: var(--primary-500);
+  --ui-secondary: var(--secondary-500);
+  --ui-color-neutral-50: var(--surface-50);
+  --ui-color-neutral-100: var(--surface-100);
+  --ui-color-neutral-200: var(--surface-200);
+  --ui-color-neutral-300: var(--surface-300);
+  --ui-color-neutral-400: var(--surface-400);
+  --ui-color-neutral-500: var(--surface-500);
+  --ui-color-neutral-600: var(--surface-600);
+  --ui-color-neutral-700: var(--surface-700);
+  --ui-color-neutral-800: var(--surface-800);
+  --ui-color-neutral-900: var(--surface-900);
+  --ui-color-neutral-950: var(--surface-950);
+  --ui-text: var(--black);
+  --ui-text-highlighted: var(--black);
+  --ui-text-inverted: var(--white);
+  --ui-bg: var(--white);
+  --ui-bg-inverted: var(--black);
 }
 
 @layer base {
@@ -142,33 +162,43 @@
     @apply font-bold text-[1.25rem] leading-7 sm:text-[1.125rem] sm:leading-6 md:text-[1.25rem] md:leading-7;
   }
 
-  .github-markdown-body h1 {
-    @apply font-bold! text-[1.5rem]! leading-7! md:text-[1.75rem]! md:leading-8! lg:text-[2rem]! lg:leading-9! border-none! pb-0!;
+  .markdown-content h1 {
+    @apply font-bold text-[1.5rem] leading-7 md:text-[1.75rem] md:leading-8 lg:text-[2rem] lg:leading-9 mb-4;
   }
 
-  .github-markdown-body h2 {
-    @apply font-bold! text-[1.25rem]! leading-6! md:text-[1.5rem]! md:leading-6! border-none! pb-0!;
+  .markdown-content h2 {
+    @apply font-bold text-[1.25rem] leading-6 md:text-[1.5rem] md:leading-6 mb-3;
   }
 
-  .github-markdown-body h3 {
-    @apply font-bold! text-[1rem]! leading-5! sm:text-[1.125rem]! sm:leading-5! md:text-[1.25rem]! md:leading-6! border-none! pb-0!;
+  .markdown-content h3 {
+    @apply font-bold text-[1rem] leading-5 sm:text-[1.125rem] sm:leading-5 md:text-[1.25rem] md:leading-6 mb-2;
   }
 
-  .github-markdown-body h4,
-  .github-markdown-body h5,
-  .github-markdown-body h6 {
-    @apply pb-0!;
+  .markdown-content :where(p, ul, ol, blockquote) {
+    @apply mb-4;
   }
 
-  .github-markdown-body hr {
-    @apply h-px! bg-surface!;
+  .markdown-content ul {
+    @apply list-disc pl-6;
   }
 
-  .github-markdown-body a {
-    @apply mb-4!;
+  .markdown-content ol {
+    @apply list-decimal pl-6;
   }
 
-  .github-markdown-body img {
-    @apply rounded-lg! my-4! w-full! max-w-87.5! max-h-87.5! mx-auto!;
+  .markdown-content blockquote {
+    @apply border-l-4 border-surface-200 pl-4 text-surface;
+  }
+
+  .markdown-content hr {
+    @apply my-4 h-px border-0 bg-surface;
+  }
+
+  .markdown-content a {
+    @apply text-primary underline;
+  }
+
+  .markdown-content img {
+    @apply rounded-lg my-4 w-full max-w-87.5 max-h-87.5 mx-auto;
   }
 }

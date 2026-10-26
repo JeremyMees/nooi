@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     '@formkit/nuxt',
     '@nuxt/image',
     '@nuxt/eslint',
-    '@nuxt/icon',
+    '@nuxt/ui',
     '@primevue/nuxt-module',
     '@nuxtjs/seo',
     '@sentry/nuxt/module',
@@ -66,10 +66,6 @@ export default defineNuxtConfig({
         '@formkit/core',
         '@formkit/icons',
         '@formkit/i18n',
-        '@kangc/v-md-editor', // CJS
-        '@kangc/v-md-editor/lib/theme/github.js', // CJS
-        '@kangc/v-md-editor/lib/lang/en-US', // CJS
-        'highlight.js', // CJS
         '@unhead/schema-org/vue',
         '@formkit/tempo',
       ],
@@ -81,6 +77,8 @@ export default defineNuxtConfig({
   image: { quality: 80 },
 
   pinia: { storesDirs: ['./stores/**'] },
+
+  ui: { fonts: false, colorMode: false },
 
   primevue: {
     options: { unstyled: true },

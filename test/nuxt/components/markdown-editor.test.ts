@@ -3,10 +3,17 @@ import { mountSuspended } from '@nuxt/test-utils/runtime'
 import MarkdownEditor from '~/components/MarkdownEditor.vue'
 
 const stubs = {
-  'v-md-editor': {
-    props: ['modelValue'],
+  UEditor: {
+    name: 'UEditor',
+    props: ['modelValue', 'contentType'],
     emits: ['update:modelValue'],
-    template: '<textarea :value="modelValue" />',
+    template:
+      '<div><textarea :value="modelValue" :data-type="contentType" /><slot :editor="{}" /></div>',
+  },
+  UEditorToolbar: {
+    name: 'UEditorToolbar',
+    props: ['items'],
+    template: '<div test-id="editor-toolbar" />',
   },
 }
 
@@ -18,19 +25,33 @@ async function mount(content = '') {
 }
 
 describe('MarkdownEditor', () => {
-  it('shows the content it is given', async () => {
+  it('edits the content as markdown', async () => {
     const wrapper = await mount('# Kom schilderen')
+    const textarea = wrapper.find('textarea')
 
-    expect(wrapper.find('textarea').element.value).toBe('# Kom schilderen')
+    expect(textarea.element.value).toBe('# Kom schilderen')
+    expect(textarea.attributes('data-type')).toBe('markdown')
   })
 
   it('sends edits back through the model', async () => {
     const wrapper = await mount('start')
 
     await wrapper
-      .findComponent(stubs['v-md-editor'])
+      .findComponent({ name: 'UEditor' })
       .vm.$emit('update:modelValue', 'edited')
 
     expect(wrapper.emitted('update:content')?.[0]).toEqual(['edited'])
+  })
+
+  it('offers a toolbar for the markdown the calendar renders', async () => {
+    const wrapper = await mount()
+    const items = wrapper
+      .findComponent({ name: 'UEditorToolbar' })
+      .props('items')
+      .flat()
+
+    expect(items.map(({ kind }: { kind: string }) => kind)).toEqual(
+      expect.arrayContaining(['heading', 'mark', 'bulletList', 'link']),
+    )
   })
 })
