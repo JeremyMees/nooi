@@ -28,44 +28,38 @@ const submitLabel = computed<string>(() => {
   else return 'Reserveren'
 })
 
-async function submit(form: ReservationInsert): Promise<void> {
-  loading.value = true
-  const eventName = store.selectedEvent?.name
+function confirmation(type: BookingType, event?: string): string {
+  if (type === 'event') {
+    return `Je bent ingeschreven voor ${event}. Tot binnenkort!`
+  }
 
-  try {
-    if (store.selectedEvent && route.query.event) {
-      form = {
-        ...form,
-        event: store.selectedEvent.id,
-        day: store.selectedEvent.day,
-        start: store.selectedEvent.start,
-        end: store.selectedEvent.end,
-        type: 'event',
-      }
-    } else {
-      form = {
-        ...form,
+  return type === 'game'
+    ? 'We hebben je boeking goed ontvangen. Tot binnenkort!'
+    : 'Je reservatie is bevestigd. Tot binnenkort!'
+}
+
+async function submit(form: Omit<BookingRequest, 'type'>): Promise<void> {
+  loading.value = true
+
+  const event = store.selectedEvent
+  const fields = { ...form, spots: Number(form.spots) }
+  const request: BookingRequest = event
+    ? { ...fields, type: 'event', event: event.id }
+    : {
+        ...fields,
         type: route.query.type === 'game' ? 'game' : 'reservation',
         day: store.form.day || '',
       }
-    }
 
-    const reservation = await store.createReservation({
-      ...form,
-      paymentNeeded: payment.value,
-    })
+  try {
+    const result = await store.book(request)
 
-    if (payment.value) {
-      await store.createSession(reservation.id)
-    } else {
-      await notifyUser(form.type, {
-        props: {
-          name: form.name,
-          date: formatDateMail(form.day),
-          time: formatHour(form.start),
-          ...(form.type === 'event' ? { event: eventName } : {}),
-        },
-        to: form.email as string,
+    if (result.status === 'confirmed') {
+      toast.add({
+        detail: confirmation(request.type, event?.name),
+        severity: 'success',
+        summary: 'Gelukt!',
+        life: 5000,
       })
     }
   } catch (error) {
@@ -82,38 +76,6 @@ async function submit(form: ReservationInsert): Promise<void> {
       store.drawerOpen = false
     }
   }
-}
-
-async function notifyUser(
-  type: BookingType,
-  payload: Pick<Mail, 'to' | 'props'>,
-): Promise<void> {
-  const endpoints = [
-    '/api/mail/event-success',
-    '/api/mail/reservation-success',
-    '/api/mail/booking-success',
-  ]
-
-  const details = [
-    `Je bent ingeschreven voor ${payload.props.event}. Tot binnenkort!`,
-    'We hebben je boeking goed ontvangen. Tot binnenkort!',
-    'Je reservatie is bevestigd. Tot binnenkort!',
-  ]
-
-  const index = type === 'event' ? 0 : type === 'game' ? 1 : 2
-  const endpoint = endpoints[index] as string
-
-  await useFetch(endpoint, {
-    method: 'POST',
-    body: payload,
-  })
-
-  toast.add({
-    detail: details[index],
-    severity: 'success',
-    summary: 'Gelukt!',
-    life: 5000,
-  })
 }
 </script>
 

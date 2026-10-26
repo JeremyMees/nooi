@@ -49,6 +49,7 @@ describe('useReservationStore', () => {
     Object.keys(query).forEach(key => delete query[key])
     hoisted.cookie.value = undefined
     hoisted.removeQuery.mockClear()
+    hoisted.navigateTo.mockClear()
     hoisted.dayRoster.mockReturnValue([])
     $fetch.mockReset()
   })
@@ -168,136 +169,60 @@ describe('useReservationStore', () => {
         'rosterIndex',
       ])
     })
-
-    it('cancels a pending payment when it closes', async () => {
-      query.date = '2026-07-10'
-      const store = await createStore()
-
-      store.paymentPending = 2599
-      store.drawerOpen = false
-      await flushPromises()
-
-      expect(supabase.delete).toHaveBeenCalled()
-      expect(supabase.eq).toHaveBeenCalledWith('id', 2599)
-      expect(hoisted.toastAdd).toHaveBeenCalledWith(
-        expect.objectContaining({ summary: 'Oeps!' }),
-      )
-    })
   })
 
-  describe('createReservation', () => {
-    const insert = {
+  describe('book', () => {
+    const request = {
+      type: 'game' as const,
       name: 'Jef Van Laer',
       number: '0496264466',
       email: 'jef@example.com',
       day: '2026-07-10',
       start: '19:00',
-      spots: 1,
-      type: 'event' as const,
+      spots: 2,
+      exclusive: false,
     }
 
-    it('inserts the reservation and remembers the contact details', async () => {
+    it('posts the booking and remembers the contact details', async () => {
       const store = await createStore()
-      supabase.result = { data: [{ id: 2599, ...insert }], error: null }
+      $fetch.mockResolvedValue({ status: 'confirmed' })
 
-      await expect(store.createReservation(insert)).resolves.toMatchObject({
-        id: 2599,
+      await expect(store.book(request)).resolves.toEqual({
+        status: 'confirmed',
       })
 
-      expect(supabase.insert).toHaveBeenCalledWith([insert])
-      expect(supabase.select).toHaveBeenCalledWith('*, event(name)')
+      expect($fetch).toHaveBeenCalledWith('/api/reservations', {
+        method: 'POST',
+        body: request,
+      })
       expect(hoisted.cookie.value).toEqual({
         name: 'Jef Van Laer',
         number: '0496264466',
         email: 'jef@example.com',
       })
+      expect(hoisted.navigateTo).not.toHaveBeenCalled()
     })
 
-    it('throws when the insert fails', async () => {
+    it('sends the visitor to the checkout when payment is needed', async () => {
       const store = await createStore()
-      supabase.result = { data: null, error: new Error('insert failed') }
-
-      await expect(store.createReservation(insert)).rejects.toThrow(
-        'insert failed',
-      )
-    })
-
-    it('throws when the insert returns no row', async () => {
-      const store = await createStore()
-      supabase.result = { data: [], error: null }
-
-      await expect(store.createReservation(insert)).rejects.toBeDefined()
-    })
-  })
-
-  describe('createSession', () => {
-    beforeEach(() => {
-      query.event = '1'
-      query.status = 'reservation'
-    })
-
-    it('charges once when the event is not priced per person', async () => {
-      const store = await createStore()
-      $fetch.mockResolvedValue('https://checkout.stripe.com/pay/cs')
-      store.form.spots = '3'
-
-      await store.createSession(2599)
-
-      expect($fetch).toHaveBeenCalledWith('/api/stripe/session', {
-        method: 'POST',
-        body: {
-          reservation: 2599,
-          name: event.name,
-          amount: event.price,
-          quantity: 1,
-        },
+      $fetch.mockResolvedValue({
+        status: 'payment',
+        url: 'https://checkout.stripe.com/pay/cs',
       })
+
+      await store.book(request)
+
       expect(hoisted.navigateTo).toHaveBeenCalledWith(
         'https://checkout.stripe.com/pay/cs',
         { external: true },
       )
     })
 
-    it('charges per person when the event is priced per unit', async () => {
-      supabase = createSupabaseMock({ data: [{ ...event, unitPrice: true }] })
+    it('passes on a rejected booking', async () => {
       const store = await createStore()
-      $fetch.mockResolvedValue('https://checkout.stripe.com/pay/cs')
-      store.form.spots = '3'
+      $fetch.mockRejectedValue(new Error('Event is full'))
 
-      await store.createSession(2599)
-
-      expect($fetch).toHaveBeenCalledWith(
-        '/api/stripe/session',
-        expect.objectContaining({
-          body: expect.objectContaining({ quantity: 3 }),
-        }),
-      )
-    })
-
-    it('falls back to a single spot for an unusable spots value', async () => {
-      supabase = createSupabaseMock({ data: [{ ...event, unitPrice: true }] })
-      const store = await createStore()
-      $fetch.mockResolvedValue('https://checkout.stripe.com/pay/cs')
-      store.form.spots = 'drie'
-
-      await store.createSession(2599)
-
-      expect($fetch).toHaveBeenCalledWith(
-        '/api/stripe/session',
-        expect.objectContaining({
-          body: expect.objectContaining({ quantity: 1 }),
-        }),
-      )
-    })
-
-    it('throws when Stripe returns no url', async () => {
-      const store = await createStore()
-      $fetch.mockResolvedValue(undefined)
-
-      await expect(store.createSession(2599)).rejects.toThrow(
-        'No session url returned',
-      )
-      expect(hoisted.navigateTo).not.toHaveBeenCalled()
+      await expect(store.book(request)).rejects.toThrow('Event is full')
     })
   })
 
@@ -325,7 +250,7 @@ describe('useReservationStore', () => {
     it('confirms a paid checkout session', async () => {
       const store = await createStore()
       query.session_id = 'cs_123'
-      $fetch.mockResolvedValue({ payment_status: 'paid' })
+      $fetch.mockResolvedValue({ paid: true })
 
       await store.init()
 
@@ -338,18 +263,14 @@ describe('useReservationStore', () => {
       expect(hoisted.removeQuery).toHaveBeenCalledWith(['session_id'])
     })
 
-    it('cancels the reservation behind an unpaid session', async () => {
+    it('warns the visitor about an unpaid session', async () => {
       const store = await createStore()
       query.session_id = 'cs_123'
-      $fetch.mockResolvedValue({
-        payment_status: 'unpaid',
-        metadata: { reservation: '2599' },
-      })
+      $fetch.mockResolvedValue({ paid: false })
 
       await store.init()
-      await flushPromises()
 
-      expect(supabase.delete).toHaveBeenCalled()
+      expect(supabase.delete).not.toHaveBeenCalled()
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({ summary: 'Oeps!' }),
       )

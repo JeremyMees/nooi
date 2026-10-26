@@ -8,10 +8,8 @@ let current: RosterRow[]
 let query: Record<string, unknown>
 
 const hoisted = vi.hoisted(() => ({
-  createReservation: vi.fn(),
-  createSession: vi.fn(),
+  book: vi.fn(),
   toastAdd: vi.fn(),
-  useFetch: vi.fn(),
 }))
 
 const store = {
@@ -20,12 +18,10 @@ const store = {
     return selectedEvent
   },
   form: { day: '2026-07-10' },
-  createReservation: hoisted.createReservation,
-  createSession: hoisted.createSession,
+  book: hoisted.book,
 }
 
 mockNuxtImport('useReservationStore', () => () => store)
-mockNuxtImport('useFetch', () => hoisted.useFetch)
 mockNuxtImport('useRosterStore', () => () => ({
   get current() {
     return current
@@ -46,13 +42,6 @@ async function mount() {
   return mountSuspended(ReservationDrawer, { global: { stubs } })
 }
 
-// Nuxt's useFetch macro appends a generated key, so only assert the real args.
-function fetchCall() {
-  const [endpoint, options] = hoisted.useFetch.mock.calls[0] ?? []
-
-  return { endpoint, options }
-}
-
 describe('ReservationDrawer', () => {
   beforeEach(() => {
     selectedEvent = null
@@ -60,12 +49,9 @@ describe('ReservationDrawer', () => {
     current = [{ ...mockRoster, allowReservation: true }]
     store.drawerOpen = true
     store.form.day = '2026-07-10'
-    hoisted.createReservation.mockReset()
-    hoisted.createReservation.mockResolvedValue({ id: 2599 })
-    hoisted.createSession.mockReset()
+    hoisted.book.mockReset()
+    hoisted.book.mockResolvedValue({ status: 'confirmed' })
     hoisted.toastAdd.mockReset()
-    hoisted.useFetch.mockReset()
-    hoisted.useFetch.mockResolvedValue({ data: ref(null), error: ref(null) })
   })
 
   it('matches snapshot', async () => {
@@ -126,8 +112,7 @@ describe('ReservationDrawer', () => {
       name: 'Jef Van Laer',
       email: 'jef@example.com',
       number: '0496264466',
-      spots: 2,
-      type: 'reservation' as const,
+      spots: '2',
       start: '19:00',
     }
 
@@ -137,17 +122,17 @@ describe('ReservationDrawer', () => {
 
       await setup(wrapper).submit({ ...form })
 
-      expect(hoisted.createReservation).toHaveBeenCalledWith(
+      expect(hoisted.book).toHaveBeenCalledWith({
+        ...form,
+        spots: 2,
+        type: 'game',
+        day: '2026-07-10',
+      })
+      expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'game',
-          day: '2026-07-10',
-          paymentNeeded: false,
+          detail: 'We hebben je boeking goed ontvangen. Tot binnenkort!',
         }),
       )
-      expect(fetchCall()).toMatchObject({
-        endpoint: '/api/mail/reservation-success',
-        options: { method: 'POST' },
-      })
     })
 
     it('falls back to a plain reservation without a type', async () => {
@@ -155,20 +140,21 @@ describe('ReservationDrawer', () => {
 
       await setup(wrapper).submit({ ...form })
 
-      expect(hoisted.createReservation).toHaveBeenCalledWith(
+      expect(hoisted.book).toHaveBeenCalledWith(
         expect.objectContaining({ type: 'reservation' }),
       )
-      expect(fetchCall().endpoint).toBe('/api/mail/booking-success')
+      expect(hoisted.toastAdd).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: 'Je reservatie is bevestigd. Tot binnenkort!',
+        }),
+      )
     })
 
-    it('copies the timing of the event it signs up for', async () => {
+    it('signs up for the selected event by id only', async () => {
       selectedEvent = {
         ...mockEvent,
         id: 9,
         name: 'Minipainting',
-        day: '2026-09-14',
-        start: '19:00',
-        end: '22:00',
         onlinePayment: false,
         price: null,
       }
@@ -177,48 +163,32 @@ describe('ReservationDrawer', () => {
 
       await setup(wrapper).submit({ ...form })
 
-      expect(hoisted.createReservation).toHaveBeenCalledWith(
+      expect(hoisted.book).toHaveBeenCalledWith({
+        ...form,
+        spots: 2,
+        type: 'event',
+        event: 9,
+      })
+      expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({
-          event: 9,
-          day: '2026-09-14',
-          start: '19:00',
-          end: '22:00',
-          type: 'event',
+          detail: 'Je bent ingeschreven voor Minipainting. Tot binnenkort!',
         }),
       )
-      expect(fetchCall()).toMatchObject({
-        endpoint: '/api/mail/event-success',
-        options: { body: { props: { event: 'Minipainting' } } },
-      })
-    })
-
-    it('sends the visitor to Stripe when the event is paid', async () => {
-      selectedEvent = {
-        ...mockEvent,
-        id: 9,
-        onlinePayment: true,
-        price: 12,
-      }
-      query = { event: '9' }
-      const wrapper = await mount()
-
-      await setup(wrapper).submit({ ...form })
-
-      expect(hoisted.createReservation).toHaveBeenCalledWith(
-        expect.objectContaining({ paymentNeeded: true }),
-      )
-      expect(hoisted.createSession).toHaveBeenCalledWith(2599)
-      expect(hoisted.useFetch).not.toHaveBeenCalled()
     })
 
     it('keeps the drawer open while the payment redirect happens', async () => {
       selectedEvent = { ...mockEvent, id: 9, onlinePayment: true, price: 12 }
       query = { event: '9' }
+      hoisted.book.mockResolvedValue({
+        status: 'payment',
+        url: 'https://checkout.stripe.com/pay/cs',
+      })
       const wrapper = await mount()
 
       await setup(wrapper).submit({ ...form })
 
       expect(store.drawerOpen).toBe(true)
+      expect(hoisted.toastAdd).not.toHaveBeenCalled()
     })
 
     it('closes the drawer once a free booking is confirmed', async () => {
@@ -234,7 +204,7 @@ describe('ReservationDrawer', () => {
     })
 
     it('warns the visitor when the reservation cannot be made', async () => {
-      hoisted.createReservation.mockRejectedValue(new Error('insert failed'))
+      hoisted.book.mockRejectedValue(new Error('Event is full'))
       const wrapper = await mount()
 
       await setup(wrapper).submit({ ...form })
@@ -242,7 +212,6 @@ describe('ReservationDrawer', () => {
       expect(hoisted.toastAdd).toHaveBeenCalledWith(
         expect.objectContaining({ summary: 'Oeps!' }),
       )
-      expect(hoisted.useFetch).not.toHaveBeenCalled()
     })
   })
 
