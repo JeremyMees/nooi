@@ -20,7 +20,6 @@
     "deps": "npx taze -w"
   },
   "dependencies": {
-    "@formkit/tempo": "^1.1.0",
     "@internationalized/date": "^3.12.4",
     "@nuxt/image": "^2.2.0",
     "@nuxt/ui": "^4.12.0",

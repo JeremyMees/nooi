@@ -1,5 +1,3 @@
-import { addDay } from '@formkit/tempo'
-
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export interface MailProps {

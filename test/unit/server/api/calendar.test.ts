@@ -50,6 +50,19 @@ describe('GET /api/calendar', () => {
     expect(rosters.lte).toHaveBeenCalledWith('day', '2026-10-21')
   })
 
+  it.each([
+    ['0', '2025-12-21', '2026-02-18'],
+    ['11', '2026-11-20', '2027-01-21'],
+  ])('crosses the year boundary for month %s', async (month, from, to) => {
+    const events = mockChain({ data: [], error: null })
+    mockFrom({ events, rosters: mockChain({ data: [], error: null }) })
+
+    await handler(request({ year: '2026', month }))
+
+    expect(events.gte).toHaveBeenCalledWith('day', from)
+    expect(events.lte).toHaveBeenCalledWith('day', to)
+  })
+
   it('only counts confirmed reservations and never selects contact details', async () => {
     const events = mockChain({ data: [], error: null })
     mockFrom({ events, rosters: mockChain({ data: [], error: null }) })

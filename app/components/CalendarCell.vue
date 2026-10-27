@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { sameDay } from '@formkit/tempo'
-
 const props = defineProps<{
   day: CalendarTile
   events: EventRow[]

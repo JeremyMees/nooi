@@ -1,16 +1,42 @@
-import {
-  format,
-  range,
-  sameDay,
-  addDay,
-  addYear,
-  isBefore,
-} from '@formkit/tempo'
-import type { Format } from '@formkit/tempo'
-
-const formatDefault: Format = { date: 'medium', time: 'short' }
 const locale = 'nl'
 const gridSize = 42
+const dateOnly = /^\d{4}-\d{2}-\d{2}$/
+
+const tileKey = new Intl.DateTimeFormat(locale, {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+})
+const mediumDate = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' })
+const fullDate = new Intl.DateTimeFormat(locale, { dateStyle: 'full' })
+const monthName = new Intl.DateTimeFormat(locale, { month: 'long' })
+const weekdayName = new Intl.DateTimeFormat(locale, { weekday: 'short' })
+
+export function toDate(value: string | Date): Date {
+  if (value instanceof Date) return value
+  if (!dateOnly.test(value)) return new Date(value)
+
+  const [year, month, day] = value.split('-').map(Number)
+
+  return new Date(year!, month! - 1, day!)
+}
+
+export function sameDay(a: string | Date, b: string | Date): boolean {
+  const first = toDate(a)
+  const second = toDate(b)
+
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  )
+}
+
+export function addDay(date: Date, amount: number): Date {
+  const next = new Date(date)
+  next.setDate(next.getDate() + amount)
+
+  return next
+}
 
 export function padDate(date: number): string {
   return date.toString().padStart(2, '0')
@@ -23,15 +49,15 @@ export function isValidDateString(dateString: string): boolean {
 }
 
 export function isBeforeDeadline(date: Date, deadline: Date): boolean {
-  return isBefore(date, deadline) || sameDay(date, deadline)
+  return date < deadline || sameDay(date, deadline)
 }
 
 export function isAfterDeadline(date: Date, deadline: Date): boolean {
-  return isBefore(deadline, date) && !sameDay(date, deadline)
+  return deadline < date && !sameDay(date, deadline)
 }
 
 export function dateInPast(date: Date): boolean {
-  return isBefore(date, addDay(new Date(), -1))
+  return date < addDay(new Date(), -1)
 }
 
 export function sameYear(date: DisplayDate, current: Date): boolean {
@@ -43,11 +69,11 @@ export function sameMonth(date: DisplayDate, current: Date): boolean {
 }
 
 export function formatDateUI(date: string): string {
-  return format(new Date(date), { date: 'medium' }, locale)
+  return mediumDate.format(new Date(date))
 }
 
 export function formatDateMail(date: string): string {
-  return format(new Date(date), { date: 'full' }, locale)
+  return fullDate.format(new Date(date))
 }
 
 export function formatDateUrl(date: string): string {
@@ -79,7 +105,13 @@ export function getYesterday(): Date {
 }
 
 export function getNextYear(): Date {
-  return addYear(new Date(), 1)
+  const next = new Date()
+  const month = next.getMonth()
+  next.setFullYear(next.getFullYear() + 1)
+
+  if (next.getMonth() !== month) next.setDate(0)
+
+  return next
 }
 
 export function roundTime(time: string): string {
@@ -100,13 +132,15 @@ export function roundTime(time: string): string {
 }
 
 export function getMonths(): string[] {
-  return range('MMMM', locale)
+  return Array.from({ length: 12 }, (_, month) =>
+    monthName.format(new Date(2026, month, 1)),
+  )
 }
 
 export function getDaysOfWeek(): string[] {
-  const [sunday, ...remainingDays] = range('ddd', locale)
-
-  return [...remainingDays, ...(sunday ? [sunday] : [])]
+  return Array.from({ length: 7 }, (_, day) =>
+    weekdayName.format(new Date(2026, 0, 5 + day)),
+  )
 }
 
 export function addMonth(date: DisplayDate, increment: number): DisplayDate {
@@ -139,7 +173,7 @@ export function getCalenderDays({ year, month }: DisplayDate): CalendarTile[] {
 
   const addTile = (date: Date, currentMonth: boolean = false) => {
     dates.push({
-      key: format(date, formatDefault, locale),
+      key: tileKey.format(date),
       date: date.getDate(),
       dateFull: date,
       currentMonth,

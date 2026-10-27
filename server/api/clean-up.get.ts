@@ -1,11 +1,9 @@
-import { addDay } from '@formkit/tempo'
 export default defineEventHandler(async event => {
   requireCron(event)
 
   const supabase = serviceClient()
 
-  const date = addDay(new Date(), -30)
-  const day = `${date.getFullYear()}-${padDate(date.getMonth() + 1)}-${padDate(date.getDate())}`
+  const day = formatDay(addDay(new Date(), -30))
 
   const { data, error } = await supabase
     .from('reservations')

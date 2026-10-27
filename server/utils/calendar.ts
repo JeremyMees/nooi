@@ -1,5 +1,3 @@
-import { addMonth, monthDays } from '@formkit/tempo'
-
 export interface CalendarQuery {
   year: number
   month: number
@@ -25,14 +23,18 @@ export function parseCalendarQuery(
 }
 
 export function calendarRange(year: number, month: number) {
-  const shown = new Date(year, month)
-  const prev = addMonth(shown, -1)
-  const next = addMonth(shown, 1)
+  const prev = new Date(year, month - 1, 1)
+  const next = new Date(year, month + 1, 1)
+  const edge = (date: Date) =>
+    formatDay(
+      new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        daysInMonth(date.getFullYear(), date.getMonth()) - 10,
+      ),
+    )
 
-  return {
-    from: `${prev.getFullYear()}-${padDate(prev.getMonth() + 1)}-${padDate(monthDays(prev) - 10)}`,
-    to: `${next.getFullYear()}-${padDate(next.getMonth() + 1)}-${padDate(monthDays(next) - 10)}`,
-  }
+  return { from: edge(prev), to: edge(next) }
 }
 
 const eventSelect = '*, reservations:reservations(id, spots)'

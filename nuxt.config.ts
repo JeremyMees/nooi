@@ -60,7 +60,6 @@ export default defineNuxtConfig({
       include: [
         '@vue/devtools-kit',
         '@unhead/schema-org/vue',
-        '@formkit/tempo',
         '@vue/devtools-core',
         'marked',
       ],

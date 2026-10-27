@@ -1,17 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  addDay,
   addMonth,
   afterTime,
   beforeTime,
   dateInPast,
   daysInMonth,
   formatDateUrl,
+  formatDateMail,
+  formatDateUI,
   formatDay,
   formatHour,
   formatHourText,
   getCalenderDays,
   getDaysOfWeek,
   getMonths,
+  getNextYear,
   getYesterday,
   isAfterDeadline,
   isBeforeDeadline,
@@ -19,11 +23,13 @@ import {
   isValidDateString,
   padDate,
   roundTime,
+  sameDay,
   sameMonth,
   sameTime,
   sameYear,
   splitTime,
   timeToMinutes,
+  toDate,
 } from '~~/shared/utils/date-helpers'
 
 describe('padDate', () => {
@@ -272,8 +278,12 @@ describe('sameTime', () => {
 })
 
 describe('getMonths', () => {
-  it('returns twelve month names', () => {
-    expect(getMonths()).toHaveLength(12)
+  it('returns the twelve Dutch month names in order', () => {
+    const months = getMonths()
+
+    expect(months).toHaveLength(12)
+    expect(months[0]).toBe('januari')
+    expect(months[11]).toBe('december')
   })
 })
 
@@ -392,5 +402,93 @@ describe('isWithinRoster', () => {
 
   it('refuses everything without openings', () => {
     expect(isWithinRoster('19:00', [])).toBe(false)
+  })
+})
+
+describe('toDate', () => {
+  it('reads a plain date as local midnight', () => {
+    expect(toDate('2026-07-10')).toEqual(new Date(2026, 6, 10))
+  })
+
+  it('keeps a full timestamp as given', () => {
+    expect(toDate('2026-07-10T18:00:00Z').toISOString()).toBe(
+      '2026-07-10T18:00:00.000Z',
+    )
+  })
+
+  it('passes a date through untouched', () => {
+    const date = new Date(2026, 6, 10)
+
+    expect(toDate(date)).toBe(date)
+  })
+})
+
+describe('sameDay', () => {
+  it('ignores the time of day', () => {
+    expect(
+      sameDay(new Date(2026, 6, 10, 0, 1), new Date(2026, 6, 10, 23, 59)),
+    ).toBe(true)
+  })
+
+  it('compares a plain date with a moment on that day', () => {
+    expect(sameDay('2026-07-10', new Date(2026, 6, 10, 23, 30))).toBe(true)
+  })
+
+  it('tells neighbouring days apart', () => {
+    expect(sameDay('2026-07-10', '2026-07-11')).toBe(false)
+  })
+})
+
+describe('addDay', () => {
+  it('moves across a month end', () => {
+    expect(addDay(new Date(2026, 0, 31), 1)).toEqual(new Date(2026, 1, 1))
+  })
+
+  it('goes back in time with a negative amount', () => {
+    expect(addDay(new Date(2026, 0, 1), -1)).toEqual(new Date(2025, 11, 31))
+  })
+
+  it('keeps the time of day', () => {
+    expect(addDay(new Date(2026, 2, 28, 18, 30), 1)).toEqual(
+      new Date(2026, 2, 29, 18, 30),
+    )
+  })
+
+  it('leaves the given date alone', () => {
+    const date = new Date(2026, 6, 10)
+
+    addDay(date, 5)
+
+    expect(date).toEqual(new Date(2026, 6, 10))
+  })
+})
+
+describe('Dutch date formats', () => {
+  it('formats a short date for the interface', () => {
+    expect(formatDateUI('2026-07-10')).toBe('10 jul 2026')
+  })
+
+  it('formats a full date for emails', () => {
+    expect(formatDateMail('2026-07-10')).toBe('vrijdag 10 juli 2026')
+  })
+})
+
+describe('getNextYear', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('returns the same day next year', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 6, 10, 12))
+
+    expect(formatDay(getNextYear())).toBe('2027-07-10')
+  })
+
+  it('falls back to the 28th after a leap day', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2028, 1, 29, 12))
+
+    expect(formatDay(getNextYear())).toBe('2029-02-28')
   })
 })
