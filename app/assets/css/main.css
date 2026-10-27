@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-@source "../../../formkit/";
-
 @theme inline {
   --font-mukta: 'Mukta', sans-serif;
 

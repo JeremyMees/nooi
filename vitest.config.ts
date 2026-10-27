@@ -46,7 +46,6 @@ export default defineConfig({
         'app/assets/**',
         'app/app.vue',
         'app/plugins/**',
-        'formkit/**',
         'emails/**',
       ],
     },

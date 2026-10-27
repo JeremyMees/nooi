@@ -11,7 +11,7 @@ Calendar and booking app for Nooi, a community meeting space in Diest. Lives at
 - **Resend** — transactional emails
 - **Upstash QStash** — scheduled reminder emails
 - **Nuxt UI** + **Tailwind CSS** — UI
-- **FormKit** — forms
+- **Zod Mini** — form validation
 - **Vercel** — hosting
 
 ## Pages

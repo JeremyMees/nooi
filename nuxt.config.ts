@@ -1,4 +1,3 @@
-import path from 'path'
 import vue from '@vitejs/plugin-vue'
 import seo from './shared/constants/seo'
 
@@ -6,7 +5,6 @@ export default defineNuxtConfig({
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    '@formkit/nuxt',
     '@nuxt/image',
     '@nuxt/eslint',
     '@nuxt/ui',
@@ -61,9 +59,6 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         '@vue/devtools-kit',
-        '@formkit/core',
-        '@formkit/icons',
-        '@formkit/i18n',
         '@unhead/schema-org/vue',
         '@formkit/tempo',
         '@vue/devtools-core',
@@ -71,8 +66,6 @@ export default defineNuxtConfig({
       ],
     },
   },
-
-  formkit: { configFile: './formkit/config' },
 
   image: { quality: 80 },
 
