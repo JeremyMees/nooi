@@ -78,7 +78,12 @@ export default defineNuxtConfig({
 
   pinia: { storesDirs: ['./stores/**'] },
 
-  ui: { fonts: false, colorMode: false },
+  ui: { colorMode: false },
+
+  fonts: {
+    defaults: { weights: [300, 400, 500, 700], subsets: ['latin'] },
+    families: [{ name: 'Mukta', provider: 'google' }],
+  },
 
   icon: {
     customCollections: [{ prefix: 'nooi', dir: './app/assets/icons' }],
