@@ -28,3 +28,7 @@ logs
 .claude
 skills-lock.json
 coverage
+
+# Maizzle
+.maizzle
+server/assets/emails

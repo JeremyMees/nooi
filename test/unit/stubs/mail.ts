@@ -1,19 +1,17 @@
 import { vi } from 'vitest'
+import './storage'
 
 const hoisted = vi.hoisted(() => ({
   send: vi.fn(),
-  render: vi.fn(async () => '<html>rendered</html>'),
 }))
 
-export const { send, render } = hoisted
+export const { send } = hoisted
 
 vi.mock('resend', () => ({
   Resend: vi.fn(function (this: { emails: { send: typeof hoisted.send } }) {
     this.emails = { send: hoisted.send }
   }),
 }))
-
-vi.mock('@vue-email/render', () => ({ render: hoisted.render }))
 
 export function mockSend(...results: { data?: unknown; error?: unknown }[]) {
   send.mockReset()

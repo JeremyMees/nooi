@@ -1,4 +1,3 @@
-import vue from '@vitejs/plugin-vue'
 import seo from './shared/constants/seo'
 
 export default defineNuxtConfig({
@@ -10,6 +9,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxtjs/seo',
     '@sentry/nuxt/module',
+    '@maizzle/nuxt',
     '@nuxt/test-utils/module',
   ],
 
@@ -49,12 +49,6 @@ export default defineNuxtConfig({
     server: false,
   },
 
-  nitro: {
-    rollupConfig: {
-      plugins: [vue()],
-    },
-  },
-
   vite: {
     optimizeDeps: {
       include: [
@@ -64,6 +58,14 @@ export default defineNuxtConfig({
         'marked',
       ],
     },
+  },
+
+  maizzle: {
+    content: ['app/emails/*.vue'],
+    components: { source: ['app/emails/components'] },
+    css: { base: 'app/emails' },
+    static: { source: [] },
+    plaintext: true,
   },
 
   image: { quality: 80 },

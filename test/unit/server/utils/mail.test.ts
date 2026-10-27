@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
 import { mockSend, send } from '~~/test/unit/stubs/mail'
+import { mockStorage, setStorageItem } from '~~/test/unit/stubs/storage'
 import { sendConfirmation } from '~~/server/utils/mail'
 import type { ReservationWithEvent } from '~~/shared/types/supabase'
 
@@ -30,6 +31,7 @@ function reservation(
 beforeEach(() => {
   mockRuntimeConfig({ resendApiKey: 're_test' })
   mockSend()
+  mockStorage()
 })
 
 describe('sendConfirmation', () => {
@@ -47,7 +49,8 @@ describe('sendConfirmation', () => {
         from: 'Nooi <zin@nooi.be>',
         to: 'jef@example.com',
         subject,
-        html: '<html>rendered</html>',
+        html: '<p>Jef Van Laer|maandag 14 september 2026|19:00|</p>',
+        text: 'Jef Van Laer|maandag 14 september 2026|19:00|',
       },
       { idempotencyKey: 'confirmation/7' },
     )
@@ -66,5 +69,27 @@ describe('sendConfirmation', () => {
     await expect(sendConfirmation(reservation())).resolves.toEqual({
       error: 'suppressed recipient',
     })
+  })
+
+  it('names the event in an event confirmation', async () => {
+    await sendConfirmation(
+      reservation({ type: 'event', event: { name: 'Minipainting' } }),
+    )
+
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        text: 'Jef Van Laer|maandag 14 september 2026|19:00|Minipainting',
+      }),
+      expect.anything(),
+    )
+  })
+
+  it('reports a missing compiled template instead of throwing', async () => {
+    setStorageItem('emails:ReservationSuccess.html', null)
+
+    await expect(sendConfirmation(reservation())).resolves.toEqual({
+      error: 'Compiled email template "ReservationSuccess" not found',
+    })
+    expect(send).not.toHaveBeenCalled()
   })
 })

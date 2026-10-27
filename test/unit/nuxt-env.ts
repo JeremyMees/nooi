@@ -37,6 +37,7 @@ export function nuxtAutoImports(): Plugin {
         'getRouterParam',
         'useSession',
       ].map(name => ({ name, from: 'h3' })),
+      { name: 'useStorage', from: 'nitropack/runtime' },
     ],
     presets: ['vue'],
   })

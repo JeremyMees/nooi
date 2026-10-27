@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import '~~/test/unit/stubs/storage'
 import {
   brusselsDay,
   reminderDay,
@@ -8,6 +9,7 @@ import {
   reportRecipients,
   reportSubject,
   splitReminders,
+  reportValues,
 } from '~~/server/utils/reminders'
 import type { ReminderReport } from '~~/shared/types/mails'
 import type { ReservationWithEvent } from '~~/shared/types/supabase'
@@ -189,5 +191,46 @@ describe('reportSubject and reportKey', () => {
     expect(reportKey('2026-09-14', rerun)).not.toBe(
       reportKey('2026-09-14', report),
     )
+  })
+})
+
+describe('reportValues', () => {
+  const report: ReminderReport = {
+    date: 'dinsdag 15 september 2026',
+    total: 2,
+    sent: [{ id: 1, name: 'Jef & An', email: 'jef@example.com' }],
+    failed: [],
+    skipped: [{ id: 3, name: 'Piet', email: '' }],
+  }
+
+  it('turns the counts into text', () => {
+    expect(reportValues(report)).toMatchObject({
+      total: '2',
+      sentCount: '1',
+      failedCount: '0',
+      skippedCount: '1',
+      nothingToDo: undefined,
+    })
+  })
+
+  it('escapes names in the html list and keeps them readable in text', () => {
+    const { sentList } = reportValues(report)
+
+    expect(sentList.html).toContain('Jef &amp; An &middot; jef@example.com')
+    expect(sentList.text).toBe('Jef & An · jef@example.com · #1')
+  })
+
+  it('leaves the email out of a skipped line without one', () => {
+    expect(reportValues(report).skippedList.text).toBe('Piet · #3')
+  })
+
+  it('returns empty lists so their sections are hidden', () => {
+    expect(reportValues(report).failedList).toEqual({ html: '', text: '' })
+  })
+
+  it('flags a day without reservations', () => {
+    expect(
+      reportValues({ ...report, total: 0, sent: [], skipped: [] }).nothingToDo,
+    ).toBe('ja')
   })
 })

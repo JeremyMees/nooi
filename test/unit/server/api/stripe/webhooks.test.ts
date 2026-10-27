@@ -3,7 +3,7 @@ import { Stripe } from 'stripe'
 import { mockEvent } from '~~/test/unit/stubs/api-event'
 import { mockRuntimeConfig } from '~~/test/unit/stubs/runtime-config'
 import { mockChain, mockFrom } from '~~/test/unit/stubs/supabase'
-import { mockSend, render, send } from '~~/test/unit/stubs/mail'
+import { mockSend, send } from '~~/test/unit/stubs/mail'
 import handler from '~~/server/api/stripe/webhooks'
 
 const reservation = {
@@ -140,16 +140,11 @@ describe('POST /api/stripe/webhooks', () => {
         paymentIdentifier: 'pi_123',
         paymentNeeded: false,
       })
-      expect(render).toHaveBeenCalledWith(expect.anything(), {
-        name: 'Jef Van Laer',
-        date: 'maandag 14 september 2026',
-        time: '19:00',
-        event: 'Minipainting',
-      })
       expect(send).toHaveBeenCalledWith(
         expect.objectContaining({
           to: 'jef@example.com',
           subject: 'Jouw inschrijving bij Nooi',
+          html: '<p>Jef Van Laer|maandag 14 september 2026|19:00|Minipainting</p>',
         }),
         { idempotencyKey: 'confirmation/2599' },
       )

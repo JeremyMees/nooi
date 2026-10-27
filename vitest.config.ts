@@ -1,6 +1,5 @@
 import { defineConfig } from 'vitest/config'
 import { defineVitestProject } from '@nuxt/test-utils/config'
-import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
 import { nuxtAliases, nuxtAutoImports } from './test/unit/nuxt-env.ts'
 
@@ -10,7 +9,7 @@ export default defineConfig({
   test: {
     projects: [
       {
-        plugins: [vue(), nuxtAutoImports()],
+        plugins: [nuxtAutoImports()],
         resolve: { alias: nuxtAliases },
         test: {
           name: 'unit',
@@ -46,7 +45,7 @@ export default defineConfig({
         'app/assets/**',
         'app/app.vue',
         'app/plugins/**',
-        'emails/**',
+        'app/emails/**',
       ],
     },
   },

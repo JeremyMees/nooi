@@ -1,6 +1,3 @@
-import Template from '~~/emails/Reminder.vue'
-import ReportTemplate from '~~/emails/ReminderReport.vue'
-
 const throttle = 600
 
 export default defineEventHandler(async event => {
@@ -36,13 +33,15 @@ export default defineEventHandler(async event => {
 
     // The idempotency key expires after 24h, so a retried or manually
     // triggered run can never send the same reminder twice.
-    const { error: sendError } = await sendMail({
-      to: reservation.email as string,
-      subject: 'We zien je snel in Nooi!',
-      template: Template,
-      props: mailProps(reservation),
-      idempotencyKey: `reminder/${reservation.id}`,
-    })
+    const { error: sendError } = await sendTemplateMail(
+      'Reminder',
+      mailProps(reservation),
+      {
+        to: reservation.email as string,
+        subject: 'We zien je snel in Nooi!',
+        idempotencyKey: `reminder/${reservation.id}`,
+      },
+    )
 
     if (sendError) {
       failed.push(reminderOutcome(reservation, sendError))
@@ -88,13 +87,15 @@ async function sendReport(
     return { sentTo: [], error: null }
   }
 
-  const { error } = await sendMail({
-    to,
-    subject: reportSubject(report),
-    template: ReportTemplate,
-    props: report,
-    idempotencyKey: reportKey(day, report),
-  })
+  const { error } = await sendTemplateMail(
+    'ReminderReport',
+    reportValues(report),
+    {
+      to,
+      subject: reportSubject(report),
+      idempotencyKey: reportKey(day, report),
+    },
+  )
 
   return { sentTo: to, error }
 }

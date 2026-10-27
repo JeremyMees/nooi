@@ -1,12 +1,5 @@
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export interface MailProps {
-  name: string
-  date: string
-  time: string
-  event?: string
-}
-
 export interface SplitReminders {
   recipients: ReservationWithEvent[]
   skipped: ReservationWithEvent[]
@@ -57,6 +50,48 @@ export function reminderOutcome(
     name: reservation.name,
     email: reservation.email ?? '',
     ...(reason ? { reason } : {}),
+  }
+}
+
+const itemStyle = 'margin: 16px 0; font-size: 14px; line-height: 24px;'
+const highlightStyle = 'color: #305445;'
+
+function reportList(
+  items: ReminderOutcome[],
+  line: (item: ReminderOutcome) => { html: string; text: string },
+): RawEmailValue {
+  const lines = items.map(line)
+
+  return {
+    html: lines
+      .map(({ html }) => `<p style="${itemStyle}">${html}</p>`)
+      .join(''),
+    text: lines.map(({ text }) => text).join('\n\n'),
+  }
+}
+
+export function reportValues(report: ReminderReport): ReportValues {
+  const { date, total, sent, failed, skipped } = report
+
+  return {
+    date,
+    total: String(total),
+    sentCount: String(sent.length),
+    failedCount: String(failed.length),
+    skippedCount: String(skipped.length),
+    nothingToDo: total ? undefined : 'ja',
+    failedList: reportList(failed, ({ id, name, email, reason }) => ({
+      html: `${escapeHTML(name)} &middot; ${escapeHTML(email)} &middot; #${id}<br><span style="${highlightStyle}">${escapeHTML(reason ?? '')}</span>`,
+      text: `${name} · ${email} · #${id}\n${reason ?? ''}`,
+    })),
+    skippedList: reportList(skipped, ({ id, name, email }) => ({
+      html: `${escapeHTML(name)} &middot; #${id}${email ? ` &middot; <span style="${highlightStyle}">${escapeHTML(email)}</span>` : ''}`,
+      text: `${name} · #${id}${email ? ` · ${email}` : ''}`,
+    })),
+    sentList: reportList(sent, ({ id, name, email }) => ({
+      html: `${escapeHTML(name)} &middot; ${escapeHTML(email)} &middot; #${id}`,
+      text: `${name} · ${email} · #${id}`,
+    })),
   }
 }
 
