@@ -1,11 +1,3 @@
-export interface Mail {
-  props: Record<string, any>
-  from: string
-  to: string
-  subject: string
-  template: string
-}
-
 export interface ReminderOutcome {
   id: number
   name: string

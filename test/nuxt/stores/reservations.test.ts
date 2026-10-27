@@ -64,7 +64,7 @@ describe('useReservationStore', () => {
     serveCalendar()
     hoisted.rosterStore.rosters = []
     hoisted.toastAdd.mockClear()
-    Object.keys(query).forEach(key => delete query[key])
+    Object.keys(query).forEach(key => Reflect.deleteProperty(query, key))
     hoisted.cookie.value = undefined
     hoisted.removeQuery.mockClear()
     hoisted.navigateTo.mockClear()

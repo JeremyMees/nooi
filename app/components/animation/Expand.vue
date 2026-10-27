@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const props = defineProps<{ height?: string }>()
 
-function enter(element: any): void {
+function enter(element: Element): void {
+  if (!(element instanceof HTMLElement)) return
+
   const width = getComputedStyle(element).width
 
   element.style.width = width
@@ -11,28 +13,32 @@ function enter(element: any): void {
 
   const height = getComputedStyle(element).height
 
-  element.style.width = null
-  element.style.position = null
-  element.style.visibility = null
-  element.style.height = 0
+  element.style.width = ''
+  element.style.position = ''
+  element.style.visibility = ''
+  element.style.height = '0'
 
   const _ = getComputedStyle(element).height
 
   requestAnimationFrame(() => (element.style.height = height))
 }
 
-function afterEnter(element: any): void {
+function afterEnter(element: Element): void {
+  if (!(element instanceof HTMLElement)) return
+
   element.style.height = props.height ?? 'auto'
 }
 
-function leave(element: any): void {
+function leave(element: Element): void {
+  if (!(element instanceof HTMLElement)) return
+
   const height = getComputedStyle(element).height
 
   element.style.height = height
 
   const _ = getComputedStyle(element).height
 
-  requestAnimationFrame(() => (element.style.height = 0))
+  requestAnimationFrame(() => (element.style.height = '0'))
 }
 </script>
 

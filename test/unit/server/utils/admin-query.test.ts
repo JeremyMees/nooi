@@ -107,11 +107,10 @@ describe('sbQuery', () => {
 
     await sbQuery(supabase, { table: 'events' })
 
-    expect(supabase.order).toHaveBeenCalledWith(
-      'day',
-      { ascending: true },
-      { nullsFirst: false },
-    )
+    expect(supabase.order).toHaveBeenCalledWith('day', {
+      ascending: true,
+      nullsFirst: false,
+    })
     expect(supabase.order).toHaveBeenCalledWith('start', { ascending: true })
     expect(supabase.order).toHaveBeenCalledWith('id', { ascending: true })
   })
@@ -124,11 +123,10 @@ describe('sbQuery', () => {
       sort: { field: 'name', order: 'desc' },
     })
 
-    expect(supabase.order).toHaveBeenCalledWith(
-      'name',
-      { ascending: false },
-      { nullsFirst: false },
-    )
+    expect(supabase.order).toHaveBeenCalledWith('name', {
+      ascending: false,
+      nullsFirst: false,
+    })
   })
 
   it('paginates with a range when page and perPage are numbers', async () => {

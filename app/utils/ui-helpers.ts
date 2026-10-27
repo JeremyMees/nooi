@@ -1,9 +1,4 @@
-export function countSpots(data: Record<string, any>): number {
-  return data.reservations.reduce(
-    (acc: number, curr: Record<string, number>) => acc + (curr.spots || 0),
-    0,
-  )
-}
+import type { LocationQueryRaw } from 'vue-router'
 
 export function translateStatus(status: CalendarStatus): string {
   switch (status) {
@@ -42,14 +37,14 @@ export function removeQuery(names: string[]): void {
   const router = useRouter()
   const route = useRoute()
 
-  const query = { ...route.query }
-
-  names.forEach(name => delete query[name])
+  const query = Object.fromEntries(
+    Object.entries(route.query).filter(([key]) => !names.includes(key)),
+  )
 
   router.push({ query })
 }
 
-export function addQuery(values: Record<string, any>): void {
+export function addQuery(values: LocationQueryRaw): void {
   const router = useRouter()
   const route = useRoute()
 

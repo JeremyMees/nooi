@@ -63,7 +63,7 @@ async function submit(
         duration: 5000,
       })
     }
-  } catch (error) {
+  } catch {
     toast.add({
       color: 'error',
       title: 'Oeps!',

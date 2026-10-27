@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const store = useReservationStore()
-const toast = useToast()
 const route = useRoute()
 
 const visible = ref<boolean>(false)

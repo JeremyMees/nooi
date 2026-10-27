@@ -168,7 +168,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
       } else if (session_id) {
         await checkPaymentStatus(session_id as string)
       }
-    } catch (error) {
+    } catch {
       toast.add({
         color: 'error',
         title: 'Oeps!',

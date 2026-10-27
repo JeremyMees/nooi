@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import AdminTable from '~/components/AdminTable.vue'
-import { mockEvent, setup } from '~~/test/mock'
+import { setup } from '~~/test/mock'
 
 const fetchData = vi.fn()
 const createData = vi.fn()
@@ -10,8 +10,8 @@ const updateData = vi.fn()
 const removeData = vi.fn()
 let events: EventRow[] = []
 
-const rows: Record<string, unknown[]> = {}
-const counts: Record<string, number> = {}
+let rows: Record<string, unknown[]> = {}
+let counts: Record<string, number> = {}
 
 mockNuxtImport('useAdminStore', () => () => ({
   data: Object.fromEntries(
@@ -46,8 +46,8 @@ describe('AdminTable', () => {
     updateData.mockClear()
     removeData.mockClear()
     events = []
-    Object.keys(rows).forEach(key => delete rows[key])
-    Object.keys(counts).forEach(key => delete counts[key])
+    rows = {}
+    counts = {}
   })
 
   it('matches snapshot', async () => {

@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   addQuery,
   calculateCellClick,
-  countSpots,
   generateCellBg,
   getReservedSpots,
   getStatus,
@@ -11,24 +10,6 @@ import {
   translateStatus,
 } from '~/utils/ui-helpers'
 import { mockRosters } from '~~/test/mock'
-
-describe('countSpots', () => {
-  it('sums the spots across all reservations', () => {
-    expect(
-      countSpots({ reservations: [{ spots: 2 }, { spots: 3 }, { spots: 1 }] }),
-    ).toBe(6)
-  })
-
-  it('treats missing spots as zero', () => {
-    expect(countSpots({ reservations: [{ spots: 2 }, {}, { spots: 4 }] })).toBe(
-      6,
-    )
-  })
-
-  it('returns zero for no reservations', () => {
-    expect(countSpots({ reservations: [] })).toBe(0)
-  })
-})
 
 describe('getReservedSpots', () => {
   it('sums the spots of every reservation', () => {

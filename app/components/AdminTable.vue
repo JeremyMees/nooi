@@ -2,7 +2,7 @@
 import type { TableColumn } from '@nuxt/ui'
 import { values } from '~~/shared/constants/admin'
 
-type Row = Record<string, any>
+type Row = EventReservation | AdminReservationRow | RosterRow
 
 const props = defineProps<{ type: DatabaseTable }>()
 
@@ -66,15 +66,24 @@ onMounted(async () => {
   await store.fetchData(props.type)
 })
 
+function cellValue(row: Row, field: string): unknown {
+  return Reflect.get(row, field)
+}
+
 function generateString(data: Row, field: string): string {
-  if (!data[field]) return ''
-  else if (['start', 'end'].includes(field)) return formatHour(data[field])
-  else if (field === 'type') return getType(data[field])
-  else if (field === 'status') return getStatus(data[field])
-  else if (field === 'reservations') return countSpots(data).toString()
-  else if (field === 'event') return data[field].name
-  else if (field === 'day') return formatDateUI(data[field])
-  else return data[field]
+  const value = cellValue(data, field)
+
+  if (!value) return ''
+  else if (['start', 'end'].includes(field)) return formatHour(String(value))
+  else if (field === 'type') return getType(String(value))
+  else if (field === 'status') return getStatus(String(value))
+  else if (field === 'reservations')
+    return getReservedSpots(
+      value as EventReservation['reservations'],
+    ).toString()
+  else if (field === 'event') return (value as { name: string }).name
+  else if (field === 'day') return formatDateUI(String(value))
+  else return String(value)
 }
 
 async function submit(
@@ -302,8 +311,16 @@ function clearFilters(): void {
       >
         <UIcon
           v-if="['exclusive', 'allowReservation'].includes(column.field)"
-          :name="row.original[column.field] ? 'i-lucide-check' : 'i-lucide-x'"
-          :class="[row.original[column.field] ? 'text-teal' : 'text-secondary']"
+          :name="
+            cellValue(row.original, column.field)
+              ? 'i-lucide-check'
+              : 'i-lucide-x'
+          "
+          :class="[
+            cellValue(row.original, column.field)
+              ? 'text-teal'
+              : 'text-secondary',
+          ]"
           class="size-6"
         />
         <span v-else>

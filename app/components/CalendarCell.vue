@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   day: CalendarTile
-  events: EventRow[]
+  events: EventReservation[]
 }>()
 
 const roster = useRosterStore()
@@ -12,7 +12,7 @@ const cell = ref<HTMLButtonElement>()
 const isOpen = computed<boolean>(() => roster.checkIfOpen(props.day.dateFull))
 const isPast = computed<boolean>(() => dateInPast(props.day.dateFull))
 
-const sortedEvents = computed<EventRow[]>(() => {
+const sortedEvents = computed<EventReservation[]>(() => {
   const _events = props.events
 
   return _events.sort((a, b) => a.start.localeCompare(b.start))
@@ -126,7 +126,8 @@ function handleClick(event: MouseEvent): void {
       :event="event"
       :class="{
         'pointer-events-none': isPast,
-        'opacity-60': isPast || countSpots(event) === event.spots,
+        'opacity-60':
+          isPast || getReservedSpots(event.reservations) === event.spots,
       }"
       @click.stop="addQuery({ event: event.id, status: 'info' })"
     />

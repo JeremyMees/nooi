@@ -7,7 +7,7 @@ export async function sbQuery<T>(
   const { table, select, page, perPage, search, eq, fuzzy, fields, sort } =
     options
 
-  let query: any = supabase
+  let query = supabase
     .from(table)
     .select(select || '*', { count: 'exact' })
     .gte('day', formatDay(new Date()))
@@ -24,19 +24,17 @@ export async function sbQuery<T>(
 
   if (!sort || (sort && sort.field === 'day')) {
     query = query
-      .order(
-        'day',
-        { ascending: sort ? sort.order === 'asc' : true },
-        { nullsFirst: false },
-      )
+      .order('day', {
+        ascending: sort ? sort.order === 'asc' : true,
+        nullsFirst: false,
+      })
       .order('start', { ascending: true })
       .order('id', { ascending: true })
   } else if (sort) {
-    query = query.order(
-      sort.field,
-      { ascending: sort.order === 'asc' },
-      { nullsFirst: false },
-    )
+    query = query.order(sort.field, {
+      ascending: sort.order === 'asc',
+      nullsFirst: false,
+    })
   }
 
   if (typeof page === 'number' && typeof perPage === 'number') {
