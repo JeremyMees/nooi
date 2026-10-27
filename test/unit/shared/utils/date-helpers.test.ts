@@ -15,6 +15,7 @@ import {
   getYesterday,
   isAfterDeadline,
   isBeforeDeadline,
+  isWithinRoster,
   isValidDateString,
   padDate,
   roundTime,
@@ -22,6 +23,7 @@ import {
   sameTime,
   sameYear,
   splitTime,
+  timeToMinutes,
 } from '~~/shared/utils/date-helpers'
 
 describe('padDate', () => {
@@ -355,5 +357,40 @@ describe('now-based helpers', () => {
     it('rejects a date in the past', () => {
       expect(isValidDateString('2020-01-01')).toBe(false)
     })
+  })
+})
+
+describe('timeToMinutes', () => {
+  it('counts the minutes since midnight', () => {
+    expect(timeToMinutes('19:30')).toBe(19 * 60 + 30)
+  })
+
+  it('places early morning hours after the evening', () => {
+    expect(timeToMinutes('01:00')).toBeGreaterThan(timeToMinutes('23:00'))
+  })
+})
+
+describe('isWithinRoster', () => {
+  const rosters = [
+    { start: '18:00', end: '20:00' },
+    { start: '21:00', end: '01:00' },
+  ]
+
+  it.each(['18:00', '19:30', '20:00', '23:30', '01:00'])(
+    'accepts %s inside an opening',
+    time => {
+      expect(isWithinRoster(time, rosters)).toBe(true)
+    },
+  )
+
+  it.each(['17:30', '20:30', '01:30'])(
+    'refuses %s outside every opening',
+    time => {
+      expect(isWithinRoster(time, rosters)).toBe(false)
+    },
+  )
+
+  it('refuses everything without openings', () => {
+    expect(isWithinRoster('19:00', [])).toBe(false)
   })
 })

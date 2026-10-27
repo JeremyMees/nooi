@@ -3,6 +3,6 @@
 exports[`ReservationDrawer > matches snapshot 1`] = `
 "<div open="true" side="right" description="Vul je gegevens in om te reserveren" ui="[object Object]"><span class="block"><span test-id="reservation-drawer-title" class="head-3 block">Reservatie / Verhuur <!--v-if--></span>
   <!--v-if--></span>
-  <form-kit-stub type="form" submit-label="Reserveren" config="[object Object]"></form-kit-stub>
+  <form submit-label="Reserveren"></form>
 </div>"
 `;

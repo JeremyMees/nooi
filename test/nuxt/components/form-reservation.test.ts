@@ -1,23 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { flushPromises, type VueWrapper } from '@vue/test-utils'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import FormReservation from '~/components/form/Reservation.vue'
-import {
-  mockEventReservation,
-  mockRoster,
-  mockRoute,
-  setup,
-} from '~~/test/mock'
+import FormTimeInput from '~/components/form/TimeInput.vue'
+import { mockEventReservation, mockRoster, mockRoute } from '~~/test/mock'
 
 let selectedEvent: EventReservation | undefined
 let current: RosterRow[]
 let query: Record<string, unknown>
 
 const form = reactive({
-  day: '2026-07-10',
+  day: '2026-07-10' as string | undefined,
   name: '',
   number: '',
   mail: '',
-  spots: '',
 })
 
 mockNuxtImport('useReservationStore', () => () => ({
@@ -35,24 +31,54 @@ mockNuxtImport('useRoute', () => () => mockRoute(query))
 
 async function mount() {
   return mountSuspended(FormReservation, {
+    props: { submitLabel: 'Reserveren' },
     global: {
-      stubs: {
-        FormKit: true,
-        AnimationReveal: { template: '<div><slot /></div>' },
-      },
+      stubs: { AnimationReveal: { template: '<div><slot /></div>' } },
     },
   })
 }
 
-function field(wrapper: Awaited<ReturnType<typeof mount>>, name: string) {
-  return wrapper.find(`[name="${name}"]`)
+const field = (wrapper: VueWrapper, name: string) =>
+  wrapper.find(`[test-id="booking-${name}"]`)
+
+const components = {
+  start: (wrapper: VueWrapper) => wrapper.findAllComponents(FormTimeInput)[0]!,
+  end: (wrapper: VueWrapper) => wrapper.findAllComponents(FormTimeInput)[1]!,
+  spots: (wrapper: VueWrapper) =>
+    wrapper.findComponent({ name: 'UInputNumber' }),
 }
+
+async function pick(
+  wrapper: VueWrapper,
+  name: keyof typeof components,
+  value: unknown,
+) {
+  components[name](wrapper).vm.$emit('update:modelValue', value)
+  await flushPromises()
+}
+
+async function type(wrapper: VueWrapper, name: string, value: string) {
+  await field(wrapper, name).setValue(value)
+  await flushPromises()
+}
+
+async function submit(wrapper: VueWrapper) {
+  await wrapper.find('form').trigger('submit')
+  await flushPromises()
+}
+
+async function fillContact(wrapper: VueWrapper) {
+  await type(wrapper, 'name', 'Jef Van Laer')
+  await type(wrapper, 'number', '0496264466')
+  await type(wrapper, 'email', 'jef@example.com')
+}
+
+const submitted = (wrapper: VueWrapper) => wrapper.emitted('submit')?.[0]?.[0]
 
 describe('FormReservation', () => {
   beforeEach(() => {
     selectedEvent = undefined
-    form.day = '2026-07-10'
-    form.spots = ''
+    Object.assign(form, { day: '2026-07-10', name: '', number: '', mail: '' })
     query = { type: 'reservation' }
     current = [
       {
@@ -60,7 +86,7 @@ describe('FormReservation', () => {
         id: 1,
         status: 'reservation',
         start: '20:00',
-        end: '22:00',
+        end: '23:00',
       },
       { ...mockRoster, id: 2, status: 'game', start: '18:00', end: '20:00' },
     ]
@@ -72,17 +98,36 @@ describe('FormReservation', () => {
     expect(field(wrapper, 'name').exists()).toBe(true)
     expect(field(wrapper, 'number').exists()).toBe(true)
     expect(field(wrapper, 'email').exists()).toBe(true)
+    expect(field(wrapper, 'submit').text()).toBe('Reserveren')
+  })
+
+  it('fills in the remembered contact details', async () => {
+    Object.assign(form, {
+      name: 'Jef Van Laer',
+      number: '0496264466',
+      mail: 'jef@example.com',
+    })
+
+    const wrapper = await mount()
+
+    expect((field(wrapper, 'name').element as HTMLInputElement).value).toBe(
+      'Jef Van Laer',
+    )
+    expect((field(wrapper, 'email').element as HTMLInputElement).value).toBe(
+      'jef@example.com',
+    )
+  })
+
+  it('remembers what the visitor types in the store', async () => {
+    const wrapper = await mount()
+
+    await type(wrapper, 'email', 'an@example.com')
+
+    expect(form.mail).toBe('an@example.com')
   })
 
   describe('time slots', () => {
-    it('bounds the start time by the roster for the current type', async () => {
-      const wrapper = await mount()
-
-      expect(field(wrapper, 'start').attributes('min')).toBe('20:00')
-      expect(field(wrapper, 'start').attributes('max')).toBe('22:00')
-    })
-
-    it('sorts multiple roster lines by start time', async () => {
+    it('lists the opening hours for the current type in order', async () => {
       current = [
         {
           ...mockRoster,
@@ -102,8 +147,7 @@ describe('FormReservation', () => {
 
       const wrapper = await mount()
 
-      expect(field(wrapper, 'start').attributes('min')).toBe('18:00')
-      expect(field(wrapper, 'start').attributes('max')).toBe('23:00')
+      expect(field(wrapper, 'hours').text()).toMatch(/18:00 - 20:00,\s+21:00/)
     })
 
     it('asks for an end time when reserving', async () => {
@@ -117,7 +161,7 @@ describe('FormReservation', () => {
 
       const wrapper = await mount()
 
-      expect(field(wrapper, 'start').attributes('label')).toBe('Tijdstip')
+      expect(wrapper.text()).toContain('Tijdstip')
       expect(field(wrapper, 'end').exists()).toBe(false)
     })
 
@@ -138,14 +182,54 @@ describe('FormReservation', () => {
       expect(field(wrapper, 'start').exists()).toBe(false)
       expect(field(wrapper, 'spots').exists()).toBe(true)
     })
+
+    it('refuses a start time outside the opening hours', async () => {
+      const wrapper = await mount()
+
+      await fillContact(wrapper)
+      await pick(wrapper, 'start', '19:00')
+      await pick(wrapper, 'end', '21:00')
+      await pick(wrapper, 'spots', 2)
+      await submit(wrapper)
+
+      expect(submitted(wrapper)).toBeUndefined()
+      expect(wrapper.text()).toContain('Wij zijn niet open op dit uur')
+    })
+
+    it('needs a reservation of at least an hour', async () => {
+      const wrapper = await mount()
+
+      await fillContact(wrapper)
+      await pick(wrapper, 'start', '20:30')
+      await pick(wrapper, 'end', '21:00')
+      await pick(wrapper, 'spots', 2)
+      await submit(wrapper)
+
+      expect(submitted(wrapper)).toBeUndefined()
+      expect(wrapper.text()).toContain('Reservatie mag minimum 1 uur zijn')
+    })
+
+    it('counts an hour from the half hour correctly', async () => {
+      const wrapper = await mount()
+
+      await fillContact(wrapper)
+      await pick(wrapper, 'start', '20:30')
+      await pick(wrapper, 'end', '21:30')
+      await pick(wrapper, 'spots', 2)
+      await submit(wrapper)
+
+      expect(submitted(wrapper)).toMatchObject({ start: '20:30', end: '21:30' })
+    })
   })
 
   describe('spots', () => {
     it('caps a reservation at the house maximum', async () => {
       const wrapper = await mount()
 
-      expect(field(wrapper, 'spots').attributes('max')).toBe('70')
-      expect(field(wrapper, 'spots').attributes('min')).toBe('1')
+      expect(components.spots(wrapper).props()).toMatchObject({
+        min: 1,
+        max: 70,
+      })
     })
 
     it('caps a table booking at eight', async () => {
@@ -154,7 +238,7 @@ describe('FormReservation', () => {
 
       const wrapper = await mount()
 
-      expect(field(wrapper, 'spots').attributes('max')).toBe('8')
+      expect(components.spots(wrapper).props('max')).toBe(8)
     })
 
     it('caps an event at the seats still free', async () => {
@@ -170,8 +254,10 @@ describe('FormReservation', () => {
 
       const wrapper = await mount()
 
-      expect(field(wrapper, 'spots').attributes('max')).toBe('15')
-      expect(field(wrapper, 'spots').attributes('min')).toBe('2')
+      expect(components.spots(wrapper).props()).toMatchObject({
+        min: 2,
+        max: 15,
+      })
     })
 
     it('takes the minimum from the roster when there is no event', async () => {
@@ -179,7 +265,7 @@ describe('FormReservation', () => {
 
       const wrapper = await mount()
 
-      expect(field(wrapper, 'spots').attributes('min')).toBe('4')
+      expect(components.spots(wrapper).props('min')).toBe(4)
     })
   })
 
@@ -205,56 +291,104 @@ describe('FormReservation', () => {
     })
   })
 
-  describe('time rounding', () => {
-    it('rounds a start time to the nearest half hour', async () => {
-      const wrapper = await mount()
-
-      setup(wrapper).start = '19:20'
-      await nextTick()
-
-      expect(setup(wrapper).start).toBe('19:30')
-    })
-
-    it('rounds an end time up to the next hour', async () => {
-      const wrapper = await mount()
-
-      setup(wrapper).end = '21:50'
-      await nextTick()
-
-      expect(setup(wrapper).end).toBe('22:00')
-    })
-
-    it('leaves a time already on the hour alone', async () => {
-      const wrapper = await mount()
-
-      setup(wrapper).start = '19:00'
-      await nextTick()
-
-      expect(setup(wrapper).start).toBe('19:00')
-    })
-  })
-
   describe('large groups', () => {
-    it('points groups of eight or more at the contact page', async () => {
+    beforeEach(() => {
       query = { type: 'game' }
       current = [{ ...mockRoster, status: 'game' }]
+    })
+
+    it('points groups of eight or more at the contact page', async () => {
       const wrapper = await mount()
 
-      form.spots = '8'
-      await nextTick()
+      await pick(wrapper, 'spots', 8)
 
-      expect(wrapper.html()).toContain('grotere groepen')
+      expect(field(wrapper, 'large-group').exists()).toBe(true)
     })
 
     it('stays quiet for a small table booking', async () => {
+      const wrapper = await mount()
+
+      await pick(wrapper, 'spots', 4)
+
+      expect(field(wrapper, 'large-group').exists()).toBe(false)
+    })
+  })
+
+  describe('submit', () => {
+    it('hands over a reservation with its times', async () => {
+      const wrapper = await mount()
+
+      await fillContact(wrapper)
+      await pick(wrapper, 'start', '20:00')
+      await pick(wrapper, 'end', '22:00')
+      await pick(wrapper, 'spots', 4)
+      await submit(wrapper)
+
+      expect(submitted(wrapper)).toEqual({
+        name: 'Jef Van Laer',
+        number: '0496264466',
+        email: 'jef@example.com',
+        spots: 4,
+        exclusive: false,
+        start: '20:00',
+        end: '22:00',
+      })
+    })
+
+    it('hands over a table booking without an end time', async () => {
       query = { type: 'game' }
       current = [{ ...mockRoster, status: 'game' }]
       const wrapper = await mount()
 
-      form.spots = '4'
-      await nextTick()
+      await fillContact(wrapper)
+      await pick(wrapper, 'start', '19:00')
+      await pick(wrapper, 'spots', 2)
+      await submit(wrapper)
 
-      expect(wrapper.html()).not.toContain('grotere groepen')
+      expect(submitted(wrapper)).toEqual({
+        name: 'Jef Van Laer',
+        number: '0496264466',
+        email: 'jef@example.com',
+        spots: 2,
+        exclusive: false,
+        start: '19:00',
+      })
+    })
+
+    it('hands over an event signup without times', async () => {
+      selectedEvent = { ...mockEventReservation, minSpots: 1, spots: 20 }
+      const wrapper = await mount()
+
+      await fillContact(wrapper)
+      await pick(wrapper, 'spots', 2)
+      await type(wrapper, 'info', 'Wij brengen taart mee')
+      await submit(wrapper)
+
+      expect(submitted(wrapper)).toEqual({
+        name: 'Jef Van Laer',
+        number: '0496264466',
+        email: 'jef@example.com',
+        spots: 2,
+        exclusive: false,
+        info: 'Wij brengen taart mee',
+      })
+    })
+
+    it.each([
+      ['name', 'Jef 123', 'Enkel letters en spaties'],
+      ['number', '+32496264466', 'Telefoonnummer moet 10 tot 12 cijfers zijn'],
+      ['email', 'jef@', 'Geen geldig e-mailadres'],
+    ])('refuses %s "%s"', async (name, value, message) => {
+      selectedEvent = { ...mockEventReservation, minSpots: 1, spots: 20 }
+      const wrapper = await mount()
+
+      await fillContact(wrapper)
+      await pick(wrapper, 'spots', 2)
+      await type(wrapper, name, value)
+      await submit(wrapper)
+
+      expect(submitted(wrapper)).toBeUndefined()
+      expect(wrapper.text()).toContain(message)
     })
   })
 })

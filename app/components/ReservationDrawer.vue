@@ -38,11 +38,12 @@ function confirmation(type: BookingType, event?: string): string {
     : 'Je reservatie is bevestigd. Tot binnenkort!'
 }
 
-async function submit(form: Omit<BookingRequest, 'type'>): Promise<void> {
+async function submit(
+  fields: Omit<BookingRequest, 'type' | 'event' | 'day'>,
+): Promise<void> {
   loading.value = true
 
   const event = store.selectedEvent
-  const fields = { ...form, spots: Number(form.spots) }
   const request: BookingRequest = event
     ? { ...fields, type: 'event', event: event.id }
     : {
@@ -124,15 +125,7 @@ async function submit(form: Omit<BookingRequest, 'type'>): Promise<void> {
       </div>
       <template v-else>
         <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
-        <FormKit
-          v-else
-          type="form"
-          :submit-label="submitLabel"
-          :config="{ validationVisibility: 'blur' }"
-          @submit="submit"
-        >
-          <FormReservation :payment="payment" />
-        </FormKit>
+        <FormReservation v-else :submit-label="submitLabel" @submit="submit" />
       </template>
     </template>
   </USlideover>

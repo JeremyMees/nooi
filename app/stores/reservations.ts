@@ -23,8 +23,6 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     name: '',
     number: '',
     mail: '',
-    spots: '',
-    exclusive: false,
   })
 
   const informationEvent = computed<EventReservation | undefined>(() => {

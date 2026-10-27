@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { flushPromises } from '@vue/test-utils'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import ReservationDrawer from '~/components/ReservationDrawer.vue'
 import { mockEvent, mockRoster, mockRoute, setup } from '~~/test/mock'
@@ -34,8 +35,7 @@ const stubs = {
   USlideover: {
     template: '<div><slot name="title" /><slot name="body" /></div>',
   },
-  FormKit: true,
-  FormReservation: true,
+  FormReservation: { name: 'FormReservation', template: '<form />' },
 }
 
 async function mount() {
@@ -94,7 +94,9 @@ describe('ReservationDrawer', () => {
     expect(wrapper.find('[test-id="reservation-no-booking"]').exists()).toBe(
       false,
     )
-    expect(wrapper.findComponent({ name: 'FormKit' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'FormReservation' }).exists()).toBe(
+      true,
+    )
   })
 
   it('shows the no-booking notice when the slot does not allow reservations', async () => {
@@ -107,13 +109,50 @@ describe('ReservationDrawer', () => {
     )
   })
 
+  it('passes the button label to the form', async () => {
+    query = { type: 'game' }
+
+    const wrapper = await mount()
+
+    expect(
+      wrapper
+        .findComponent({ name: 'FormReservation' })
+        .attributes('submit-label'),
+    ).toBe('Boeken')
+  })
+
+  it('books what the form hands over', async () => {
+    query = { type: 'game' }
+    const wrapper = await mount()
+    const fields = {
+      name: 'Jef Van Laer',
+      email: 'jef@example.com',
+      number: '0496264466',
+      spots: 2,
+      start: '19:00',
+      exclusive: false,
+    }
+
+    wrapper
+      .findComponent({ name: 'FormReservation' })
+      .vm.$emit('submit', fields)
+    await flushPromises()
+
+    expect(hoisted.book).toHaveBeenCalledWith({
+      ...fields,
+      type: 'game',
+      day: '2026-07-10',
+    })
+  })
+
   describe('submit', () => {
     const form = {
       name: 'Jef Van Laer',
       email: 'jef@example.com',
       number: '0496264466',
-      spots: '2',
+      spots: 2,
       start: '19:00',
+      exclusive: false,
     }
 
     it('books a table with the type from the url', async () => {
@@ -124,7 +163,6 @@ describe('ReservationDrawer', () => {
 
       expect(hoisted.book).toHaveBeenCalledWith({
         ...form,
-        spots: 2,
         type: 'game',
         day: '2026-07-10',
       })
@@ -165,7 +203,6 @@ describe('ReservationDrawer', () => {
 
       expect(hoisted.book).toHaveBeenCalledWith({
         ...form,
-        spots: 2,
         type: 'event',
         event: 9,
       })

@@ -3,8 +3,6 @@ export interface ReservationForm {
   name?: string
   number?: string
   mail?: string
-  spots?: string
-  exclusive?: boolean
 }
 
 export interface Option<T> {

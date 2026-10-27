@@ -224,3 +224,21 @@ export function sameTime(time: string, compare: string): boolean {
 
   return hour === compareHour && minutes === compareMinutes
 }
+
+export function timeToMinutes(time: string): number {
+  const { hour, minutes } = splitTime(time)
+
+  return (hour < 6 ? hour + 24 : hour) * 60 + minutes
+}
+
+export function isWithinRoster(
+  time: string,
+  rosters: Pick<RosterRow, 'start' | 'end'>[],
+): boolean {
+  const minutes = timeToMinutes(time)
+
+  return rosters.some(
+    ({ start, end }) =>
+      timeToMinutes(start) <= minutes && minutes <= timeToMinutes(end),
+  )
+}
