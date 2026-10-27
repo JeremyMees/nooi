@@ -2,11 +2,9 @@
   <div class="min-h-screen flex flex-col">
     <Navigation />
 
-    <main
-      class="relative grow pb-[140px] flex flex-col gap-[60px] overflow-hidden"
-    >
+    <UMain class="relative grow pb-35 flex flex-col gap-15 overflow-hidden">
       <slot />
-    </main>
+    </UMain>
 
     <Footer />
   </div>

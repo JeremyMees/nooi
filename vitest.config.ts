@@ -44,7 +44,6 @@ export default defineConfig({
       exclude: [
         'test/**',
         'app/assets/**',
-        'app/error.vue',
         'app/app.vue',
         'app/plugins/**',
         'formkit/**',

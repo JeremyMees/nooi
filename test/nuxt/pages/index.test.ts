@@ -12,7 +12,10 @@ mockNuxtImport('useReservationStore', () => () => ({
   stopRefresh: hoisted.stopRefresh,
 }))
 
-const stubs = { NuxtLayout: { template: '<div><slot /></div>' } }
+const stubs = {
+  NuxtLayout: { template: '<div><slot /></div>' },
+  UContainer: { template: '<div><slot /></div>' },
+}
 
 async function mount() {
   return mountSuspended(IndexPage, { shallow: true, global: { stubs } })
@@ -30,7 +33,7 @@ describe('index page', () => {
     expect(hoisted.init).toHaveBeenCalled()
   })
 
-  it('drops the realtime subscription when it closes', async () => {
+  it('stops refreshing the calendar when it closes', async () => {
     const wrapper = await mount()
 
     wrapper.unmount()

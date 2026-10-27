@@ -1,5 +1,9 @@
 export default defineAppConfig({
   ui: {
+    container: {
+      base: 'w-full max-w-(--ui-container) mx-auto px-4 sm:px-6 md:px-8 lg:px-12',
+    },
+    main: { base: '' },
     button: {
       slots: { base: 'rounded-md' },
       variants: {

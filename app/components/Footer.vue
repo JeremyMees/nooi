@@ -1,6 +1,6 @@
 <template>
   <footer test-id="footer" class="bg-secondary pt-12.5 pb-5">
-    <div class="container flex flex-col items-center gap-5">
+    <UContainer class="flex flex-col items-center gap-5">
       <img src="/assets/images/kolibri.png" alt="Nooi logo" class="w-21.25" />
       <div test-id="footer-socials" class="flex gap-1">
         <a
@@ -56,9 +56,9 @@
         |
         <a href="tel:0496672361" aria-label="Telefoonnummer"> 0496 67 23 61 </a>
       </div>
-    </div>
+    </UContainer>
     <hr class="border-black my-10" />
-    <div class="container flex justify-center">
+    <UContainer class="flex justify-center">
       <NuxtLink
         to="https://nooi.be/av-privacy/"
         test-id="footer-terms"
@@ -66,6 +66,6 @@
       >
         Algemene voorwaarden & privacy
       </NuxtLink>
-    </div>
+    </UContainer>
   </footer>
 </template>

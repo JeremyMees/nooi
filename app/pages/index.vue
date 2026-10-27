@@ -7,7 +7,7 @@ onBeforeUnmount(() => store.stopRefresh())
 
 <template>
   <NuxtLayout>
-    <div class="space-y-5 container">
+    <UContainer class="space-y-5">
       <h1 class="text-[37px] font-medium text-center tracking-[1.5px]">
         KALENDER
       </h1>
@@ -24,7 +24,7 @@ onBeforeUnmount(() => store.stopRefresh())
           eigen activiteit. Dat is gratis, tenzij je Nooi voor jezelf wilt.
         </p>
       </div>
-    </div>
+    </UContainer>
     <OpeningsHours />
     <BigCalendar class="max-w-5xl mx-auto" />
     <EventModal />

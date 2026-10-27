@@ -8,9 +8,9 @@ onMounted(store.checkSession)
 
 <template>
   <NuxtLayout>
-    <div v-if="store.authenticated" class="container flex flex-col gap-20">
+    <UContainer v-if="store.authenticated" class="flex flex-col gap-20">
       <AdminTable v-for="type in types" :key="type" :type="type" />
-    </div>
+    </UContainer>
     <LoginDialog />
   </NuxtLayout>
 </template>
