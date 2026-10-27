@@ -25,7 +25,7 @@ withDefaults(
     <Body class="m-0 bg-white">
       <Preheader>{{ preview }}</Preheader>
       <Container class="max-w-150 px-3">
-        <Text class="pb-10 text-[60px] font-medium">NOOI</Text>
+        <Text class="mt-4 mb-0 text-[60px]/none font-medium">NOOI</Text>
         <Text v-if="greeting" class="my-4 text-sm/6">
           Hallo <span v-pre>{{ name }}</span
           >,
