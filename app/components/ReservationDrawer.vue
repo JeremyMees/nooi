@@ -125,7 +125,11 @@ async function submit(
       </div>
       <template v-else>
         <Loader v-if="loading" class="w-[120px] mx-auto text-primary" />
-        <FormReservation v-else :submit-label="submitLabel" @submit="submit" />
+        <LazyFormReservation
+          v-else
+          :submit-label="submitLabel"
+          @submit="submit"
+        />
       </template>
     </template>
   </USlideover>
