@@ -236,55 +236,15 @@ describe('AdminTable', () => {
       expect(updateData).not.toHaveBeenCalled()
     })
 
-    it('updates an existing row without its generated columns', async () => {
+    it('updates an existing row by its id', async () => {
       const wrapper = await mount()
 
-      await setup(wrapper).submit({
-        id: 7,
-        created_at: '2026-09-01T00:00:00Z',
-        name: 'Minipainting',
-        reservations: [{ id: 1 }],
-      })
+      await setup(wrapper).submit({ id: 7, name: 'Minipainting' })
 
       expect(updateData).toHaveBeenCalledWith(7, 'events', {
         name: 'Minipainting',
       })
       expect(createData).not.toHaveBeenCalled()
-    })
-
-    it('copies the timing of the linked event onto a reservation', async () => {
-      events = [
-        {
-          ...mockEvent,
-          id: 3,
-          day: '2026-09-14',
-          start: '19:00',
-          end: '22:00',
-        },
-      ]
-      const wrapper = await mount('reservations')
-
-      await setup(wrapper).submit({ name: 'Jef', event: { id: 3 } })
-
-      expect(createData).toHaveBeenCalledWith('reservations', {
-        name: 'Jef',
-        event: 3,
-        day: '2026-09-14',
-        start: '19:00',
-        end: '22:00',
-      })
-    })
-
-    it('accepts an event given as a plain id', async () => {
-      events = [{ ...mockEvent, id: 3, day: '2026-09-14' }]
-      const wrapper = await mount('reservations')
-
-      await setup(wrapper).submit({ name: 'Jef', event: '3' })
-
-      expect(createData).toHaveBeenCalledWith(
-        'reservations',
-        expect.objectContaining({ event: 3 }),
-      )
     })
 
     it.each([
@@ -297,6 +257,11 @@ describe('AdminTable', () => {
         'events',
         'FormEvent',
         { name: 'Minipainting', day: '2026-09-14', description: 'Verf' },
+      ],
+      [
+        'reservations',
+        'FormAdminReservation',
+        { name: 'Jef Van Laer', event: 3, day: '2026-09-14', spots: 2 },
       ],
     ] as const)(
       'creates %s from the form component',
@@ -319,17 +284,6 @@ describe('AdminTable', () => {
         expect(setup(wrapper).creating).toBe(false)
       },
     )
-
-    it('stores a reservation without an event as null', async () => {
-      const wrapper = await mount('reservations')
-
-      await setup(wrapper).submit({ name: 'Jef' })
-
-      expect(createData).toHaveBeenCalledWith(
-        'reservations',
-        expect.objectContaining({ event: null }),
-      )
-    })
   })
 
   describe('row expansion', () => {
@@ -361,7 +315,7 @@ describe('AdminTable', () => {
 
     expect(setup(wrapper).filters).toMatchObject({
       search: '',
-      date: null,
+      date: undefined,
       page: 1,
     })
   })

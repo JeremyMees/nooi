@@ -1,133 +1,252 @@
 <script setup lang="ts">
+import * as z from 'zod/mini'
+import type { FormSubmitEvent } from '@nuxt/ui'
 import { maxSpots } from '~~/shared/constants/info'
+
+const required = 'Dit veld is verplicht'
+
+const props = defineProps<{
+  reservation?: AdminReservationRow
+  submitLabel: string
+}>()
+
+const emit = defineEmits<{ submit: [reservation: ReservationInsert] }>()
 
 const store = useAdminStore()
 
-const start = ref<string>()
-const end = ref<string>()
-const type = ref<string>('game')
-const selectedEvent = ref<string>()
-
-const typeOptions: Option<string>[] = [
+const typeOptions: Option<BookingType>[] = [
   { label: 'Spel café', value: 'game' },
   { label: 'Reservatie', value: 'reservation' },
   { label: 'Event', value: 'event' },
 ]
 
-const eventOptions = computed<Option<string>[]>(() => {
-  return store.events.map(event => ({
-    label: `${event.name} (${formatDateUI(event.day)})`,
-    value: event.id.toString(),
-  }))
+const state = reactive({
+  name: props.reservation?.name,
+  number: props.reservation?.number,
+  email: props.reservation?.email,
+  type: props.reservation?.type ?? 'game',
+  event: props.reservation?.event?.id,
+  day: props.reservation?.day,
+  start: props.reservation?.start,
+  end: props.reservation?.end,
+  spots: props.reservation?.spots,
+  exclusive: props.reservation?.exclusive ?? false,
+  info: props.reservation?.info,
 })
 
-const spots = computed<{ min: number; max: number }>(() => {
-  if (selectedEvent.value) {
-    const id = +selectedEvent.value
-    const event = store.events.find(event => event.id === id)
+const eventOptions = computed<Option<number>[]>(() =>
+  store.events.map(event => ({
+    label: `${event.name} (${formatDateUI(event.day)})`,
+    value: event.id,
+  })),
+)
 
-    return {
-      min: event?.minSpots ?? 1,
-      max: event?.spots
-        ? event?.spots - getReservedSpots(event?.reservations)
-        : maxSpots,
-    }
-  } else {
-    return { min: 1, max: maxSpots }
+const linkedEvent = computed(() =>
+  state.type === 'event'
+    ? store.events.find(({ id }) => id === state.event)
+    : undefined,
+)
+
+const spots = computed<{ min: number; max: number }>(() => {
+  const event = linkedEvent.value
+
+  return {
+    min: event?.minSpots ?? 1,
+    max: event?.spots
+      ? event.spots - getReservedSpots(event.reservations)
+      : maxSpots,
   }
 })
 
+const schema = computed(() =>
+  z.object({
+    name: z
+      .string(required)
+      .check(
+        z.trim(),
+        z.minLength(5, 'Naam moet 5 tot 45 tekens zijn'),
+        z.maxLength(45, 'Naam moet 5 tot 45 tekens zijn'),
+        z.regex(/^[\p{L} ]+$/u, 'Enkel letters en spaties'),
+      ),
+    number: z.nullish(
+      z.union([
+        z.literal(''),
+        z
+          .string()
+          .check(
+            z.regex(
+              /^\d{10,12}$/,
+              'Telefoonnummer moet 10 tot 12 cijfers zijn',
+            ),
+          ),
+      ]),
+    ),
+    email: z.nullish(
+      z.union([
+        z.literal(''),
+        z.email('Geen geldig e-mailadres').check(z.maxLength(65)),
+      ]),
+    ),
+    type: z.enum(['game', 'reservation', 'event'], required),
+    event:
+      state.type === 'event'
+        ? z.number('Selecteer een event')
+        : z.nullish(z.number()),
+    day: state.type === 'event' ? z.nullish(z.string()) : z.string(required),
+    start: state.type === 'event' ? z.nullish(z.string()) : z.string(required),
+    end: z.nullish(z.string()),
+    spots: z
+      .number(required)
+      .check(
+        z.minimum(spots.value.min, `Minimum ${spots.value.min}`),
+        z.maximum(spots.value.max, `Maximum ${spots.value.max}`),
+      ),
+    exclusive: z.boolean(),
+    info: z.nullish(
+      z.union([
+        z.literal(''),
+        z
+          .string()
+          .check(
+            z.minLength(5, 'Extra info moet 5 tot 500 tekens zijn'),
+            z.maxLength(500, 'Extra info moet 5 tot 500 tekens zijn'),
+          ),
+      ]),
+    ),
+  }),
+)
+
 onMounted(async () => await store.getEvents())
 
-watch([start, end], v => {
-  v.forEach((value: string | undefined, i: number) => {
-    if (value && !['00', '30'].includes(value.split(':')[1]!)) {
-      if (i === 0) {
-        start.value = roundTime(value)
-      } else {
-        end.value = roundTime(value)
-      }
-    }
-  })
-})
+function submit({
+  data,
+}: FormSubmitEvent<z.output<typeof schema.value>>): void {
+  const event = linkedEvent.value
+  const contact = {
+    name: data.name,
+    number: data.number || null,
+    email: data.email || null,
+    type: data.type,
+    spots: data.spots,
+    info: data.info || null,
+  }
+
+  emit(
+    'submit',
+    event
+      ? {
+          ...contact,
+          event: event.id,
+          day: event.day,
+          start: event.start,
+          end: event.end,
+        }
+      : {
+          ...contact,
+          event: null,
+          day: data.day!,
+          start: data.start!,
+          end: data.end ?? null,
+          exclusive: data.exclusive,
+        },
+  )
+}
 </script>
 
 <template>
-  <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-4">
-    <FormKit
-      name="name"
-      label="Naam"
-      validation="required|alpha_spaces:default|length:5,45"
-    />
-    <FormKit
-      type="tel"
-      name="number"
-      label="Telefoonnummer"
-      validation="matches:/^[0-9]*$/|length:10,12"
-    />
-    <FormKit
-      type="email"
-      name="email"
-      label="Email"
-      validation="email|length:5,65"
-    />
-    <FormKit
-      v-model="type"
-      name="type"
-      type="select"
-      label="Reservatie type"
-      validation="required"
-      :options="typeOptions"
-    />
-    <template v-if="type === 'event'">
-      <FormKit
-        v-model="selectedEvent"
-        name="event"
-        type="select"
+  <UForm
+    :schema="schema"
+    :state="state"
+    :validate-on="['blur']"
+    @submit="submit"
+  >
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-4">
+      <UFormField label="Naam" name="name" required>
+        <UInput v-model="state.name" test-id="reservation-name" />
+      </UFormField>
+      <UFormField label="Telefoonnummer" name="number">
+        <UInput
+          :model-value="state.number ?? undefined"
+          test-id="reservation-number"
+          type="tel"
+          @update:model-value="state.number = $event"
+        />
+      </UFormField>
+      <UFormField label="Email" name="email">
+        <UInput
+          :model-value="state.email ?? undefined"
+          test-id="reservation-email"
+          type="email"
+          @update:model-value="state.email = $event"
+        />
+      </UFormField>
+      <UFormField label="Reservatie type" name="type" required>
+        <USelect
+          v-model="state.type"
+          test-id="reservation-type"
+          :items="typeOptions"
+        />
+      </UFormField>
+      <UFormField
+        v-if="state.type === 'event'"
         label="Event"
-        validation="required"
-        placeholder="Selecteer een event"
-        :options="eventOptions"
+        name="event"
+        required
+      >
+        <USelect
+          v-model="state.event"
+          test-id="reservation-event"
+          placeholder="Selecteer een event"
+          :items="eventOptions"
+        />
+      </UFormField>
+      <template v-else>
+        <UFormField label="Datum" name="day" required>
+          <FormDateInput
+            :model-value="state.day ?? undefined"
+            test-id="reservation-day"
+            @update:model-value="state.day = $event"
+          />
+        </UFormField>
+        <UFormField label="Startuur" name="start" required>
+          <FormTimeInput
+            :model-value="state.start ?? undefined"
+            test-id="reservation-start"
+            @update:model-value="state.start = $event"
+          />
+        </UFormField>
+        <UFormField label="Einduur" name="end">
+          <FormTimeInput
+            :model-value="state.end ?? undefined"
+            test-id="reservation-end"
+            @update:model-value="state.end = $event"
+          />
+        </UFormField>
+      </template>
+      <UFormField label="Aantal plaatsen" name="spots" required>
+        <UInputNumber
+          v-model="state.spots"
+          test-id="reservation-spots"
+          orientation="vertical"
+          :min="spots.min"
+          :max="spots.max"
+        />
+      </UFormField>
+    </div>
+    <UFormField v-if="state.type !== 'event'" name="exclusive">
+      <UCheckbox
+        v-model="state.exclusive"
+        test-id="reservation-exclusive"
+        label="Exclusief"
       />
-    </template>
-    <template v-else>
-      <FormKit type="date" name="day" label="Datum" validation="required" />
-      <FormKit
-        v-model="start"
-        type="time"
-        name="start"
-        label="Startuur"
-        step="1800"
-        validation="required"
+    </UFormField>
+    <UFormField label="Extra info" name="info">
+      <UTextarea
+        :model-value="state.info ?? undefined"
+        test-id="reservation-info"
+        @update:model-value="state.info = $event"
       />
-      <FormKit
-        v-model="end"
-        type="time"
-        name="end"
-        label="Einduur"
-        step="1800"
-      />
-    </template>
-    <FormKit
-      type="number"
-      name="spots"
-      label="Aantal plaatsen"
-      :validation="`required|number|max:${spots.max}|min:${spots.min}`"
-      :min="spots.min"
-      :max="spots.max"
-    />
-  </div>
-  <FormKit
-    v-if="type !== 'event'"
-    :value="false"
-    type="checkbox"
-    label="Exclusief"
-    name="exclusive"
-  />
-  <FormKit
-    type="textarea"
-    name="info"
-    label="Extra info"
-    validation="length:5,500"
-  />
+    </UFormField>
+    <UButton test-id="reservation-submit" type="submit" :label="submitLabel" />
+  </UForm>
 </template>

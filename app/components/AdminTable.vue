@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { reset } from '@formkit/core'
 import type { TableColumn } from '@nuxt/ui'
 import { values } from '~~/shared/constants/admin'
 
@@ -18,12 +17,11 @@ const expandedRows = ref<Record<string, boolean>>({})
 
 const filters = ref<{
   search: string
-  date: string | null
+  date?: string
   page: number
   sort?: SbSort
 }>({
   search: '',
-  date: null,
   page: 1,
 })
 
@@ -82,29 +80,8 @@ function generateString(data: Row, field: string): string {
 async function submit(
   form: RosterInsert | EventInsert | ReservationInsert,
 ): Promise<void> {
-  if (props.type === 'reservations') {
-    const rawEvent = (form as ReservationInsert).event as any
-    const eventId =
-      rawEvent && typeof rawEvent === 'object'
-        ? rawEvent.id
-        : rawEvent
-          ? +rawEvent
-          : undefined
-    const event = store.events.find(({ id }) => id === eventId)
-
-    form = {
-      ...form,
-      event: eventId ?? null,
-      ...(event ? { day: event.day, start: event.start, end: event.end } : {}),
-    } as ReservationInsert
-  }
-
   if (form.id) {
-    const { id, created_at, ...payload } = form
-
-    if ('reservations' in payload) {
-      delete payload.reservations
-    }
+    const { id, ...payload } = form
 
     await store.updateData(id, props.type, payload)
     expandedRows.value = {}
@@ -113,9 +90,6 @@ async function submit(
   }
 
   clearFilters()
-  if (props.type === 'reservations') {
-    reset(form?.id ? `${props.type}-${form.id}` : props.type)
-  }
   creating.value = false
 }
 
@@ -164,7 +138,6 @@ function sortIcon(field: string): string {
 function toggleRow(data: Row): void {
   if (expandedRows.value[data.id]) {
     expandedRows.value = {}
-    if (props.type === 'reservations') reset(`${props.type}-${data.id}`)
 
     return
   }
@@ -183,7 +156,7 @@ async function removeSelected(): Promise<void> {
 
 function clearFilters(): void {
   filters.value.search = ''
-  filters.value.date = null
+  filters.value.date = undefined
   filters.value.page = 1
 }
 </script>
@@ -196,19 +169,22 @@ function clearFilters(): void {
     <div class="flex flex-col gap-4">
       <div class="flex items-center gap-4 justify-between flex-wrap">
         <div class="flex gap-4 flex-wrap items-center">
-          <FormKit
+          <UInput
             v-if="values[type].filter.length"
             v-model="filters.search"
+            test-id="admin-search"
             :disabled="creating || editing"
             type="search"
-            prefix-icon="search"
-            outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+            icon="i-lucide-search"
+            placeholder="Zoeken"
+            aria-label="Zoeken"
+            class="w-full sm:w-62.5"
           />
-          <FormKit
+          <FormDateInput
             v-model="filters.date"
+            test-id="admin-date"
             :disabled="creating || editing"
-            type="date"
-            outer-class="$remove:mb-4 $remove:max-w-none max-w-[250px] mb-0"
+            class="w-full sm:w-62.5"
           />
           <AnimationReveal>
             <UButton
@@ -244,16 +220,11 @@ function clearFilters(): void {
             submit-label="Toevoegen"
             @submit="submit"
           />
-          <FormKit
+          <FormAdminReservation
             v-else-if="creating && !editing"
-            :id="type"
-            type="form"
             submit-label="Toevoegen"
-            :config="{ validationVisibility: 'blur' }"
             @submit="submit"
-          >
-            <FormAdminReservation />
-          </FormKit>
+          />
         </AnimationExpand>
       </ClientOnly>
     </div>
@@ -355,17 +326,12 @@ function clearFilters(): void {
               submit-label="Bijwerken"
               @submit="submit({ ...$event, id: row.original.id })"
             />
-            <FormKit
+            <FormAdminReservation
               v-else
-              :id="`${type}-${row.original.id}`"
-              type="form"
+              :reservation="row.original as AdminReservationRow"
               submit-label="Bijwerken"
-              :value="row.original"
-              :config="{ validationVisibility: 'blur' }"
-              @submit="submit"
-            >
-              <FormAdminReservation />
-            </FormKit>
+              @submit="submit({ ...$event, id: row.original.id })"
+            />
           </ClientOnly>
         </div>
       </template>

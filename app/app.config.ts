@@ -40,6 +40,20 @@ export default defineAppConfig({
         },
       },
     },
+    textarea: {
+      slots: {
+        root: 'w-full',
+        base: 'rounded text-black placeholder:text-surface-400',
+      },
+      variants: {
+        size: {
+          md: { base: 'px-3 py-2 text-base gap-2' },
+        },
+        variant: {
+          outline: 'bg-white ring-surface-400',
+        },
+      },
+    },
     inputNumber: {
       slots: {
         root: 'w-full',

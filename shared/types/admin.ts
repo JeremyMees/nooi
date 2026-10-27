@@ -5,9 +5,13 @@ export interface AdminDataChild<T> {
   error?: string
 }
 
+export type AdminReservationRow = Omit<ReservationRow, 'event'> & {
+  event: Pick<EventRow, 'id' | 'name'> | null
+}
+
 export interface AdminData {
   events: AdminDataChild<EventReservation>
-  reservations: AdminDataChild<ReservationRow>
+  reservations: AdminDataChild<AdminReservationRow>
   rosters: AdminDataChild<RosterRow>
 }
 
