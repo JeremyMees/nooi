@@ -112,6 +112,67 @@ describe('useReservationStore', () => {
     expect(store.loading).toBe(false)
   })
 
+  describe('changing month', () => {
+    function deferCalendar() {
+      const pending: ((value: unknown) => void)[] = []
+      hoisted.calendar.mockImplementation(
+        () => new Promise(resolve => pending.push(resolve)),
+      )
+      return pending
+    }
+
+    it('loads the new month while the previous one is still loading', async () => {
+      const store = await createStore()
+      const pending = deferCalendar()
+
+      store.shownDate = { month: 3, year: 2030 }
+      await flushPromises()
+      store.shownDate = { month: 4, year: 2030 }
+      await flushPromises()
+
+      expect(pending).toHaveLength(2)
+      expect(hoisted.calendar).toHaveBeenLastCalledWith('/api/calendar', {
+        query: expect.objectContaining({ month: 4, year: 2030 }),
+      })
+    })
+
+    it('ignores a slow answer for a month the visitor already left', async () => {
+      const store = await createStore()
+      const pending = deferCalendar()
+      const april = { ...event, id: 4 }
+      const may = { ...event, id: 5 }
+
+      store.shownDate = { month: 3, year: 2030 }
+      await flushPromises()
+      store.shownDate = { month: 4, year: 2030 }
+      await flushPromises()
+
+      pending[1]!({ events: [may], rosters: [roster] })
+      await flushPromises()
+      expect(store.loading).toBe(false)
+
+      pending[0]!({ events: [april], rosters: [roster] })
+      await flushPromises()
+
+      expect(store.events).toEqual([may])
+    })
+
+    it('stays loading until the latest month arrives', async () => {
+      const store = await createStore()
+      const pending = deferCalendar()
+
+      store.shownDate = { month: 3, year: 2030 }
+      await flushPromises()
+      store.shownDate = { month: 4, year: 2030 }
+      await flushPromises()
+
+      pending[0]!({ events: [], rosters: [] })
+      await flushPromises()
+
+      expect(store.loading).toBe(true)
+    })
+  })
+
   describe('selectedEvent', () => {
     it('returns the matching event when status is reservation', async () => {
       const store = await createStore()

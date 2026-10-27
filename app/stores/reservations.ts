@@ -6,6 +6,8 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   const route = useRoute()
   const reservationInfo = useCookie<Record<string, string>>('reservationInfo')
 
+  let latestRequest = 0
+
   const events = ref<EventReservation[]>([])
   const loading = ref<boolean>(false)
   const drawerOpen = ref<boolean>(false)
@@ -99,15 +101,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
     }
   })
 
-  watch(
-    shownDate,
-    async () => {
-      if (!loading.value) {
-        await getData()
-      }
-    },
-    { immediate: true },
-  )
+  watch(shownDate, getData, { immediate: true })
 
   async function book(request: BookingRequest): Promise<BookingResult> {
     const { name, number, email } = request
@@ -190,6 +184,9 @@ export const useReservationStore = defineStore('useReservationStore', () => {
   }
 
   async function getData(): Promise<void> {
+    const request = ++latestRequest
+    const isLatest = () => request === latestRequest
+
     try {
       loading.value = true
 
@@ -202,9 +199,13 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         },
       })
 
+      if (!isLatest()) return
+
       events.value = calendar.events
       rosterStore.rosters = calendar.rosters
     } catch {
+      if (!isLatest()) return
+
       toast.add({
         color: 'error',
         title: 'Oeps!',
@@ -213,7 +214,7 @@ export const useReservationStore = defineStore('useReservationStore', () => {
         duration: 5000,
       })
     } finally {
-      loading.value = false
+      if (isLatest()) loading.value = false
     }
   }
 
