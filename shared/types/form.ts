@@ -7,10 +7,6 @@ export interface ReservationForm {
   exclusive?: boolean
 }
 
-export interface AdminForm {
-  password: string
-}
-
 export interface Option<T> {
   value: T
   label: string

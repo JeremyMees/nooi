@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { flushPromises, type VueWrapper } from '@vue/test-utils'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
 import LoginDialog from '~/components/LoginDialog.vue'
 
@@ -19,7 +20,12 @@ const stubs = {
     template:
       '<div v-if="open"><span test-id="login-header">{{ title }}</span><slot name="body" /></div>',
   },
-  FormKit: true,
+}
+
+async function submit(wrapper: VueWrapper, password: string) {
+  await wrapper.find('[test-id="login-password"]').setValue(password)
+  await wrapper.find('form').trigger('submit')
+  await flushPromises()
 }
 
 async function mount() {
@@ -44,7 +50,7 @@ describe('LoginDialog', () => {
     expect(wrapper.find('[test-id="login-header"]').text()).toBe(
       'Inloggen op admin paneel',
     )
-    expect(wrapper.findComponent({ name: 'FormKit' }).exists()).toBe(true)
+    expect(wrapper.find('[test-id="login-password"]').exists()).toBe(true)
   })
 
   it('stays hidden while the session is still being checked', async () => {
@@ -71,9 +77,7 @@ describe('LoginDialog', () => {
     login.mockResolvedValue(true)
     const wrapper = await mount()
 
-    await wrapper
-      .findComponent({ name: 'FormKit' })
-      .vm.$emit('submit', { password: 'hunter22' })
+    await submit(wrapper, 'hunter22')
 
     expect(login).toHaveBeenCalledWith('hunter22')
     expect(wrapper.find('[test-id="login-error"]').exists()).toBe(false)
@@ -81,24 +85,19 @@ describe('LoginDialog', () => {
 
   it('tells the admin when the password is wrong', async () => {
     login.mockResolvedValue(false)
-    const wrapper = await mountSuspended(LoginDialog, {
-      global: {
-        stubs: {
-          ...stubs,
-          FormKit: {
-            name: 'FormKit',
-            emits: ['submit'],
-            template: '<div><slot /></div>',
-          },
-        },
-      },
-    })
+    const wrapper = await mount()
 
-    await wrapper
-      .findComponent({ name: 'FormKit' })
-      .vm.$emit('submit', { password: 'admin' })
-    await new Promise(resolve => setTimeout(resolve))
+    await submit(wrapper, 'admin')
 
     expect(wrapper.find('[test-id="login-error"]').exists()).toBe(true)
+  })
+
+  it('asks for a password before logging in', async () => {
+    const wrapper = await mount()
+
+    await submit(wrapper, '')
+
+    expect(login).not.toHaveBeenCalled()
+    expect(wrapper.text()).toContain('Dit veld is verplicht')
   })
 })

@@ -13,6 +13,32 @@ export default defineAppConfig({
         },
       },
     },
+    formField: {
+      slots: {
+        root: 'mb-4',
+        label: 'text-sm font-bold text-black',
+        error: 'mt-1 text-xs text-red-600',
+      },
+      variants: {
+        required: {
+          true: { label: 'after:text-secondary' },
+        },
+      },
+    },
+    input: {
+      slots: {
+        root: 'w-full',
+        base: 'rounded min-h-11 text-black placeholder:text-surface-400',
+      },
+      variants: {
+        size: {
+          md: { base: 'px-3 py-2 text-base gap-2' },
+        },
+        variant: {
+          outline: 'bg-white ring-surface-400',
+        },
+      },
+    },
     slideover: {
       slots: {
         overlay: 'bg-black/40 backdrop-blur-sm',
