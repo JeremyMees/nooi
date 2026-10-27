@@ -13,6 +13,10 @@ export default withNuxt(
       camelcase: 0,
       'vue/multi-word-component-names': 'off',
       'vue/no-v-html': 'off',
+      'vue/html-self-closing': [
+        'warn',
+        { html: { void: 'always', normal: 'always', component: 'always' } },
+      ],
       'no-console': [
         'error',
         {

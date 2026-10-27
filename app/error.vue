@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps({ error: Object })
+import type { NuxtError } from '#app'
+
+defineProps<{ error: NuxtError }>()
 </script>
 
 <template>

@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import { defineVitestProject } from '@nuxt/test-utils/config'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'node:path'
-import { nuxtAliases, nuxtAutoImports } from './test/unit/nuxt-env'
+import { nuxtAliases, nuxtAutoImports } from './test/unit/nuxt-env.ts'
 
 const ignoredLogs = [/^<Suspense>/, /Failed to load messages for locale/]
 
@@ -21,7 +21,7 @@ export default defineConfig({
       await defineVitestProject({
         resolve: {
           alias: {
-            '/assets': resolve(__dirname, 'app/assets'),
+            '/assets': resolve(import.meta.dirname, 'app/assets'),
           },
         },
         test: {

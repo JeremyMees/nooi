@@ -1,6 +1,5 @@
 import path from 'path'
 import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
 import seo from './shared/constants/seo'
 
 export default defineNuxtConfig({
@@ -59,7 +58,6 @@ export default defineNuxtConfig({
   },
 
   vite: {
-    plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
         '@vue/devtools-kit',
