@@ -31,6 +31,10 @@ watch(open, async value => {
     ?.scrollIntoView({ block: 'center' })
 })
 
+function roundToHalfHour(): void {
+  if (model.value) model.value = roundTime(model.value.slice(0, 5))
+}
+
 function pick(part: { hour?: number; minute?: number }): void {
   time.value = (time.value ?? new Time(0, 0)).set(part)
 
@@ -39,7 +43,12 @@ function pick(part: { hour?: number; minute?: number }): void {
 </script>
 
 <template>
-  <UInputTime v-model="time" :hour-cycle="24" :step="{ minute: 30 }">
+  <UInputTime
+    v-model="time"
+    :hour-cycle="24"
+    :step="{ minute: 30 }"
+    @blur="roundToHalfHour"
+  >
     <template #trailing>
       <UPopover v-model:open="open">
         <UButton

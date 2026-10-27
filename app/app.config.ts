@@ -18,6 +18,7 @@ export default defineAppConfig({
         root: 'mb-4',
         label: 'text-sm font-bold text-black',
         error: 'mt-1 text-xs text-red-600',
+        help: 'mt-1 text-xs text-surface-500',
       },
       variants: {
         required: {
@@ -33,6 +34,20 @@ export default defineAppConfig({
       variants: {
         size: {
           md: { base: 'px-3 py-2 text-base gap-2' },
+        },
+        variant: {
+          outline: 'bg-white ring-surface-400',
+        },
+      },
+    },
+    inputNumber: {
+      slots: {
+        root: 'w-full',
+        base: 'rounded min-h-11 text-black',
+      },
+      variants: {
+        size: {
+          md: 'px-3 py-2 text-base',
         },
         variant: {
           outline: 'bg-white ring-surface-400',

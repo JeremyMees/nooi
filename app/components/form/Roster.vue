@@ -39,22 +39,6 @@ const state = reactive<Partial<Schema>>({
   allowReservation: props.roster?.allowReservation ?? true,
 })
 
-function onHalfHour(time: string | undefined): string | undefined {
-  return time && !['00', '30'].includes(time.split(':')[1] ?? '')
-    ? roundTime(time)
-    : time
-}
-
-watch(
-  () => state.start,
-  time => (state.start = onHalfHour(time)),
-)
-
-watch(
-  () => state.end,
-  time => (state.end = onHalfHour(time)),
-)
-
 function submit({ data }: FormSubmitEvent<Schema>): void {
   emit('submit', data)
 }
@@ -85,10 +69,10 @@ function submit({ data }: FormSubmitEvent<Schema>): void {
         />
       </UFormField>
       <UFormField label="Minimum personen" name="minSpots" required>
-        <UInput
-          v-model.number="state.minSpots"
+        <UInputNumber
+          v-model="state.minSpots"
+          orientation="vertical"
           test-id="roster-min-spots"
-          type="number"
           :min="1"
           :max="100"
         />

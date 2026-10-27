@@ -115,6 +115,47 @@ describe('FormTimeInput', () => {
     })
   })
 
+  describe('rounding to the half hour on blur', () => {
+    async function blurWith(modelValue: string) {
+      const wrapper = await mountSuspended(FormTimeInput, {
+        props: { modelValue },
+      })
+
+      wrapper
+        .findComponent({ name: 'UInputTime' })
+        .vm.$emit('blur', new FocusEvent('blur'))
+      await flushPromises()
+
+      return wrapper.emitted('update:modelValue')
+    }
+
+    it.each([
+      ['19:10', '19:00'],
+      ['19:20', '19:30'],
+      ['19:50', '20:00'],
+      ['23:50', '00:00'],
+    ])('rounds %s to %s', async (typed, expected) => {
+      expect(await blurWith(typed)).toEqual([[expected]])
+    })
+
+    it('leaves a half hour alone', async () => {
+      expect(await blurWith('19:30')).toBeUndefined()
+    })
+
+    it('does not round while the minutes are still being typed', async () => {
+      const wrapper = await mountSuspended(FormTimeInput, {
+        props: { modelValue: '19:00' },
+      })
+
+      wrapper
+        .findComponent({ name: 'UInputTime' })
+        .vm.$emit('update:modelValue', new Time(19, 4))
+      await flushPromises()
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([['19:04']])
+    })
+  })
+
   it('reads a database time with seconds', async () => {
     const wrapper = await mountSuspended(FormTimeInput, {
       props: { modelValue: '08:00:00' },

@@ -12,7 +12,6 @@ const store = useAdminStore()
 const perPage = 10
 const sortable = ['name', 'day']
 
-const content = ref<string>('')
 const creating = ref<boolean>(false)
 const rowSelection = ref<Record<string, boolean>>({})
 const expandedRows = ref<Record<string, boolean>>({})
@@ -83,12 +82,7 @@ function generateString(data: Row, field: string): string {
 async function submit(
   form: RosterInsert | EventInsert | ReservationInsert,
 ): Promise<void> {
-  if (props.type === 'events') {
-    form = {
-      ...form,
-      description: content.value,
-    }
-  } else if (props.type === 'reservations') {
+  if (props.type === 'reservations') {
     const rawEvent = (form as ReservationInsert).event as any
     const eventId =
       rawEvent && typeof rawEvent === 'object'
@@ -119,10 +113,9 @@ async function submit(
   }
 
   clearFilters()
-  if (props.type !== 'rosters') {
+  if (props.type === 'reservations') {
     reset(form?.id ? `${props.type}-${form.id}` : props.type)
   }
-  content.value = ''
   creating.value = false
 }
 
@@ -171,20 +164,12 @@ function sortIcon(field: string): string {
 function toggleRow(data: Row): void {
   if (expandedRows.value[data.id]) {
     expandedRows.value = {}
-    if (props.type !== 'rosters') reset(`${props.type}-${data.id}`)
-
-    if (props.type === 'events') {
-      content.value = ''
-    }
+    if (props.type === 'reservations') reset(`${props.type}-${data.id}`)
 
     return
   }
 
   expandedRows.value = { [data.id]: true }
-
-  if (props.type === 'events') {
-    content.value = data.description
-  }
 }
 
 async function removeSelected(): Promise<void> {
@@ -254,6 +239,11 @@ function clearFilters(): void {
             submit-label="Toevoegen"
             @submit="submit"
           />
+          <FormEvent
+            v-else-if="creating && !editing && type === 'events'"
+            submit-label="Toevoegen"
+            @submit="submit"
+          />
           <FormKit
             v-else-if="creating && !editing"
             :id="type"
@@ -262,12 +252,7 @@ function clearFilters(): void {
             :config="{ validationVisibility: 'blur' }"
             @submit="submit"
           >
-            <FormEvent v-if="type === 'events'" />
-            <FormAdminReservation v-else-if="type === 'reservations'" />
-            <div v-if="type === 'events'" class="mb-10">
-              <span class="text-sm text-black"> Omscrijving </span>
-              <MarkdownEditor v-model:content="content" />
-            </div>
+            <FormAdminReservation />
           </FormKit>
         </AnimationExpand>
       </ClientOnly>
@@ -364,6 +349,12 @@ function clearFilters(): void {
               submit-label="Bijwerken"
               @submit="submit({ ...$event, id: row.original.id })"
             />
+            <FormEvent
+              v-else-if="type === 'events'"
+              :event="row.original as EventRow"
+              submit-label="Bijwerken"
+              @submit="submit({ ...$event, id: row.original.id })"
+            />
             <FormKit
               v-else
               :id="`${type}-${row.original.id}`"
@@ -373,12 +364,7 @@ function clearFilters(): void {
               :config="{ validationVisibility: 'blur' }"
               @submit="submit"
             >
-              <FormEvent v-if="type === 'events'" />
-              <FormAdminReservation v-else-if="type === 'reservations'" />
-              <div v-if="type === 'events'" class="mb-10">
-                <span class="text-sm text-black"> Omscrijving </span>
-                <MarkdownEditor v-model:content="content" />
-              </div>
+              <FormAdminReservation />
             </FormKit>
           </ClientOnly>
         </div>

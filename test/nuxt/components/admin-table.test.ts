@@ -232,7 +232,6 @@ describe('AdminTable', () => {
 
       expect(createData).toHaveBeenCalledWith('events', {
         name: 'Minipainting',
-        description: '',
       })
       expect(updateData).not.toHaveBeenCalled()
     })
@@ -249,7 +248,6 @@ describe('AdminTable', () => {
 
       expect(updateData).toHaveBeenCalledWith(7, 'events', {
         name: 'Minipainting',
-        description: '',
       })
       expect(createData).not.toHaveBeenCalled()
     })
@@ -289,32 +287,38 @@ describe('AdminTable', () => {
       )
     })
 
-    it('creates a roster from the roster form', async () => {
-      const passThrough = { template: '<div><slot /></div>' }
-      const wrapper = await mountSuspended(AdminTable, {
-        props: { type: 'rosters' },
-        shallow: true,
-        global: {
-          stubs: { ClientOnly: passThrough, AnimationExpand: passThrough },
-        },
-      })
-      const roster = {
-        day: '2026-07-10',
-        start: '18:00',
-        end: '23:00',
-        status: 'game',
-        minSpots: 1,
-        allowReservation: true,
-      }
+    it.each([
+      [
+        'rosters',
+        'FormRoster',
+        { day: '2026-07-10', start: '18:00', end: '23:00', minSpots: 1 },
+      ],
+      [
+        'events',
+        'FormEvent',
+        { name: 'Minipainting', day: '2026-09-14', description: 'Verf' },
+      ],
+    ] as const)(
+      'creates %s from the form component',
+      async (type, form, values) => {
+        const passThrough = { template: '<div><slot /></div>' }
+        const wrapper = await mountSuspended(AdminTable, {
+          props: { type },
+          shallow: true,
+          global: {
+            stubs: { ClientOnly: passThrough, AnimationExpand: passThrough },
+          },
+        })
 
-      setup(wrapper).creating = true
-      await nextTick()
-      wrapper.findComponent({ name: 'FormRoster' }).vm.$emit('submit', roster)
-      await flushPromises()
+        setup(wrapper).creating = true
+        await nextTick()
+        wrapper.findComponent({ name: form }).vm.$emit('submit', values)
+        await flushPromises()
 
-      expect(createData).toHaveBeenCalledWith('rosters', roster)
-      expect(setup(wrapper).creating).toBe(false)
-    })
+        expect(createData).toHaveBeenCalledWith(type, values)
+        expect(setup(wrapper).creating).toBe(false)
+      },
+    )
 
     it('stores a reservation without an event as null', async () => {
       const wrapper = await mount('reservations')
@@ -329,33 +333,22 @@ describe('AdminTable', () => {
   })
 
   describe('row expansion', () => {
-    it('opens one row at a time and loads its description', async () => {
+    it('opens one row at a time', async () => {
       const wrapper = await mount()
 
-      setup(wrapper).toggleRow({ id: 3, description: 'Quiz' })
-      setup(wrapper).toggleRow({ id: 4, description: 'Kom schilderen' })
+      setup(wrapper).toggleRow({ id: 3 })
+      setup(wrapper).toggleRow({ id: 4 })
 
       expect(setup(wrapper).expandedRows).toEqual({ 4: true })
-      expect(setup(wrapper).content).toBe('Kom schilderen')
     })
 
-    it('clears the description when the row closes', async () => {
+    it('closes the open row when it is toggled again', async () => {
       const wrapper = await mount()
 
-      setup(wrapper).toggleRow({ id: 4, description: 'Kom schilderen' })
-      setup(wrapper).toggleRow({ id: 4, description: 'Kom schilderen' })
+      setup(wrapper).toggleRow({ id: 4 })
+      setup(wrapper).toggleRow({ id: 4 })
 
       expect(setup(wrapper).expandedRows).toEqual({})
-      expect(setup(wrapper).content).toBe('')
-    })
-
-    it('leaves the description alone for other tables', async () => {
-      const wrapper = await mount('rosters')
-
-      setup(wrapper).toggleRow({ id: 4, description: 'ignored' })
-
-      expect(setup(wrapper).content).toBe('')
-      expect(setup(wrapper).expandedRows).toEqual({ 4: true })
     })
   })
 
