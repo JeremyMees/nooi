@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
+import { nl } from '@nuxt/ui/locale'
 
 const props = defineProps<{ error: NuxtError }>()
 
@@ -9,7 +10,7 @@ useSeo()
 </script>
 
 <template>
-  <UApp>
+  <UApp :locale="nl">
     <NuxtLayout>
       <UError
         as="div"

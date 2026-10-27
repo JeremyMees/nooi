@@ -119,7 +119,9 @@ async function submit(
   }
 
   clearFilters()
-  reset(form?.id ? `${props.type}-${form.id}` : props.type)
+  if (props.type !== 'rosters') {
+    reset(form?.id ? `${props.type}-${form.id}` : props.type)
+  }
   content.value = ''
   creating.value = false
 }
@@ -169,7 +171,7 @@ function sortIcon(field: string): string {
 function toggleRow(data: Row): void {
   if (expandedRows.value[data.id]) {
     expandedRows.value = {}
-    reset(`${props.type}-${data.id}`)
+    if (props.type !== 'rosters') reset(`${props.type}-${data.id}`)
 
     if (props.type === 'events') {
       content.value = ''
@@ -247,16 +249,20 @@ function clearFilters(): void {
       </div>
       <ClientOnly>
         <AnimationExpand>
+          <FormRoster
+            v-if="creating && !editing && type === 'rosters'"
+            submit-label="Toevoegen"
+            @submit="submit"
+          />
           <FormKit
-            v-if="creating && !editing"
+            v-else-if="creating && !editing"
             :id="type"
             type="form"
             submit-label="Toevoegen"
             :config="{ validationVisibility: 'blur' }"
             @submit="submit"
           >
-            <FormRoster v-if="type === 'rosters'" />
-            <FormEvent v-else-if="type === 'events'" />
+            <FormEvent v-if="type === 'events'" />
             <FormAdminReservation v-else-if="type === 'reservations'" />
             <div v-if="type === 'events'" class="mb-10">
               <span class="text-sm text-black"> Omscrijving </span>
@@ -352,7 +358,14 @@ function clearFilters(): void {
       <template #expanded="{ row }">
         <div class="p-3">
           <ClientOnly>
+            <FormRoster
+              v-if="type === 'rosters'"
+              :roster="row.original as RosterRow"
+              submit-label="Bijwerken"
+              @submit="submit({ ...$event, id: row.original.id })"
+            />
             <FormKit
+              v-else
               :id="`${type}-${row.original.id}`"
               type="form"
               submit-label="Bijwerken"
@@ -360,8 +373,7 @@ function clearFilters(): void {
               :config="{ validationVisibility: 'blur' }"
               @submit="submit"
             >
-              <FormRoster v-if="type === 'rosters'" />
-              <FormEvent v-else-if="type === 'events'" />
+              <FormEvent v-if="type === 'events'" />
               <FormAdminReservation v-else-if="type === 'reservations'" />
               <div v-if="type === 'events'" class="mb-10">
                 <span class="text-sm text-black"> Omscrijving </span>

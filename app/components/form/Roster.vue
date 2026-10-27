@@ -1,68 +1,106 @@
 <script setup lang="ts">
-const start = ref<string>()
-const end = ref<string>()
+import * as z from 'zod/mini'
+import type { FormSubmitEvent } from '@nuxt/ui'
 
-const statusOptions: Option<string>[] = [
+const required = 'Dit veld is verplicht'
+
+const schema = z.object({
+  day: z.string(required).check(z.minLength(1, required)),
+  start: z.string(required).check(z.minLength(1, required)),
+  end: z.string(required).check(z.minLength(1, required)),
+  status: z.enum(['game', 'reservation', 'occupied'], required),
+  minSpots: z
+    .number(required)
+    .check(
+      z.minimum(1, 'Minimum 1 persoon'),
+      z.maximum(100, 'Maximum 100 personen'),
+    ),
+  allowReservation: z.boolean(),
+})
+
+type Schema = z.output<typeof schema>
+
+const props = defineProps<{ roster?: RosterRow; submitLabel: string }>()
+
+const emit = defineEmits<{ submit: [roster: Schema] }>()
+
+const statusOptions: Option<RosterRow['status']>[] = [
   { label: 'Open spelcafé', value: 'game' },
   { label: 'Reservatie', value: 'reservation' },
   { label: 'Bezet', value: 'occupied' },
 ]
 
-watch([start, end], v => {
-  v.forEach((value: string | undefined, i: number) => {
-    if (value && !['00', '30'].includes(value.split(':')[1] || '')) {
-      if (i === 0) {
-        start.value = roundTime(value)
-      } else {
-        end.value = roundTime(value)
-      }
-    }
-  })
+const state = reactive<Partial<Schema>>({
+  day: props.roster?.day,
+  start: props.roster?.start,
+  end: props.roster?.end,
+  status: props.roster?.status ?? 'game',
+  minSpots: props.roster?.minSpots ?? 1,
+  allowReservation: props.roster?.allowReservation ?? true,
 })
+
+function onHalfHour(time: string | undefined): string | undefined {
+  return time && !['00', '30'].includes(time.split(':')[1] ?? '')
+    ? roundTime(time)
+    : time
+}
+
+watch(
+  () => state.start,
+  time => (state.start = onHalfHour(time)),
+)
+
+watch(
+  () => state.end,
+  time => (state.end = onHalfHour(time)),
+)
+
+function submit({ data }: FormSubmitEvent<Schema>): void {
+  emit('submit', data)
+}
 </script>
 
 <template>
-  <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-4">
-    <FormKit type="date" name="day" label="Datum" validation="required" />
-    <FormKit
-      v-model="start"
-      type="time"
-      name="start"
-      label="Startuur"
-      step="1800"
-      validation="required"
-    />
-    <FormKit
-      v-model="end"
-      type="time"
-      name="end"
-      label="Einduur"
-      step="1800"
-      validation="required"
-    />
-    <FormKit
-      type="select"
-      name="status"
-      label="Status"
-      validation="required"
-      :value="statusOptions[0]!.value"
-      :options="statusOptions"
-    />
-    <FormKit
-      type="number"
-      number
-      name="minSpots"
-      label="Minimum personen"
-      validation="required|number|min:1|max:100"
-      :value="1"
-      :min="1"
-      :max="100"
-    />
-  </div>
-  <FormKit
-    type="checkbox"
-    name="allowReservation"
-    label="Toestaan om te reserveren"
-    :value="true"
-  />
+  <UForm
+    :schema="schema"
+    :state="state"
+    :validate-on="['blur']"
+    @submit="submit"
+  >
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-4">
+      <UFormField label="Datum" name="day" required>
+        <FormDateInput v-model="state.day" test-id="roster-day" />
+      </UFormField>
+      <UFormField label="Startuur" name="start" required>
+        <FormTimeInput v-model="state.start" test-id="roster-start" />
+      </UFormField>
+      <UFormField label="Einduur" name="end" required>
+        <FormTimeInput v-model="state.end" test-id="roster-end" />
+      </UFormField>
+      <UFormField label="Status" name="status" required>
+        <USelect
+          v-model="state.status"
+          test-id="roster-status"
+          :items="statusOptions"
+        />
+      </UFormField>
+      <UFormField label="Minimum personen" name="minSpots" required>
+        <UInput
+          v-model.number="state.minSpots"
+          test-id="roster-min-spots"
+          type="number"
+          :min="1"
+          :max="100"
+        />
+      </UFormField>
+    </div>
+    <UFormField name="allowReservation">
+      <UCheckbox
+        v-model="state.allowReservation"
+        test-id="roster-allow-reservation"
+        label="Toestaan om te reserveren"
+      />
+    </UFormField>
+    <UButton test-id="roster-submit" type="submit" :label="submitLabel" />
+  </UForm>
 </template>

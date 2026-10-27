@@ -39,6 +39,45 @@ export default defineAppConfig({
         },
       },
     },
+    inputDate: {
+      slots: {
+        base: 'w-full rounded min-h-11 text-black',
+      },
+      variants: {
+        size: {
+          md: { base: 'px-3 py-2 text-base' },
+        },
+        variant: {
+          outline: 'bg-white ring-surface-400',
+        },
+      },
+    },
+    inputTime: {
+      slots: {
+        base: 'w-full rounded min-h-11 text-black',
+      },
+      variants: {
+        size: {
+          md: { base: 'px-3 py-2 text-base' },
+        },
+        variant: {
+          outline: 'bg-white ring-surface-400',
+        },
+      },
+    },
+    select: {
+      slots: {
+        base: 'w-full rounded min-h-11 text-black',
+      },
+      variants: {
+        size: {
+          md: { base: 'px-3 py-2 text-base gap-2' },
+        },
+        variant: {
+          outline: 'bg-white ring-surface-400',
+        },
+      },
+    },
     slideover: {
       slots: {
         overlay: 'bg-black/40 backdrop-blur-sm',

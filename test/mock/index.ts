@@ -1,4 +1,5 @@
 import { vi } from 'vitest'
+import { flushPromises, type VueWrapper } from '@vue/test-utils'
 import type {
   EventRow,
   EventReservation,
@@ -128,4 +129,23 @@ export const mockRosters: RosterRow[] = [
  */
 export function setup(wrapper: { vm: unknown }): Record<string, any> {
   return wrapper.vm as Record<string, any>
+}
+
+export const popoverStub = {
+  UPopover: {
+    name: 'UPopover',
+    props: ['open'],
+    emits: ['update:open'],
+    template:
+      '<div><slot /><div v-if="open" test-id="popover-content"><slot name="content" /></div></div>',
+  },
+}
+
+export async function openPopover(wrapper: VueWrapper): Promise<void> {
+  wrapper.findComponent({ name: 'UPopover' }).vm.$emit('update:open', true)
+  await flushPromises()
+}
+
+export function isPopoverOpen(wrapper: VueWrapper): boolean {
+  return wrapper.find('[test-id="popover-content"]').exists()
 }

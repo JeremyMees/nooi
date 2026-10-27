@@ -289,6 +289,33 @@ describe('AdminTable', () => {
       )
     })
 
+    it('creates a roster from the roster form', async () => {
+      const passThrough = { template: '<div><slot /></div>' }
+      const wrapper = await mountSuspended(AdminTable, {
+        props: { type: 'rosters' },
+        shallow: true,
+        global: {
+          stubs: { ClientOnly: passThrough, AnimationExpand: passThrough },
+        },
+      })
+      const roster = {
+        day: '2026-07-10',
+        start: '18:00',
+        end: '23:00',
+        status: 'game',
+        minSpots: 1,
+        allowReservation: true,
+      }
+
+      setup(wrapper).creating = true
+      await nextTick()
+      wrapper.findComponent({ name: 'FormRoster' }).vm.$emit('submit', roster)
+      await flushPromises()
+
+      expect(createData).toHaveBeenCalledWith('rosters', roster)
+      expect(setup(wrapper).creating).toBe(false)
+    })
+
     it('stores a reservation without an event as null', async () => {
       const wrapper = await mount('reservations')
 
