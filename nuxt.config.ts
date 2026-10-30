@@ -44,6 +44,10 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2026-03-27',
 
+  nitro: {
+    prerender: { routes: ['/llms.txt'] },
+  },
+
   sourcemap: {
     client: 'hidden',
     server: false,
@@ -97,4 +101,5 @@ export default defineNuxtConfig({
   },
 
   sitemap: { zeroRuntime: true },
+  aiReady: { llmsFullTxt: false },
 })
